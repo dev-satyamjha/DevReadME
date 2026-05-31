@@ -505,15 +505,28 @@ export default function App() {
 
     /* Tech Stack  */
     if (formData.skills.length > 0) {
-      md += `## 💻 Core Tech Stack\n<p align="center">\n`;
-      formData.skills.forEach((skill) => {
-        const safeName = skill
-          .replace(/ /g, "%20")
-          .replace(/\+/g, "%2B")
-          .replace(/#/g, "%23");
-        md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${skill}" />\n`;
-      });
-      md += `</p>\n\n`;
+      md += `## 💻 Core Tech Stack\n\n`;
+      Object.entries(SKILLS_CATEGORIES).forEach(
+        ([category, categorySkills]) => {
+          const selectedSkills = categorySkills.filter((skill) =>
+            formData.skills.includes(skill),
+          );
+
+          if (selectedSkills.length > 0) {
+            const formattedCategory = category.replace(/_/g, " & ");
+            md += `### ${formattedCategory}\n<p align="center">\n`;
+
+            selectedSkills.forEach((skill) => {
+              const safeName = skill
+                .replace(/ /g, "%20")
+                .replace(/\+/g, "%2B")
+                .replace(/#/g, "%23");
+              md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${skill}" />\n`;
+            });
+            md += `</p>\n\n`;
+          }
+        },
+      );
     }
 
     /* Custom skills */
@@ -953,6 +966,21 @@ export default function App() {
                         border: "1px solid var(--border-color)",
                       }}
                     >
+                      <div
+                        style={{
+                          padding: "10px",
+                          background: "rgba(88, 166, 255, 0.1)",
+                          borderLeft: "4px solid var(--accent-color)",
+                          borderRadius: "4px",
+                          fontSize: "0.85rem",
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        <strong>⚠️ Important:</strong> The snake requires a
+                        GitHub Action to run. Check the generated Markdown Code
+                        tab for the exact <code>snake.yml</code> code you need
+                        to add to your repository!
+                      </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label>Snake Section Title</label>
                         <input
