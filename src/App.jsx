@@ -298,9 +298,7 @@ export default function App() {
     codestats: "",
     customLinks: [],
     skills: ["JavaScript", "React", "Node.js", "Python"],
-    customCategories: [
-      { id: 1, title: "My Favorite Design Tools", skills: ["Krita", "Figma"] },
-    ],
+    customCategories: [],
     projects: ["", "", "", "", ""],
     displayBoard: true,
     animations: {
@@ -474,26 +472,36 @@ export default function App() {
     let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
 
     /*Display Board*/
-    if (formData.displayBoard) {
-      md += `<div align="center">\n`;
-      md += `  <img src="${DINO_DAY_NIGHT_GIF}" alt="Dino Day-Night Loop" width="100%" style="border-radius:12px; margin-bottom:16px;" />\n`;
+        if (formData.displayBoard) {
+          md += `<div align="center">\n`;
+          md += `  <img src="${DINO_DAY_NIGHT_GIF}" alt="Dino Day-Night Loop" width="100%" style="border-radius:12px; margin-bottom:16px;" />\n`;
 
-      const validProjects = formData.projects.filter((p) => p.trim() !== "");
-      if (validProjects.length > 0) {
-        md += `\n### 🏆 Prominent Projects\n\n`;
-        md += `<table>\n<tr>\n`;
-        validProjects.forEach((repo, idx) => {
-          md += `<td align="center">\n`;
-          md += `  <a href="https://github.com/${githubUser}/${repo}">\n`;
-          md += `    <img src="https://github-readme-stats.vercel.app/api/pin/?username=${githubUser}&repo=${repo}&${themeParams}&show_icons=true" width="320" alt="${repo}" />\n`;
-          md += `  </a>\n`;
-          md += `</td>\n`;
-          if ((idx + 1) % 2 === 0 && idx < validProjects.length - 1) {
-            md += `</tr>\n<tr>\n`;
+          const validProjects = formData.projects.filter((p) => p.trim() !== "");
+          if (validProjects.length > 0) {
+            md += `\n### 🏆 Prominent Projects\n\n`;
+            md += `<table>\n<tr>\n`;
+
+            // Grab the base URL dynamically so it works locally and on Netlify
+            const baseUrl = window.location.origin;
+
+            validProjects.forEach((repo, idx) => {
+              md += `<td align="center">\n`;
+              md += `  <a href="https://github.com/${githubUser}/${repo}">\n`;
+
+              // THIS IS THE NEW LINE: Pointing to your Netlify serverless function
+              md += `    <img src="${baseUrl}/.netlify/functions/seven-segment?user=${githubUser}&repo=${repo}" width="320" alt="${repo}" />\n`;
+
+              md += `  </a>\n`;
+              md += `</td>\n`;
+              if ((idx + 1) % 2 === 0 && idx < validProjects.length - 1) {
+                md += `</tr>\n<tr>\n`;
+              }
+            });
+            md += `</tr>\n</table>\n`;
           }
-        });
-        md += `</tr>\n</table>\n`;
-      }
+
+          md += `</div>\n\n`;
+        }
 
       md += `</div>\n\n`;
     }
