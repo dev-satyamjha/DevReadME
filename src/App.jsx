@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Globe,
   Link as LinkIcon,
@@ -10,9 +10,8 @@ import {
   Plus,
   Trash2,
   Gamepad2,
-  Award,
   Settings,
-  Image as ImageIcon,
+  ImageIcon,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -277,8 +276,211 @@ const SKILLS_CATEGORIES = {
   ],
 };
 
-const DINO_DAY_NIGHT_GIF =
-  "https://raw.githubusercontent.com/saadeghi/saadeghi/master/dino.gif";
+const MATRIX_FONT = {
+  A: [0x70, 0x88, 0x88, 0xf8, 0x88, 0x88, 0x88],
+  B: [0xf0, 0x48, 0x48, 0x70, 0x48, 0x48, 0xf0],
+  C: [0x70, 0x88, 0x80, 0x80, 0x80, 0x88, 0x70],
+  D: [0xe0, 0x50, 0x48, 0x48, 0x48, 0x50, 0xe0],
+  E: [0xf8, 0x80, 0x80, 0xf0, 0x80, 0x80, 0xf8],
+  F: [0xf8, 0x80, 0x80, 0xf0, 0x80, 0x80, 0x80],
+  G: [0x70, 0x88, 0x80, 0xb8, 0x88, 0x88, 0x70],
+  H: [0x88, 0x88, 0x88, 0xf8, 0x88, 0x88, 0x88],
+  I: [0x70, 0x20, 0x20, 0x20, 0x20, 0x20, 0x70],
+  J: [0x38, 0x10, 0x10, 0x10, 0x10, 0x90, 0x60],
+  K: [0x88, 0x90, 0xa0, 0xc0, 0xa0, 0x90, 0x88],
+  L: [0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xf8],
+  M: [0x88, 0xd8, 0xa8, 0x88, 0x88, 0x88, 0x88],
+  N: [0x88, 0x88, 0xc8, 0xa8, 0x98, 0x88, 0x88],
+  O: [0x70, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70],
+  P: [0xf0, 0x88, 0x88, 0xf0, 0x80, 0x80, 0x80],
+  Q: [0x70, 0x88, 0x88, 0x88, 0xa8, 0x90, 0x68],
+  R: [0xf0, 0x88, 0x88, 0xf0, 0xa0, 0x90, 0x88],
+  S: [0x70, 0x88, 0x80, 0x70, 0x08, 0x88, 0x70],
+  T: [0xf8, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20],
+  U: [0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70],
+  V: [0x88, 0x88, 0x88, 0x88, 0x88, 0x50, 0x20],
+  W: [0x88, 0x88, 0x88, 0x88, 0xa8, 0xd8, 0x88],
+  X: [0x88, 0x88, 0x50, 0x20, 0x50, 0x88, 0x88],
+  Y: [0x88, 0x88, 0x50, 0x20, 0x20, 0x20, 0x20],
+  Z: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x80, 0xf8],
+  0: [0x70, 0x88, 0x98, 0xa8, 0xc8, 0x88, 0x70],
+  1: [0x20, 0x60, 0x20, 0x20, 0x20, 0x20, 0x70],
+  2: [0x70, 0x88, 0x08, 0x30, 0x40, 0x80, 0xf8],
+  3: [0x70, 0x88, 0x08, 0x30, 0x08, 0x88, 0x70],
+  4: [0x10, 0x30, 0x50, 0x90, 0xf8, 0x10, 0x10],
+  5: [0xf8, 0x80, 0xf0, 0x08, 0x08, 0x88, 0x70],
+  6: [0x70, 0x80, 0xf0, 0x88, 0x88, 0x88, 0x70],
+  7: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x40, 0x40],
+  8: [0x70, 0x88, 0x88, 0x70, 0x88, 0x88, 0x70],
+  9: [0x70, 0x88, 0x88, 0x88, 0x78, 0x08, 0x70],
+  " ": [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+  "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
+};
+
+const DOT_SIZE = 6;
+const DOT_GAP = 2;
+const CHAR_WIDTH = 5 * (DOT_SIZE + DOT_GAP);
+
+function DotMatrixString({ str, y, totalW, onColor }) {
+  const strW = str.length * (CHAR_WIDTH + DOT_GAP * 3);
+  const startX = Math.max(0, (totalW - strW) / 2);
+  const dots = [];
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i].toUpperCase();
+    const matrix = MATRIX_FONT[ch] || MATRIX_FONT[" "];
+    const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
+
+    matrix.forEach((row, rowIdx) => {
+      for (let colIdx = 0; colIdx < 5; colIdx++) {
+        if ((row & (0x80 >> colIdx)) !== 0) {
+          const cx = charX + colIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
+          const cy = y + rowIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
+          dots.push(
+            <circle
+              key={`${i}-${rowIdx}-${colIdx}`}
+              cx={cx}
+              cy={cy}
+              r={DOT_SIZE / 2}
+              fill={onColor}
+              filter="url(#glow)"
+            />,
+          );
+        }
+      }
+    });
+  }
+  return <>{dots}</>;
+}
+
+function DisplayBoard({ projects }) {
+  const validProjects = projects.filter((p) => p.trim() !== "");
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const timerRef = useRef(null);
+
+  const SVG_W = 650;
+  const SVG_H = 440;
+  const ON = "#ff0000";
+  const OFF = "#1a0000";
+
+  const rainDrops = useMemo(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      cx: Math.floor(Math.random() * SVG_W),
+      dur: 1 + Math.random() * 2,
+      delay: Math.random() * 3,
+    }));
+  }, [SVG_W]);
+
+  useEffect(() => {
+    if (validProjects.length <= 1) {
+      setCurrentIdx(0);
+      return;
+    }
+    timerRef.current = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % validProjects.length);
+    }, 5000);
+    return () => clearInterval(timerRef.current);
+  }, [validProjects.length]);
+
+  if (validProjects.length === 0) return null;
+
+  const name = validProjects[currentIdx].toUpperCase().slice(0, 12);
+  const stars = "★ 2";
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}
+    >
+      <style>
+        {`
+          @keyframes blurTransition {
+            0% { filter: blur(8px); opacity: 0; }
+            15% { filter: blur(0px); opacity: 1; }
+            85% { filter: blur(0px); opacity: 1; }
+            100% { filter: blur(8px); opacity: 0; }
+          }
+          @keyframes drop {
+            0% { transform: translateY(-20px); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(${SVG_H}px); opacity: 0; }
+          }
+          .blur-animate {
+            animation: blurTransition 5s infinite;
+          }
+        `}
+      </style>
+      <svg
+        width="100%"
+        viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ maxWidth: SVG_W, borderRadius: 16 }}
+      >
+        <defs>
+          <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse">
+            <rect width="8" height="8" fill="#050100" />
+            <circle cx="4" cy="4" r="2" fill="#110000" />
+          </pattern>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <rect width={SVG_W} height={SVG_H} fill="url(#dots)" rx="16" />
+        <rect
+          width={SVG_W}
+          height={SVG_H}
+          fill="none"
+          rx="16"
+          stroke="#110000"
+          strokeWidth="12"
+        />
+
+        <g className="rain-container">
+          {rainDrops.map((drop) => (
+            <circle
+              key={drop.id}
+              cx={drop.cx}
+              cy="0"
+              r="2"
+              fill={ON}
+              filter="url(#glow)"
+              style={{
+                animation: `drop ${drop.dur}s ${drop.delay}s infinite linear`,
+              }}
+            />
+          ))}
+        </g>
+
+        <g
+          key={currentIdx}
+          className={validProjects.length > 1 ? "blur-animate" : ""}
+          filter="url(#glow)"
+        >
+          <DotMatrixString str={name} totalW={SVG_W} y={140} onColor={ON} />
+          <DotMatrixString str={stars} totalW={SVG_W} y={260} onColor={ON} />
+        </g>
+
+        {validProjects.length > 1 && (
+          <text
+            x={SVG_W - 16}
+            y={SVG_H - 16}
+            fill={OFF}
+            fontSize="14"
+            fontFamily="monospace"
+            textAnchor="end"
+          >
+            {currentIdx + 1}/{validProjects.length}
+          </text>
+        )}
+      </svg>
+    </div>
+  );
+}
 
 export default function App() {
   const [theme, setTheme] = useState("elegant-black");
@@ -307,7 +509,6 @@ export default function App() {
       pinball: false,
       topLangs: true,
       activityOverview: true,
-      leetcodeHeatmap: true,
     },
     snakeSkinColor: "#000000",
     snakeFoodStyle: "gold",
@@ -317,7 +518,7 @@ export default function App() {
 
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCustomSkill, setNewCustomSkill] = useState("");
-  const [targetCustomCategory, setTargetCustomCategory] = useState(1);
+  const [selectedCatId, setSelectedCatId] = useState(null);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
 
@@ -327,11 +528,10 @@ export default function App() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleProjectChange = (index, value) => {
@@ -380,24 +580,21 @@ export default function App() {
           { id: newId, title: newCategoryName.trim(), skills: [] },
         ],
       }));
-      setTargetCustomCategory(newId);
+      setSelectedCatId(newId);
       setNewCategoryName("");
     }
   };
 
   const addSkillToCustomCategory = () => {
-    if (newCustomSkill.trim() && targetCustomCategory) {
+    if (newCustomSkill.trim() && selectedCatId) {
       setFormData((prev) => ({
         ...prev,
-        customCategories: prev.customCategories.map((cat) => {
-          if (
-            cat.id === targetCustomCategory &&
-            !cat.skills.includes(newCustomSkill.trim())
-          ) {
-            return { ...cat, skills: [...cat.skills, newCustomSkill.trim()] };
-          }
-          return cat;
-        }),
+        customCategories: prev.customCategories.map((cat) =>
+          cat.id === selectedCatId &&
+          !cat.skills.includes(newCustomSkill.trim())
+            ? { ...cat, skills: [...cat.skills, newCustomSkill.trim()] }
+            : cat,
+        ),
       }));
       setNewCustomSkill("");
     }
@@ -406,19 +603,18 @@ export default function App() {
   const removeCustomCategory = (id) => {
     setFormData((prev) => ({
       ...prev,
-      customCategories: prev.customCategories.filter((cat) => cat.id !== id),
+      customCategories: prev.customCategories.filter((c) => c.id !== id),
     }));
   };
 
   const removeSkillFromCustomCategory = (catId, skill) => {
     setFormData((prev) => ({
       ...prev,
-      customCategories: prev.customCategories.map((cat) => {
-        if (cat.id === catId) {
-          return { ...cat, skills: cat.skills.filter((s) => s !== skill) };
-        }
-        return cat;
-      }),
+      customCategories: prev.customCategories.map((cat) =>
+        cat.id === catId
+          ? { ...cat, skills: cat.skills.filter((s) => s !== skill) }
+          : cat,
+      ),
     }));
   };
 
@@ -434,14 +630,11 @@ export default function App() {
   const toggleAnimation = (anim) => {
     setFormData((prev) => ({
       ...prev,
-      animations: {
-        ...prev.animations,
-        [anim]: !prev.animations[anim],
-      },
+      animations: { ...prev.animations, [anim]: !prev.animations[anim] },
     }));
   };
 
-  const getThemeQueryParams = () => {
+  const getThemeParams = () => {
     switch (theme) {
       case "elegant-black":
         return "bg_color=0d1117&title_color=ffffff&text_color=8b949e&icon_color=58a6ff&border_color=30363d";
@@ -458,73 +651,39 @@ export default function App() {
     }
   };
 
-  const getSelectedFoodDots = () => {
-    const found = SNAKE_FOOD_OPTIONS.find(
-      (o) => o.value === formData.snakeFoodStyle,
-    );
-    return found ? found.dots : SNAKE_FOOD_OPTIONS[0].dots;
-  };
-
   const generateMarkdown = (isPreview = false) => {
-    const themeParams = getThemeQueryParams();
-    const githubUser = formData.github || "torvalds";
-
+    const themeParams = getThemeParams();
+    const user = formData.github || "torvalds";
     let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
 
-    /*Display Board*/
-        if (formData.displayBoard) {
-          md += `<div align="center">\n`;
-          md += `  <img src="${DINO_DAY_NIGHT_GIF}" alt="Dino Day-Night Loop" width="100%" style="border-radius:12px; margin-bottom:16px;" />\n`;
-
-          const validProjects = formData.projects.filter((p) => p.trim() !== "");
-          if (validProjects.length > 0) {
-            md += `\n### 🏆 Prominent Projects\n\n`;
-            md += `<table>\n<tr>\n`;
-
-            // Grab the base URL dynamically so it works locally and on Netlify
-            const baseUrl = window.location.origin;
-
-            validProjects.forEach((repo, idx) => {
-              md += `<td align="center">\n`;
-              md += `  <a href="https://github.com/${githubUser}/${repo}">\n`;
-
-              // THIS IS THE NEW LINE: Pointing to your Netlify serverless function
-              md += `    <img src="${baseUrl}/.netlify/functions/seven-segment?user=${githubUser}&repo=${repo}" width="320" alt="${repo}" />\n`;
-
-              md += `  </a>\n`;
-              md += `</td>\n`;
-              if ((idx + 1) % 2 === 0 && idx < validProjects.length - 1) {
-                md += `</tr>\n<tr>\n`;
-              }
-            });
-            md += `</tr>\n</table>\n`;
-          }
-
-          md += `</div>\n\n`;
-        }
-
-      md += `</div>\n\n`;
+    if (formData.displayBoard) {
+      const validProjects = formData.projects.filter((p) => p.trim() !== "");
+      if (validProjects.length > 0) {
+        const base = isPreview
+          ? window.location.origin
+          : "https://YOUR_DEPLOY_URL";
+        const reposParam = validProjects.join(",");
+        md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n`;
+        md += `<a href="https://github.com/${user}">\n`;
+        md += `  <img src="${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}" width="650" alt="Projects Display Board" />\n`;
+        md += `</a>\n\n</div>\n\n`;
+      }
     }
 
-    /* About */
     if (formData.about) {
       md += `## 🚀 About Me\n${formData.about}\n\n`;
     }
 
-    /* Tech Stack  */
     if (formData.skills.length > 0) {
       md += `## 💻 Core Tech Stack\n\n`;
       Object.entries(SKILLS_CATEGORIES).forEach(
         ([category, categorySkills]) => {
-          const selectedSkills = categorySkills.filter((skill) =>
-            formData.skills.includes(skill),
+          const selected = categorySkills.filter((s) =>
+            formData.skills.includes(s),
           );
-
-          if (selectedSkills.length > 0) {
-            const formattedCategory = category.replace(/_/g, " & ");
-            md += `### ${formattedCategory}\n<p align="center">\n`;
-
-            selectedSkills.forEach((skill) => {
+          if (selected.length > 0) {
+            md += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
+            selected.forEach((skill) => {
               const safeName = skill
                 .replace(/ /g, "%20")
                 .replace(/\+/g, "%2B")
@@ -537,7 +696,6 @@ export default function App() {
       );
     }
 
-    /* Custom skills */
     formData.customCategories.forEach((cat) => {
       if (cat.skills.length > 0) {
         md += `## ✨ ${cat.title}\n<p align="center">\n`;
@@ -552,14 +710,13 @@ export default function App() {
       }
     });
 
-    /*  Social */
-    const hasAnyLink =
+    const hasLinks =
       formData.github ||
       formData.twitter ||
       formData.linkedin ||
       formData.codestats ||
       formData.customLinks.length > 0;
-    if (hasAnyLink) {
+    if (hasLinks) {
       md += `## 🌐 Connect with me\n<p align="center">\n`;
       if (formData.github)
         md += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>\n`;
@@ -570,87 +727,46 @@ export default function App() {
       if (formData.codestats)
         md += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-1F2937?style=for-the-badge&logo=codeforces&logoColor=white" alt="Code::Stats" /></a>\n`;
       formData.customLinks.forEach((link) => {
-        const safeLbl = link.label.replace(/ /g, "%20");
-        md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${safeLbl}-4285F4?style=for-the-badge" alt="${link.label}" /></a>\n`;
+        md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge" alt="${link.label}" /></a>\n`;
       });
       md += `</p>\n\n`;
     }
 
-    /* Fun Fact  */
     if (formData.funFact) {
       md += `> 💡 **Fun Fact:** ${formData.funFact}\n\n`;
     }
 
-    /* GitHub Activity Overview  */
     md += `## 📊 GitHub Activity Overview\n\n<p align="center">\n`;
-    if (formData.animations.activityOverview) {
-      md += `  <img src="https://github-readme-stats.vercel.app/api?username=${githubUser}&show_icons=true&hide_border=true&${themeParams}" alt="GitHub Stats" />\n`;
-    }
-    if (formData.animations.topLangs) {
-      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${githubUser}&layout=compact&hide_border=true&${themeParams}" alt="Top Languages" />\n`;
-    }
-    if (formData.animations.streak) {
-      md += `  <img src="https://streak-stats.demolab.com/?user=${githubUser}&hide_border=true&${themeParams}" alt="Meteor Streak" />\n`;
-    }
+    if (formData.animations.activityOverview)
+      md += `  <img src="https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&hide_border=true&${themeParams}" alt="GitHub Stats" />\n`;
+    if (formData.animations.topLangs)
+      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=compact&hide_border=true&${themeParams}" alt="Top Languages" />\n`;
+    if (formData.animations.streak)
+      md += `  <img src="https://streak-stats.demolab.com/?user=${user}&hide_border=true&${themeParams}" alt="Meteor Streak" />\n`;
     md += `</p>\n\n`;
 
-    /* CodeStats */
     if (formData.codestats) {
-      md += `## 📈 Code::Stats XP Overview\n<p align="center">\n`;
-      md += `  <img src="https://codestats-readme.wegfan.cn/history/${formData.codestats}?max_languages=8&width=800" alt="Code::Stats XP History" />\n`;
-      md += `</p>\n\n`;
+      md += `## 📈 Code::Stats XP Overview\n<p align="center">\n  <img src="https://codestats-readme.wegfan.cn/history/${formData.codestats}?max_languages=8&width=800" alt="Code::Stats XP History" />\n</p>\n\n`;
     }
 
-    /*Competitive */
-    const hasCompetitive = formData.leetcode || formData.codeforces;
-    if (hasCompetitive) {
+    if (formData.leetcode || formData.codeforces) {
       md += `## 🧩 Competitive & Code Stats\n\n`;
-      if (formData.leetcode) {
-        md += `<p align="center">\n`;
-        md += `  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Heatmap" />\n`;
-        md += `</p>\n\n`;
-      }
-      if (formData.codeforces) {
-        md += `<p align="center">\n`;
-        md += `  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" />\n`;
-        md += `</p>\n\n`;
-      }
+      if (formData.leetcode)
+        md += `<p align="center">\n  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Heatmap" />\n</p>\n\n`;
+      if (formData.codeforces)
+        md += `<p align="center">\n  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" />\n</p>\n\n`;
     }
 
-    /* Pinball Activity Graph  */
     if (formData.animations.pinball) {
-      md += `## 🎯 Pinball Activity Graph\n<p align="center">\n`;
-      md += `  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${githubUser}&hide_border=true&${themeParams}" alt="Activity Graph" width="100%" />\n`;
-      md += `</p>\n\n`;
+      md += `## 🎯 Pinball Activity Graph\n<p align="center">\n  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${user}&hide_border=true&${themeParams}" alt="Activity Graph" width="100%" />\n</p>\n\n`;
     }
 
-    /* Snake */
     if (formData.animations.snake) {
-      md += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n`;
-
       const snakeSrc = isPreview
         ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
-        : `https://raw.githubusercontent.com/${githubUser}/${githubUser}/output/github-contribution-grid-snake.svg`;
-
-      md += `<p align="center">\n`;
-      md += `  <img src="${snakeSrc}" alt="${formData.snakeTitle || "Dev Snake"}" width="100%" />\n`;
-      md += `</p>\n\n`;
-
-      if (!isPreview) {
-        md += `<!-- \n  🐍 SNAKE SETUP — Add .github/workflows/snake.yml to your profile repo:\n\n`;
-        md += `  name: Generate Snake\n`;
-        md += `  on:\n    schedule:\n      - cron: "0 0 * * *"\n    workflow_dispatch:\n\n`;
-        md += `  jobs:\n    build:\n      runs-on: ubuntu-latest\n      steps:\n`;
-        md += `        - uses: Platane/snk@v3\n          with:\n`;
-        md += `            github_user_name: \${{ github.repository_owner }}\n`;
-        md += `            outputs: |\n              dist/github-contribution-grid-snake.svg?color_snake=${formData.snakeSkinColor}&color_dots=${getSelectedFoodDots()}\n\n`;
-        md += `        - uses: crazy-max/ghaction-github-pages@v3.1.0\n          with:\n`;
-        md += `            target_branch: output\n            build_dir: dist\n`;
-        md += `          env:\n            GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n`;
-        md += `\n  Snake Skin: ${SNAKE_SKIN_OPTIONS.find((o) => o.value === formData.snakeSkinColor)?.label || "Custom"} (${formData.snakeSkinColor})`;
-        md += `\n  Food Style: ${SNAKE_FOOD_OPTIONS.find((o) => o.value === formData.snakeFoodStyle)?.label || "Custom"}\n`;
-        md += `-->\n\n`;
-      }
+        : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
+      md += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n`;
+      md += `<p align="center">\n  <img src="${snakeSrc}" alt="${formData.snakeTitle || "Dev Snake"}" width="100%" />\n</p>\n\n`;
     }
 
     return md;
@@ -662,13 +778,46 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const PreviewContent = () => {
+    const validProjects = formData.projects.filter((p) => p.trim() !== "");
+    const showBoard = formData.displayBoard && validProjects.length > 0;
+
+    const mdWithoutBoard = (() => {
+      let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
+      if (showBoard) {
+        md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n</div>\n\n`;
+      }
+      return md;
+    })();
+
+    const mdRest = (() => {
+      const full = generateMarkdown(true);
+      const aboutIdx = full.indexOf("## 🚀 About Me");
+      if (aboutIdx === -1) {
+        const connectIdx = full.indexOf("## 🌐");
+        return connectIdx !== -1 ? full.slice(connectIdx) : "";
+      }
+      return full.slice(aboutIdx);
+    })();
+
+    return (
+      <div className="markdown-preview custom-scrollbar">
+        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+          {mdWithoutBoard}
+        </ReactMarkdown>
+        {showBoard && <DisplayBoard projects={formData.projects} />}
+        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdRest}</ReactMarkdown>
+      </div>
+    );
+  };
+
   return (
     <>
       <CursorBubbles />
       <div className="app-container">
         <header className="header">
           <div className="logo-area">
-            <Sparkles className="logo-icon" size={2} />
+            <Sparkles className="logo-icon" size={20} />
             <h1>DevReadME</h1>
           </div>
           <div className="theme-selector">
@@ -730,6 +879,7 @@ export default function App() {
                   />
                 </div>
               </div>
+
               <div className="card">
                 <h3 className="section-title">
                   <ImageIcon size={18} /> Display Board &amp; Projects
@@ -741,8 +891,9 @@ export default function App() {
                     marginBottom: "1rem",
                   }}
                 >
-                  Shows the classic dinosaur day-to-night pixel loop animation
-                  above your top 5 pinned projects.
+                  Shows a custom dynamic seven-segment board for your top
+                  projects. Cycling animates on deploy; preview shows one at a
+                  time.
                 </p>
                 <label
                   className="checkbox-label"
@@ -773,64 +924,53 @@ export default function App() {
                     </div>
                   ))}
               </div>
+
               <div className="card">
                 <h3 className="section-title">
                   <LinkIcon size={18} /> Social &amp; Platforms
                 </h3>
-                <div className="form-group">
-                  <label>GitHub Username (Crucial)</label>
-                  <input
-                    name="github"
-                    value={formData.github}
-                    onChange={handleInputChange}
-                    placeholder="torvalds"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>LeetCode Username</label>
-                  <input
-                    name="leetcode"
-                    value={formData.leetcode}
-                    onChange={handleInputChange}
-                    placeholder="your_leetcode"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Codeforces Handle</label>
-                  <input
-                    name="codeforces"
-                    value={formData.codeforces}
-                    onChange={handleInputChange}
-                    placeholder="tourist"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Code::Stats Username (shows XP graph)</label>
-                  <input
-                    name="codestats"
-                    value={formData.codestats}
-                    onChange={handleInputChange}
-                    placeholder="your_codestats_user"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Twitter / X</label>
-                  <input
-                    name="twitter"
-                    value={formData.twitter}
-                    onChange={handleInputChange}
-                    placeholder="elonmusk"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>LinkedIn</label>
-                  <input
-                    name="linkedin"
-                    value={formData.linkedin}
-                    onChange={handleInputChange}
-                    placeholder="williamgates"
-                  />
-                </div>
+                {[
+                  {
+                    name: "github",
+                    label: "GitHub Username (Crucial)",
+                    placeholder: "torvalds",
+                  },
+                  {
+                    name: "leetcode",
+                    label: "LeetCode Username",
+                    placeholder: "your_leetcode",
+                  },
+                  {
+                    name: "codeforces",
+                    label: "Codeforces Handle",
+                    placeholder: "tourist",
+                  },
+                  {
+                    name: "codestats",
+                    label: "Code::Stats Username (XP graph)",
+                    placeholder: "your_codestats_user",
+                  },
+                  {
+                    name: "twitter",
+                    label: "Twitter / X",
+                    placeholder: "elonmusk",
+                  },
+                  {
+                    name: "linkedin",
+                    label: "LinkedIn",
+                    placeholder: "williamgates",
+                  },
+                ].map((f) => (
+                  <div className="form-group" key={f.name}>
+                    <label>{f.label}</label>
+                    <input
+                      name={f.name}
+                      value={formData[f.name]}
+                      onChange={handleInputChange}
+                      placeholder={f.placeholder}
+                    />
+                  </div>
+                ))}
 
                 <div
                   style={{
@@ -911,54 +1051,25 @@ export default function App() {
                   <Sparkles size={18} /> Metrics &amp; Animations
                 </h3>
                 <div className="toggle-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.activityOverview}
-                      onChange={() => toggleAnimation("activityOverview")}
-                    />
-                    <span>GitHub Activity Overview</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.topLangs}
-                      onChange={() => toggleAnimation("topLangs")}
-                    />
-                    <span>Top Languages</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.streak}
-                      onChange={() => toggleAnimation("streak")}
-                    />
-                    <span>Meteor Effect Streak</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.leetcodeHeatmap}
-                      onChange={() => toggleAnimation("leetcodeHeatmap")}
-                    />
-                    <span>LeetCode Heatmap (needs username)</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.pinball}
-                      onChange={() => toggleAnimation("pinball")}
-                    />
-                    <span>Pinball Activity Graph</span>
-                  </label>
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={formData.animations.snake}
-                      onChange={() => toggleAnimation("snake")}
-                    />
-                    <span>Contribution Snake</span>
-                  </label>
+                  {[
+                    {
+                      key: "activityOverview",
+                      label: "GitHub Activity Overview",
+                    },
+                    { key: "topLangs", label: "Top Languages" },
+                    { key: "streak", label: "Meteor Effect Streak" },
+                    { key: "pinball", label: "Pinball Activity Graph" },
+                    { key: "snake", label: "Contribution Snake" },
+                  ].map(({ key, label }) => (
+                    <label key={key} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={formData.animations[key]}
+                        onChange={() => toggleAnimation(key)}
+                      />
+                      <span>{label}</span>
+                    </label>
+                  ))}
 
                   {formData.animations.snake && (
                     <div
@@ -977,7 +1088,7 @@ export default function App() {
                       <div
                         style={{
                           padding: "10px",
-                          background: "rgba(88, 166, 255, 0.1)",
+                          background: "rgba(88,166,255,0.1)",
                           borderLeft: "4px solid var(--accent-color)",
                           borderRadius: "4px",
                           fontSize: "0.85rem",
@@ -985,9 +1096,8 @@ export default function App() {
                         }}
                       >
                         <strong>⚠️ Important:</strong> The snake requires a
-                        GitHub Action to run. Check the generated Markdown Code
-                        tab for the exact <code>snake.yml</code> code you need
-                        to add to your repository!
+                        GitHub Action. Check the Markdown Code tab for the{" "}
+                        <code>snake.yml</code> you need to add to your repo.
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label>Snake Section Title</label>
@@ -1053,9 +1163,8 @@ export default function App() {
                           margin: 0,
                         }}
                       >
-                        These colors are applied when you deploy the GitHub
-                        Action from the generated code. The live preview uses a
-                        demo snake SVG.
+                        Colors apply when you deploy the GitHub Action. The live
+                        preview uses a demo snake SVG.
                       </p>
                     </div>
                   )}
@@ -1199,12 +1308,10 @@ export default function App() {
                     >
                       <input
                         type="text"
-                        value={
-                          targetCustomCategory === cat.id ? newCustomSkill : ""
-                        }
-                        onFocus={() => setTargetCustomCategory(cat.id)}
+                        value={selectedCatId === cat.id ? newCustomSkill : ""}
+                        onFocus={() => setSelectedCatId(cat.id)}
                         onChange={(e) => {
-                          setTargetCustomCategory(cat.id);
+                          setSelectedCatId(cat.id);
                           setNewCustomSkill(e.target.value);
                         }}
                         onKeyDown={(e) => {
@@ -1223,7 +1330,7 @@ export default function App() {
                       />
                       <button
                         onClick={() => {
-                          setTargetCustomCategory(cat.id);
+                          setSelectedCatId(cat.id);
                           addSkillToCustomCategory();
                         }}
                         className="add-skill-btn"
@@ -1262,6 +1369,7 @@ export default function App() {
               </div>
             </div>
           </aside>
+
           <section className="preview-area">
             <div className="preview-header">
               <div className="preview-tabs">
@@ -1288,11 +1396,7 @@ export default function App() {
 
             <div className="preview-container card">
               {activeTab === "preview" ? (
-                <div className="markdown-preview custom-scrollbar">
-                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                    {generateMarkdown(true)}
-                  </ReactMarkdown>
-                </div>
+                <PreviewContent />
               ) : (
                 <pre className="code-view custom-scrollbar">
                   {generateMarkdown(false)}
