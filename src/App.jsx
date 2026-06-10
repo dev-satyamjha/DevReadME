@@ -303,6 +303,32 @@ const MATRIX_FONT = {
   X: [0x88, 0x88, 0x50, 0x20, 0x50, 0x88, 0x88],
   Y: [0x88, 0x88, 0x50, 0x20, 0x20, 0x20, 0x20],
   Z: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x80, 0xf8],
+  a: [0x00, 0x00, 0x70, 0x88, 0xf8, 0x88, 0x88],
+  b: [0x80, 0x80, 0xf0, 0x88, 0x88, 0x88, 0xf0],
+  c: [0x00, 0x00, 0x70, 0x80, 0x80, 0x80, 0x70],
+  d: [0x08, 0x08, 0x78, 0x88, 0x88, 0x88, 0x78],
+  e: [0x00, 0x00, 0x70, 0x88, 0xf8, 0x80, 0x70],
+  f: [0x30, 0x40, 0xe0, 0x40, 0x40, 0x40, 0x40],
+  g: [0x00, 0x78, 0x88, 0x88, 0x78, 0x08, 0x70],
+  h: [0x80, 0x80, 0xf0, 0x88, 0x88, 0x88, 0x88],
+  i: [0x20, 0x00, 0x60, 0x20, 0x20, 0x20, 0x70],
+  j: [0x10, 0x00, 0x10, 0x10, 0x10, 0x90, 0x60],
+  k: [0x80, 0x80, 0x90, 0xa0, 0xc0, 0xa0, 0x90],
+  l: [0x60, 0x20, 0x20, 0x20, 0x20, 0x20, 0x70],
+  m: [0x00, 0x00, 0xd0, 0xa8, 0xa8, 0x88, 0x88],
+  n: [0x00, 0x00, 0xb0, 0xc8, 0x88, 0x88, 0x88],
+  o: [0x00, 0x00, 0x70, 0x88, 0x88, 0x88, 0x70],
+  p: [0x00, 0x00, 0xf0, 0x88, 0xf0, 0x80, 0x80],
+  q: [0x00, 0x00, 0x78, 0x88, 0x78, 0x08, 0x08],
+  r: [0x00, 0x00, 0xb0, 0xc8, 0x80, 0x80, 0x80],
+  s: [0x00, 0x00, 0x70, 0x80, 0x70, 0x08, 0x70],
+  t: [0x40, 0x40, 0xe0, 0x40, 0x40, 0x40, 0x30],
+  u: [0x00, 0x00, 0x88, 0x88, 0x88, 0x98, 0x68],
+  v: [0x00, 0x00, 0x88, 0x88, 0x88, 0x50, 0x20],
+  w: [0x00, 0x00, 0x88, 0x88, 0xa8, 0xa8, 0x50],
+  x: [0x00, 0x00, 0x88, 0x50, 0x20, 0x50, 0x88],
+  y: [0x00, 0x00, 0x88, 0x88, 0x78, 0x08, 0x70],
+  z: [0x00, 0x00, 0xf8, 0x10, 0x20, 0x40, 0xf8],
   0: [0x70, 0x88, 0x98, 0xa8, 0xc8, 0x88, 0x70],
   1: [0x20, 0x60, 0x20, 0x20, 0x20, 0x20, 0x70],
   2: [0x70, 0x88, 0x08, 0x30, 0x40, 0x80, 0xf8],
@@ -313,6 +339,7 @@ const MATRIX_FONT = {
   7: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x40, 0x40],
   8: [0x70, 0x88, 0x88, 0x70, 0x88, 0x88, 0x70],
   9: [0x70, 0x88, 0x88, 0x88, 0x78, 0x08, 0x70],
+  "-": [0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00],
   " ": [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
   "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
 };
@@ -327,7 +354,7 @@ function DotMatrixString({ str, y, totalW, onColor }) {
   const dots = [];
 
   for (let i = 0; i < str.length; i++) {
-    const ch = str[i].toUpperCase();
+    const ch = str[i];
     const matrix = MATRIX_FONT[ch] || MATRIX_FONT[" "];
     const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
 
@@ -353,7 +380,7 @@ function DotMatrixString({ str, y, totalW, onColor }) {
   return <>{dots}</>;
 }
 
-function DisplayBoard({ projects }) {
+function DisplayBoard({ projects, username }) {
   const validProjects = projects.filter((p) => p.trim() !== "");
   const [currentIdx, setCurrentIdx] = useState(0);
   const timerRef = useRef(null);
@@ -385,12 +412,25 @@ function DisplayBoard({ projects }) {
 
   if (validProjects.length === 0) return null;
 
-  const name = validProjects[currentIdx].toUpperCase().slice(0, 12);
+  const currentProject = validProjects[currentIdx];
+  const name = currentProject.slice(0, 12);
   const stars = "★ 2";
+  const targetUrl = username
+    ? `https://github.com/${username}/${currentProject}`
+    : "#";
 
   return (
-    <div
-      style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}
+    <a
+      href={targetUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        margin: "1rem 0",
+        textDecoration: "none",
+        cursor: "pointer",
+      }}
     >
       <style>
         {`
@@ -478,7 +518,7 @@ function DisplayBoard({ projects }) {
           </text>
         )}
       </svg>
-    </div>
+    </a>
   );
 }
 
@@ -497,30 +537,34 @@ export default function App() {
     linkedin: "",
     leetcode: "",
     codeforces: "",
-    codestats: "",
     customLinks: [],
     skills: ["JavaScript", "React", "Node.js", "Python"],
     customCategories: [],
     projects: ["", "", "", "", ""],
     displayBoard: true,
+    statsDropdown: false,
     animations: {
       streak: true,
       snake: true,
       pinball: false,
       topLangs: true,
       activityOverview: true,
+      showLeetcode: true,
     },
-    snakeSkinColor: "#000000",
-    snakeFoodStyle: "gold",
+    snakeSkinColor: "#ff0000",
+    snakeFoodStyle: "white",
     snakeTitle: "Dev Snake",
     funFact: "I can solve a Rubik's cube in under a minute!",
   });
 
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCustomSkill, setNewCustomSkill] = useState("");
+  const [newCustomSkillIcon, setNewCustomSkillIcon] = useState("");
   const [selectedCatId, setSelectedCatId] = useState(null);
+
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
+  const [newLinkIcon, setNewLinkIcon] = useState("");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -555,11 +599,16 @@ export default function App() {
         ...prev,
         customLinks: [
           ...prev.customLinks,
-          { label: newLinkLabel.trim(), url: newLinkUrl.trim() },
+          {
+            label: newLinkLabel.trim(),
+            url: newLinkUrl.trim(),
+            icon: newLinkIcon.trim() || newLinkLabel.trim(),
+          },
         ],
       }));
       setNewLinkLabel("");
       setNewLinkUrl("");
+      setNewLinkIcon("");
     }
   };
 
@@ -589,14 +638,29 @@ export default function App() {
     if (newCustomSkill.trim() && selectedCatId) {
       setFormData((prev) => ({
         ...prev,
-        customCategories: prev.customCategories.map((cat) =>
-          cat.id === selectedCatId &&
-          !cat.skills.includes(newCustomSkill.trim())
-            ? { ...cat, skills: [...cat.skills, newCustomSkill.trim()] }
-            : cat,
-        ),
+        customCategories: prev.customCategories.map((cat) => {
+          if (cat.id === selectedCatId) {
+            const skillExists = cat.skills.some(
+              (s) => s.name === newCustomSkill.trim(),
+            );
+            if (!skillExists) {
+              return {
+                ...cat,
+                skills: [
+                  ...cat.skills,
+                  {
+                    name: newCustomSkill.trim(),
+                    icon: newCustomSkillIcon.trim() || newCustomSkill.trim(),
+                  },
+                ],
+              };
+            }
+          }
+          return cat;
+        }),
       }));
       setNewCustomSkill("");
+      setNewCustomSkillIcon("");
     }
   };
 
@@ -607,12 +671,12 @@ export default function App() {
     }));
   };
 
-  const removeSkillFromCustomCategory = (catId, skill) => {
+  const removeSkillFromCustomCategory = (catId, skillName) => {
     setFormData((prev) => ({
       ...prev,
       customCategories: prev.customCategories.map((cat) =>
         cat.id === catId
-          ? { ...cat, skills: cat.skills.filter((s) => s !== skill) }
+          ? { ...cat, skills: cat.skills.filter((s) => s.name !== skillName) }
           : cat,
       ),
     }));
@@ -634,25 +698,55 @@ export default function App() {
     }));
   };
 
-  const getThemeParams = () => {
+  const getApiThemes = () => {
     switch (theme) {
       case "elegant-black":
-        return "bg_color=0d1117&title_color=ffffff&text_color=8b949e&icon_color=58a6ff&border_color=30363d";
+        return {
+          stats:
+            "bg_color=000000&title_color=ffffff&text_color=8b949e&icon_color=ff0000&border_color=30363d",
+          streak:
+            "background=000000&border=30363d&stroke=30363d&ring=ff0000&fire=ff0000&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=8b949e&sideLabels=8b949e&dates=8b949e",
+          activity:
+            "bg_color=000000&color=8b949e&line=ff0000&point=ffffff&hide_border=true",
+        };
       case "glassmorphic":
-        return "bg_color=0f172a&title_color=38bdf8&text_color=94a3b8&icon_color=38bdf8&border_color=1e293b";
+        return {
+          stats:
+            "bg_color=0f172a&title_color=38bdf8&text_color=94a3b8&icon_color=38bdf8&border_color=1e293b",
+          streak:
+            "background=0f172a&border=1e293b&stroke=1e293b&ring=38bdf8&fire=38bdf8&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=94a3b8&sideLabels=94a3b8&dates=94a3b8",
+          activity:
+            "bg_color=0f172a&color=94a3b8&line=38bdf8&point=ffffff&hide_border=true",
+        };
       case "colorful":
-        return "theme=radical";
+        return {
+          stats: "theme=radical",
+          streak: "theme=radical",
+          activity: "theme=radical&hide_border=true",
+        };
       case "vibe-coded":
-        return "theme=synthwave";
+        return {
+          stats: "theme=synthwave",
+          streak: "theme=synthwave",
+          activity: "theme=synthwave&hide_border=true",
+        };
       case "game-orange":
-        return "theme=gruvbox";
+        return {
+          stats: "theme=gruvbox",
+          streak: "theme=gruvbox",
+          activity: "theme=gruvbox&hide_border=true",
+        };
       default:
-        return "theme=dark";
+        return {
+          stats: "theme=dark",
+          streak: "theme=dark",
+          activity: "theme=dark&hide_border=true",
+        };
     }
   };
 
   const generateMarkdown = (isPreview = false) => {
-    const themeParams = getThemeParams();
+    const apiThemes = getApiThemes();
     const user = formData.github || "torvalds";
     let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
 
@@ -663,8 +757,9 @@ export default function App() {
           ? window.location.origin
           : "https://YOUR_DEPLOY_URL";
         const reposParam = validProjects.join(",");
+        const primaryRepo = validProjects[0];
         md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n`;
-        md += `<a href="https://github.com/${user}">\n`;
+        md += `<a href="https://github.com/${user}/${primaryRepo}">\n`;
         md += `  <img src="${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}" width="650" alt="Projects Display Board" />\n`;
         md += `</a>\n\n</div>\n\n`;
       }
@@ -698,23 +793,31 @@ export default function App() {
 
     formData.customCategories.forEach((cat) => {
       if (cat.skills.length > 0) {
-        md += `## ✨ ${cat.title}\n<p align="center">\n`;
-        cat.skills.forEach((skill) => {
-          const safeName = skill
-            .replace(/ /g, "%20")
-            .replace(/\+/g, "%2B")
-            .replace(/#/g, "%23");
-          md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${skill}" />\n`;
+        md += `### ${cat.title}\n<p align="center">\n`;
+        cat.skills.forEach((skillObj) => {
+          if (skillObj.icon.startsWith("http")) {
+            md += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
+          } else {
+            const safeName = skillObj.name
+              .replace(/ /g, "%20")
+              .replace(/\+/g, "%2B")
+              .replace(/#/g, "%23");
+            const safeIcon = skillObj.icon.toLowerCase().replace(/ /g, "");
+            md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${safeIcon}&logoColor=white" alt="${skillObj.name}" />\n`;
+          }
         });
         md += `</p>\n\n`;
       }
     });
 
+    if (formData.funFact) {
+      md += `<h3 align="center">🌟 <i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+    }
+
     const hasLinks =
       formData.github ||
       formData.twitter ||
       formData.linkedin ||
-      formData.codestats ||
       formData.customLinks.length > 0;
     if (hasLinks) {
       md += `## 🌐 Connect with me\n<p align="center">\n`;
@@ -724,41 +827,48 @@ export default function App() {
         md += `  <a href="https://linkedin.com/in/${formData.linkedin}"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>\n`;
       if (formData.twitter)
         md += `  <a href="https://twitter.com/${formData.twitter}"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>\n`;
-      if (formData.codestats)
-        md += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-1F2937?style=for-the-badge&logo=codeforces&logoColor=white" alt="Code::Stats" /></a>\n`;
+
       formData.customLinks.forEach((link) => {
-        md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge" alt="${link.label}" /></a>\n`;
+        if (link.icon.startsWith("http")) {
+          md += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" style="margin: 0 4px;" /></a>\n`;
+        } else {
+          const safeIcon = link.icon.toLowerCase().replace(/ /g, "");
+          md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${safeIcon}&logoColor=white" alt="${link.label}" /></a>\n`;
+        }
       });
       md += `</p>\n\n`;
     }
 
-    if (formData.funFact) {
-      md += `> 💡 **Fun Fact:** ${formData.funFact}\n\n`;
+    if (formData.statsDropdown) {
+      md += `<details>\n<summary><b>🏆 View GitHub Analytics</b></summary>\n<br>\n\n`;
+    } else {
+      md += `## 📊 GitHub Analytics\n\n`;
     }
 
-    md += `## 📊 GitHub Activity Overview\n\n<p align="center">\n`;
-    if (formData.animations.activityOverview)
-      md += `  <img src="https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&hide_border=true&${themeParams}" alt="GitHub Stats" />\n`;
-    if (formData.animations.topLangs)
-      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=compact&hide_border=true&${themeParams}" alt="Top Languages" />\n`;
-    if (formData.animations.streak)
-      md += `  <img src="https://streak-stats.demolab.com/?user=${user}&hide_border=true&${themeParams}" alt="Meteor Streak" />\n`;
+    md += `<p align="center">\n`;
+    if (formData.animations.streak) {
+      md += `  <img src="https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}" alt="Streak Stats" height="195" />\n`;
+    }
+    if (formData.animations.activityOverview) {
+      md += `  <img src="https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&hide_rank=true&custom_title=Stats&${apiThemes.stats}" alt="GitHub Stats" height="195" />\n`;
+    }
     md += `</p>\n\n`;
 
-    if (formData.codestats) {
-      md += `## 📈 Code::Stats XP Overview\n<p align="center">\n  <img src="https://codestats-readme.wegfan.cn/history/${formData.codestats}?max_languages=8&width=800" alt="Code::Stats XP History" />\n</p>\n\n`;
-    }
-
-    if (formData.leetcode || formData.codeforces) {
-      md += `## 🧩 Competitive & Code Stats\n\n`;
-      if (formData.leetcode)
-        md += `<p align="center">\n  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Heatmap" />\n</p>\n\n`;
-      if (formData.codeforces)
-        md += `<p align="center">\n  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" />\n</p>\n\n`;
-    }
-
     if (formData.animations.pinball) {
-      md += `## 🎯 Pinball Activity Graph\n<p align="center">\n  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${user}&hide_border=true&${themeParams}" alt="Activity Graph" width="100%" />\n</p>\n\n`;
+      md += `<p align="center">\n`;
+      md += `  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}" alt="Activity Graph" style="max-width: 100%;" />\n`;
+      md += `</p>\n\n`;
+    }
+
+    if (formData.animations.topLangs) {
+      md += `<p align="center">\n`;
+      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}" alt="Top Languages by Commit" height="205" />\n`;
+      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}" alt="Top Languages by Repo" height="205" />\n`;
+      md += `</p>\n\n`;
+    }
+
+    if (formData.statsDropdown) {
+      md += `</details>\n\n`;
     }
 
     if (formData.animations.snake) {
@@ -766,7 +876,31 @@ export default function App() {
         ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
         : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
       md += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n`;
-      md += `<p align="center">\n  <img src="${snakeSrc}" alt="${formData.snakeTitle || "Dev Snake"}" width="100%" />\n</p>\n\n`;
+      md += `<p align="center">\n`;
+      md += `  <picture>\n`;
+      md += `    <img src="${snakeSrc}" alt="${formData.snakeTitle || "Dev Snake"}" style="max-width: 100%;" />\n`;
+      md += `  </picture>\n`;
+      md += `</p>\n\n`;
+    }
+
+    if (
+      (formData.leetcode && formData.animations.showLeetcode) ||
+      formData.codeforces
+    ) {
+      md += `## 🧩 Competitive & Code Stats\n\n`;
+
+      if (formData.leetcode && formData.animations.showLeetcode) {
+        md += `<p align="center">\n`;
+        md += `  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Heatmap" width="48%" />\n`;
+        md += `  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest" alt="LeetCode Contest" width="48%" />\n`;
+        md += `</p>\n\n`;
+      }
+
+      if (formData.codeforces) {
+        md += `<p align="center">\n`;
+        md += `  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" style="max-width: 100%;" />\n`;
+        md += `</p>\n\n`;
+      }
     }
 
     return md;
@@ -805,7 +939,12 @@ export default function App() {
         <ReactMarkdown rehypePlugins={[rehypeRaw]}>
           {mdWithoutBoard}
         </ReactMarkdown>
-        {showBoard && <DisplayBoard projects={formData.projects} />}
+        {showBoard && (
+          <DisplayBoard
+            projects={formData.projects}
+            username={formData.github}
+          />
+        )}
         <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdRest}</ReactMarkdown>
       </div>
     );
@@ -891,9 +1030,8 @@ export default function App() {
                     marginBottom: "1rem",
                   }}
                 >
-                  Shows a custom dynamic seven-segment board for your top
-                  projects. Cycling animates on deploy; preview shows one at a
-                  time.
+                  Shows a custom dynamic matrix board for your top projects.
+                  Cycling animates on deploy; preview shows one at a time.
                 </p>
                 <label
                   className="checkbox-label"
@@ -946,11 +1084,6 @@ export default function App() {
                     placeholder: "tourist",
                   },
                   {
-                    name: "codestats",
-                    label: "Code::Stats Username (XP graph)",
-                    placeholder: "your_codestats_user",
-                  },
-                  {
                     name: "twitter",
                     label: "Twitter / X",
                     placeholder: "elonmusk",
@@ -990,13 +1123,37 @@ export default function App() {
                     + Add Custom Link
                   </h4>
                   <div
-                    className="form-group"
-                    style={{ marginBottom: "0.5rem" }}
+                    style={{
+                      display: "flex",
+                      gap: "0.5rem",
+                      marginBottom: "0.5rem",
+                    }}
                   >
                     <input
                       value={newLinkLabel}
                       onChange={(e) => setNewLinkLabel(e.target.value)}
                       placeholder="Label (e.g. Portfolio)"
+                      style={{
+                        flex: 1,
+                        padding: "0.6rem",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border-color)",
+                        background: "var(--input-bg)",
+                        color: "var(--text-primary)",
+                      }}
+                    />
+                    <input
+                      value={newLinkIcon}
+                      onChange={(e) => setNewLinkIcon(e.target.value)}
+                      placeholder="Icon Name or URL"
+                      style={{
+                        flex: 1,
+                        padding: "0.6rem",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border-color)",
+                        background: "var(--input-bg)",
+                        color: "var(--text-primary)",
+                      }}
                     />
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -1050,16 +1207,36 @@ export default function App() {
                 <h3 className="section-title">
                   <Sparkles size={18} /> Metrics &amp; Animations
                 </h3>
-                <div className="toggle-group">
+                <div className="toggle-group" style={{ marginBottom: "1rem" }}>
+                  <label
+                    className="checkbox-label"
+                    style={{
+                      borderBottom: "1px solid var(--border-color)",
+                      paddingBottom: "0.5rem",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      name="statsDropdown"
+                      checked={formData.statsDropdown}
+                      onChange={handleInputChange}
+                    />
+                    <span>Wrap Analytics in Dropdown (Details/Summary)</span>
+                  </label>
                   {[
                     {
                       key: "activityOverview",
                       label: "GitHub Activity Overview",
                     },
                     { key: "topLangs", label: "Top Languages" },
-                    { key: "streak", label: "Meteor Effect Streak" },
+                    { key: "streak", label: "GitHub Streak Stats" },
                     { key: "pinball", label: "Pinball Activity Graph" },
                     { key: "snake", label: "Contribution Snake" },
+                    {
+                      key: "showLeetcode",
+                      label: "Show LeetCode Stats (Heatmap & Contest)",
+                    },
                   ].map(({ key, label }) => (
                     <label key={key} className="checkbox-label">
                       <input
@@ -1314,12 +1491,33 @@ export default function App() {
                           setSelectedCatId(cat.id);
                           setNewCustomSkill(e.target.value);
                         }}
+                        placeholder={`Skill (e.g. MongoDB)`}
+                        style={{
+                          flex: 1,
+                          padding: "0.4rem 0.6rem",
+                          borderRadius: "4px",
+                          border: "1px solid var(--border-color)",
+                          background: "var(--input-bg)",
+                          color: "var(--text-primary)",
+                          fontSize: "0.85rem",
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={
+                          selectedCatId === cat.id ? newCustomSkillIcon : ""
+                        }
+                        onFocus={() => setSelectedCatId(cat.id)}
+                        onChange={(e) => {
+                          setSelectedCatId(cat.id);
+                          setNewCustomSkillIcon(e.target.value);
+                        }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") addSkillToCustomCategory();
                         }}
-                        placeholder={`Add skill to "${cat.title}"...`}
+                        placeholder={`Icon Name or URL`}
                         style={{
-                          flex: 1,
+                          flex: 0.8,
                           padding: "0.4rem 0.6rem",
                           borderRadius: "4px",
                           border: "1px solid var(--border-color)",
@@ -1334,21 +1532,21 @@ export default function App() {
                           addSkillToCustomCategory();
                         }}
                         className="add-skill-btn"
-                        style={{ width: "32px", height: "32px" }}
+                        style={{ width: "32px", height: "32px", flexShrink: 0 }}
                       >
                         <Plus size={16} />
                       </button>
                     </div>
                     <div className="skills-grid">
-                      {cat.skills.map((skill) => (
+                      {cat.skills.map((skillObj) => (
                         <div
-                          key={skill}
+                          key={skillObj.name}
                           className="skill-tag selected"
                           onClick={() =>
-                            removeSkillFromCustomCategory(cat.id, skill)
+                            removeSkillFromCustomCategory(cat.id, skillObj.name)
                           }
                         >
-                          {skill}{" "}
+                          {skillObj.name}{" "}
                           <Trash2 size={12} style={{ marginLeft: "4px" }} />
                         </div>
                       ))}
