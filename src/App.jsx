@@ -517,16 +517,17 @@ export default function App() {
       showLeetcodeContest: true,
     },
     dimensions: {
-      visitors: { w: "", h: "", scale: "100%", x: 0, y: 0 },
-      stats: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      displayBoard: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      stats: { w: "", h: "", scale: "46%", x: 0, y: 0 },
       streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
       githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
       topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-      topLangsRepo: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      topLangsRepo: { w: "", h: "", scale: "25%", x: 58, y: 0 },
       pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      visitors: { w: "", h: "", scale: "5%", x: 0, y: 0 },
       snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
       showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-      showLeetcodeContest: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
     },
     sectionOrder: [
       "board",
@@ -537,8 +538,8 @@ export default function App() {
       "socials",
       "stats",
       "summary",
-      "pinball",
       "topLangs",
+      "pinball",
       "visitors",
       "snake",
       "leetcode",
@@ -794,8 +795,15 @@ export default function App() {
       switch (section) {
         case "visitors":
           if (formData.animations.visitors) {
+            const labelText = "VIEWS";
+            const eyeColor = "white";
+            const boxColor = "orange";
+            const labelBgColor = "white";
+
+            const badgeUrl = `https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=${labelText}&logo=eye&logoColor=${eyeColor}&color=${boxColor}&labelColor=${labelBgColor}`;
+
             md += `<p align="center">\n`;
-            md += `  ${buildImg("visitors", `https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&color=blue&label=${encodeURIComponent("󰐠")}`, "Profile views")}`;
+            md += `  ${buildImg("visitors", badgeUrl, "Profile views")}`;
             md += `</p>\n\n`;
           }
           break;
@@ -810,9 +818,11 @@ export default function App() {
             const reposParam = formData.projects
               .filter((p) => p.trim() !== "")
               .join(",");
+            const boardUrl = `${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}`;
+
             md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n`;
             md += `<a href="https://github.com/${user}/${formData.projects.filter((p) => p.trim() !== "")[0]}">\n`;
-            md += `  <img src="${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}" width="100%" alt="Projects Display Board" />\n`;
+            md += `  ${buildImg("displayBoard", boardUrl, "Projects Display Board")}`;
             md += `</a>\n\n</div>\n\n`;
           }
           break;
@@ -1130,7 +1140,7 @@ export default function App() {
                 </h3>
                 <label
                   className="checkbox-label"
-                  style={{ marginBottom: "1rem" }}
+                  style={{ marginBottom: "1rem", width: "100%" }}
                 >
                   <input
                     type="checkbox"
@@ -1138,8 +1148,199 @@ export default function App() {
                     checked={formData.displayBoard}
                     onChange={handleInputChange}
                   />
-                  <span>Enable Display Board</span>
+                  <span style={{ fontWeight: 600 }}>Enable Display Board</span>
                 </label>
+
+                {formData.displayBoard && (
+                  <div
+                    style={{
+                      marginBottom: "1rem",
+                      padding: "0.75rem",
+                      background: "rgba(0,0,0,0.2)",
+                      borderRadius: "6px",
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <div style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            Scale
+                          </span>
+                          <input
+                            type="text"
+                            value={formData.dimensions.displayBoard.scale}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                "scale",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="100%"
+                            style={{
+                              width: "100%",
+                              padding: "0.3rem",
+                              fontSize: "0.75rem",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border-color)",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                            }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            Width
+                          </span>
+                          <input
+                            type="text"
+                            value={formData.dimensions.displayBoard.w}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                "w",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="650px"
+                            style={{
+                              width: "100%",
+                              padding: "0.3rem",
+                              fontSize: "0.75rem",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border-color)",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                            }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            Height
+                          </span>
+                          <input
+                            type="text"
+                            value={formData.dimensions.displayBoard.h}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                "h",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="opt"
+                            style={{
+                              width: "100%",
+                              padding: "0.3rem",
+                              fontSize: "0.75rem",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border-color)",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <div style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            X-Offset (Spaces)
+                          </span>
+                          <input
+                            type="number"
+                            value={formData.dimensions.displayBoard.x}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                "x",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="0"
+                            style={{
+                              width: "100%",
+                              padding: "0.3rem",
+                              fontSize: "0.75rem",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border-color)",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                            }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            Y-Offset (Breaks)
+                          </span>
+                          <input
+                            type="number"
+                            value={formData.dimensions.displayBoard.y}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                "y",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="0"
+                            style={{
+                              width: "100%",
+                              padding: "0.3rem",
+                              fontSize: "0.75rem",
+                              borderRadius: "4px",
+                              border: "1px solid var(--border-color)",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {formData.displayBoard &&
                   formData.projects.map((proj, idx) => (
                     <div
