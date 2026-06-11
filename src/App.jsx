@@ -36,41 +36,13 @@ const SNAKE_SKIN_OPTIONS = [
 ];
 
 const SNAKE_FOOD_OPTIONS = [
-  {
-    value: "gold",
-    label: "Golden Stars",
-    dots: "#ebedf0,#ffef99,#ffdf33,#ccb200,#998500",
-  },
-  {
-    value: "green",
-    label: "Classic Green",
-    dots: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
-  },
-  {
-    value: "red",
-    label: "Red Hot",
-    dots: "#ebedf0,#ffb3b3,#ff6666,#cc0000,#660000",
-  },
-  {
-    value: "yellow",
-    label: "Neon Yellow",
-    dots: "#ebedf0,#fff5b1,#ffdf33,#e6b800,#997a00",
-  },
-  {
-    value: "white",
-    label: "White Minimal",
-    dots: "#161b22,#4a4a4a,#8f8f8f,#d4d4d4,#ffffff",
-  },
-  {
-    value: "purple",
-    label: "Violet Vibes",
-    dots: "#ebedf0,#d8b4fe,#a855f7,#7e22ce,#581c87",
-  },
-  {
-    value: "blue",
-    label: "Ocean Blue",
-    dots: "#ebedf0,#93c5fd,#3b82f6,#1d4ed8,#1e3a5f",
-  },
+  { value: "gold", label: "Golden Stars" },
+  { value: "green", label: "Classic Green" },
+  { value: "red", label: "Red Hot" },
+  { value: "yellow", label: "Neon Yellow" },
+  { value: "white", label: "White Minimal" },
+  { value: "purple", label: "Violet Vibes" },
+  { value: "blue", label: "Ocean Blue" },
 ];
 
 const SKILLS_CATEGORIES = {
@@ -105,10 +77,6 @@ const SKILLS_CATEGORIES = {
     "Lua",
     "Zig",
     "Nim",
-    "Fortran",
-    "COBOL",
-    "Erlang",
-    "OCaml",
   ],
   Frontend: [
     "React",
@@ -133,7 +101,6 @@ const SKILLS_CATEGORIES = {
     "Vite",
     "Astro",
     "Gatsby",
-    "Storybook",
   ],
   Backend: [
     "Node.js",
@@ -173,8 +140,6 @@ const SKILLS_CATEGORIES = {
     "Mongoose",
     "MariaDB",
     "CouchDB",
-    "InfluxDB",
-    "Elasticsearch",
   ],
   DevOps_Cloud: [
     "AWS",
@@ -237,7 +202,6 @@ const SKILLS_CATEGORIES = {
     "Sketch",
     "After Effects",
     "Premiere Pro",
-    "DaVinci Resolve",
   ],
   Games_Platforms: [
     "Steam",
@@ -269,10 +233,6 @@ const SKILLS_CATEGORIES = {
     "Swimming",
     "Running",
     "Yoga",
-    "Football",
-    "Basketball",
-    "Cricket",
-    "Table Tennis",
   ],
 };
 
@@ -537,6 +497,7 @@ export default function App() {
     linkedin: "",
     leetcode: "",
     codeforces: "",
+    codestats: "",
     customLinks: [],
     skills: ["JavaScript", "React", "Node.js", "Python"],
     customCategories: [],
@@ -544,13 +505,44 @@ export default function App() {
     displayBoard: true,
     statsDropdown: false,
     animations: {
+      visitors: true,
+      stats: true,
       streak: true,
-      snake: true,
+      githubProfileSummary: true,
+      topLangsCommit: true,
+      topLangsRepo: true,
       pinball: false,
-      topLangs: true,
-      activityOverview: true,
-      showLeetcode: true,
+      snake: true,
+      showLeetcodeHeatmap: true,
+      showLeetcodeContest: true,
     },
+    dimensions: {
+      visitors: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      stats: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      topLangsRepo: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+      showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+      showLeetcodeContest: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    },
+    sectionOrder: [
+      "board",
+      "about",
+      "skills",
+      "customSkills",
+      "funFact",
+      "socials",
+      "stats",
+      "summary",
+      "pinball",
+      "topLangs",
+      "visitors",
+      "snake",
+      "leetcode",
+    ],
     snakeSkinColor: "#ff0000",
     snakeFoodStyle: "white",
     snakeTitle: "Dev Snake",
@@ -698,6 +690,34 @@ export default function App() {
     }));
   };
 
+  const handleDimensionChange = (key, prop, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      dimensions: {
+        ...prev.dimensions,
+        [key]: { ...prev.dimensions[key], [prop]: value },
+      },
+    }));
+  };
+
+  const moveSection = (index, direction) => {
+    setFormData((prev) => {
+      const newOrder = [...prev.sectionOrder];
+      if (direction === -1 && index > 0) {
+        [newOrder[index - 1], newOrder[index]] = [
+          newOrder[index],
+          newOrder[index - 1],
+        ];
+      } else if (direction === 1 && index < newOrder.length - 1) {
+        [newOrder[index + 1], newOrder[index]] = [
+          newOrder[index],
+          newOrder[index + 1],
+        ];
+      }
+      return { ...prev, sectionOrder: newOrder };
+    });
+  };
+
   const getApiThemes = () => {
     switch (theme) {
       case "elegant-black":
@@ -708,6 +728,7 @@ export default function App() {
             "background=000000&border=30363d&stroke=30363d&ring=ff0000&fire=ff0000&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=8b949e&sideLabels=8b949e&dates=8b949e",
           activity:
             "bg_color=000000&color=8b949e&line=ff0000&point=ffffff&hide_border=true",
+          summaryFolder: "github-dark",
         };
       case "glassmorphic":
         return {
@@ -717,30 +738,35 @@ export default function App() {
             "background=0f172a&border=1e293b&stroke=1e293b&ring=38bdf8&fire=38bdf8&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=94a3b8&sideLabels=94a3b8&dates=94a3b8",
           activity:
             "bg_color=0f172a&color=94a3b8&line=38bdf8&point=ffffff&hide_border=true",
+          summaryFolder: "tokyonight",
         };
       case "colorful":
         return {
           stats: "theme=radical",
           streak: "theme=radical",
           activity: "theme=radical&hide_border=true",
+          summaryFolder: "radical",
         };
       case "vibe-coded":
         return {
           stats: "theme=synthwave",
           streak: "theme=synthwave",
           activity: "theme=synthwave&hide_border=true",
+          summaryFolder: "synthwave",
         };
       case "game-orange":
         return {
           stats: "theme=gruvbox",
           streak: "theme=gruvbox",
           activity: "theme=gruvbox&hide_border=true",
+          summaryFolder: "gruvbox",
         };
       default:
         return {
           stats: "theme=dark",
           streak: "theme=dark",
           activity: "theme=dark&hide_border=true",
+          summaryFolder: "dark",
         };
     }
   };
@@ -748,160 +774,212 @@ export default function App() {
   const generateMarkdown = (isPreview = false) => {
     const apiThemes = getApiThemes();
     const user = formData.github || "torvalds";
+
+    const buildImg = (key, src, alt) => {
+      const dim = formData.dimensions[key];
+      const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
+      const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
+      let attrs = "";
+      if (dim.w && dim.w.trim() !== "") attrs += `width="${dim.w}" `;
+      if (dim.h && dim.h.trim() !== "") attrs += `height="${dim.h}" `;
+      if (attrs === "" && dim.scale && dim.scale.trim() !== "") {
+        attrs = `width="${dim.scale}" `;
+      }
+      return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
+    };
+
     let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
 
-    if (formData.displayBoard) {
-      const validProjects = formData.projects.filter((p) => p.trim() !== "");
-      if (validProjects.length > 0) {
-        const base = isPreview
-          ? window.location.origin
-          : "https://YOUR_DEPLOY_URL";
-        const reposParam = validProjects.join(",");
-        const primaryRepo = validProjects[0];
-        md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n`;
-        md += `<a href="https://github.com/${user}/${primaryRepo}">\n`;
-        md += `  <img src="${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}" width="650" alt="Projects Display Board" />\n`;
-        md += `</a>\n\n</div>\n\n`;
-      }
-    }
-
-    if (formData.about) {
-      md += `## 🚀 About Me\n${formData.about}\n\n`;
-    }
-
-    if (formData.skills.length > 0) {
-      md += `## 💻 Core Tech Stack\n\n`;
-      Object.entries(SKILLS_CATEGORIES).forEach(
-        ([category, categorySkills]) => {
-          const selected = categorySkills.filter((s) =>
-            formData.skills.includes(s),
-          );
-          if (selected.length > 0) {
-            md += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
-            selected.forEach((skill) => {
-              const safeName = skill
-                .replace(/ /g, "%20")
-                .replace(/\+/g, "%2B")
-                .replace(/#/g, "%23");
-              md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${skill}" />\n`;
+    formData.sectionOrder.forEach((section) => {
+      switch (section) {
+        case "visitors":
+          if (formData.animations.visitors) {
+            md += `<p align="center">\n`;
+            md += `  ${buildImg("visitors", `https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&color=blue&label=${encodeURIComponent("󰐠")}`, "Profile views")}`;
+            md += `</p>\n\n`;
+          }
+          break;
+        case "board":
+          if (
+            formData.displayBoard &&
+            formData.projects.filter((p) => p.trim() !== "").length > 0
+          ) {
+            const base = isPreview
+              ? window.location.origin
+              : "https://YOUR_DEPLOY_URL";
+            const reposParam = formData.projects
+              .filter((p) => p.trim() !== "")
+              .join(",");
+            md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n`;
+            md += `<a href="https://github.com/${user}/${formData.projects.filter((p) => p.trim() !== "")[0]}">\n`;
+            md += `  <img src="${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(reposParam)}" width="100%" alt="Projects Display Board" />\n`;
+            md += `</a>\n\n</div>\n\n`;
+          }
+          break;
+        case "about":
+          if (formData.about) md += `## 🚀 About Me\n${formData.about}\n\n`;
+          break;
+        case "skills":
+          if (formData.skills.length > 0) {
+            md += `## 💻 Core Tech Stack\n\n`;
+            Object.entries(SKILLS_CATEGORIES).forEach(
+              ([category, categorySkills]) => {
+                const selected = categorySkills.filter((s) =>
+                  formData.skills.includes(s),
+                );
+                if (selected.length > 0) {
+                  md += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
+                  selected.forEach((skill) => {
+                    const safeName = skill
+                      .replace(/ /g, "%20")
+                      .replace(/\+/g, "%2B")
+                      .replace(/#/g, "%23");
+                    md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
+                  });
+                  md += `</p>\n\n`;
+                }
+              },
+            );
+          }
+          break;
+        case "customSkills":
+          formData.customCategories.forEach((cat) => {
+            if (cat.skills.length > 0) {
+              md += `### ${cat.title}\n<p align="center">\n`;
+              cat.skills.forEach((skillObj) => {
+                if (skillObj.icon.startsWith("http")) {
+                  md += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
+                } else {
+                  const safeName = skillObj.name
+                    .replace(/ /g, "%20")
+                    .replace(/\+/g, "%2B")
+                    .replace(/#/g, "%23");
+                  const safeIcon = skillObj.icon
+                    .toLowerCase()
+                    .replace(/ /g, "");
+                  md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${safeIcon}" alt="${skillObj.name}" />\n`;
+                }
+              });
+              md += `</p>\n\n`;
+            }
+          });
+          break;
+        case "funFact":
+          if (formData.funFact)
+            md += `<h3 align="center">🌟 <i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+          break;
+        case "socials":
+          if (
+            formData.github ||
+            formData.twitter ||
+            formData.linkedin ||
+            formData.codestats ||
+            formData.customLinks.length > 0
+          ) {
+            md += `## 🌐 Connect with me\n<p align="center">\n`;
+            if (formData.github)
+              md += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github" alt="GitHub" /></a>\n`;
+            if (formData.linkedin)
+              md += `  <a href="https://linkedin.com/in/${formData.linkedin}"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin" alt="LinkedIn" /></a>\n`;
+            if (formData.twitter)
+              md += `  <a href="https://twitter.com/${formData.twitter}"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter" alt="Twitter" /></a>\n`;
+            if (formData.codestats)
+              md += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-1F2937?style=for-the-badge&logo=codeforces" alt="Code::Stats" /></a>\n`;
+            formData.customLinks.forEach((link) => {
+              if (link.icon.startsWith("http")) {
+                md += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" style="margin: 0 4px;" /></a>\n`;
+              } else {
+                const safeIcon = link.icon.toLowerCase().replace(/ /g, "");
+                md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${safeIcon}" alt="${link.label}" /></a>\n`;
+              }
             });
             md += `</p>\n\n`;
           }
-        },
-      );
-    }
-
-    formData.customCategories.forEach((cat) => {
-      if (cat.skills.length > 0) {
-        md += `### ${cat.title}\n<p align="center">\n`;
-        cat.skills.forEach((skillObj) => {
-          if (skillObj.icon.startsWith("http")) {
-            md += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
-          } else {
-            const safeName = skillObj.name
-              .replace(/ /g, "%20")
-              .replace(/\+/g, "%2B")
-              .replace(/#/g, "%23");
-            const safeIcon = skillObj.icon.toLowerCase().replace(/ /g, "");
-            md += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${safeIcon}&logoColor=white" alt="${skillObj.name}" />\n`;
+          break;
+        case "stats":
+          if (formData.animations.streak || formData.animations.stats) {
+            md += `## 📊 GitHub Analytics\n\n`;
+            if (formData.statsDropdown)
+              md += `<details>\n<summary><b>🏆 View Stats</b></summary>\n<br>\n\n`;
+            md += `<p align="center">\n`;
+            if (formData.animations.streak) {
+              md += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
+            }
+            if (formData.animations.stats) {
+              md += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
+            }
+            md += `</p>\n\n`;
+            if (formData.statsDropdown) md += `</details>\n\n`;
           }
-        });
-        md += `</p>\n\n`;
+          break;
+        case "summary":
+          if (formData.animations.githubProfileSummary) {
+            const summarySrc = isPreview
+              ? `https://placehold.co/800x200/111827/4ade80?text=Profile+Summary+Graph+(Requires+GitHub+Action)`
+              : `profile-summary-card-output/${apiThemes.summaryFolder}/0-profile-details.svg`;
+            md += `<p align="center">\n  ${buildImg("githubProfileSummary", summarySrc, "GitHub Profile Summary")}</p>\n\n`;
+          }
+          break;
+        case "pinball":
+          if (formData.animations.pinball) {
+            md += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
+          }
+          break;
+        case "topLangs":
+          if (
+            formData.animations.topLangsCommit ||
+            formData.animations.topLangsRepo
+          ) {
+            md += `<p align="center">\n`;
+            if (formData.animations.topLangsCommit) {
+              md += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
+            }
+            if (formData.animations.topLangsRepo) {
+              md += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
+            }
+            md += `</p>\n\n`;
+          }
+          break;
+        case "snake":
+          if (formData.animations.snake) {
+            const snakeSrc = isPreview
+              ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
+              : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
+            md += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n`;
+            md += `<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
+          }
+          break;
+        case "leetcode":
+          if (
+            (formData.leetcode &&
+              (formData.animations.showLeetcodeHeatmap ||
+                formData.animations.showLeetcodeContest)) ||
+            formData.codeforces
+          ) {
+            md += `## 🧩 Competitive & Code Stats\n\n`;
+            if (
+              formData.leetcode &&
+              (formData.animations.showLeetcodeHeatmap ||
+                formData.animations.showLeetcodeContest)
+            ) {
+              md += `<p align="center">\n`;
+              if (formData.animations.showLeetcodeHeatmap) {
+                md += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
+              }
+              if (formData.animations.showLeetcodeContest) {
+                md += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
+              }
+              md += `</p>\n\n`;
+            }
+            if (formData.codeforces) {
+              md += `<p align="center">\n  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" width="100%" />\n</p>\n\n`;
+            }
+          }
+          break;
+        default:
+          break;
       }
     });
-
-    if (formData.funFact) {
-      md += `<h3 align="center">🌟 <i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
-    }
-
-    const hasLinks =
-      formData.github ||
-      formData.twitter ||
-      formData.linkedin ||
-      formData.customLinks.length > 0;
-    if (hasLinks) {
-      md += `## 🌐 Connect with me\n<p align="center">\n`;
-      if (formData.github)
-        md += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>\n`;
-      if (formData.linkedin)
-        md += `  <a href="https://linkedin.com/in/${formData.linkedin}"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>\n`;
-      if (formData.twitter)
-        md += `  <a href="https://twitter.com/${formData.twitter}"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>\n`;
-
-      formData.customLinks.forEach((link) => {
-        if (link.icon.startsWith("http")) {
-          md += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" style="margin: 0 4px;" /></a>\n`;
-        } else {
-          const safeIcon = link.icon.toLowerCase().replace(/ /g, "");
-          md += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${safeIcon}&logoColor=white" alt="${link.label}" /></a>\n`;
-        }
-      });
-      md += `</p>\n\n`;
-    }
-
-    if (formData.statsDropdown) {
-      md += `<details>\n<summary><b>🏆 View GitHub Analytics</b></summary>\n<br>\n\n`;
-    } else {
-      md += `## 📊 GitHub Analytics\n\n`;
-    }
-
-    md += `<p align="center">\n`;
-    if (formData.animations.streak) {
-      md += `  <img src="https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}" alt="Streak Stats" height="195" />\n`;
-    }
-    if (formData.animations.activityOverview) {
-      md += `  <img src="https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&hide_rank=true&custom_title=Stats&${apiThemes.stats}" alt="GitHub Stats" height="195" />\n`;
-    }
-    md += `</p>\n\n`;
-
-    if (formData.animations.pinball) {
-      md += `<p align="center">\n`;
-      md += `  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}" alt="Activity Graph" style="max-width: 100%;" />\n`;
-      md += `</p>\n\n`;
-    }
-
-    if (formData.animations.topLangs) {
-      md += `<p align="center">\n`;
-      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}" alt="Top Languages by Commit" height="205" />\n`;
-      md += `  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}" alt="Top Languages by Repo" height="205" />\n`;
-      md += `</p>\n\n`;
-    }
-
-    if (formData.statsDropdown) {
-      md += `</details>\n\n`;
-    }
-
-    if (formData.animations.snake) {
-      const snakeSrc = isPreview
-        ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
-        : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-      md += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n`;
-      md += `<p align="center">\n`;
-      md += `  <picture>\n`;
-      md += `    <img src="${snakeSrc}" alt="${formData.snakeTitle || "Dev Snake"}" style="max-width: 100%;" />\n`;
-      md += `  </picture>\n`;
-      md += `</p>\n\n`;
-    }
-
-    if (
-      (formData.leetcode && formData.animations.showLeetcode) ||
-      formData.codeforces
-    ) {
-      md += `## 🧩 Competitive & Code Stats\n\n`;
-
-      if (formData.leetcode && formData.animations.showLeetcode) {
-        md += `<p align="center">\n`;
-        md += `  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Heatmap" width="48%" />\n`;
-        md += `  <img src="https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest" alt="LeetCode Contest" width="48%" />\n`;
-        md += `</p>\n\n`;
-      }
-
-      if (formData.codeforces) {
-        md += `<p align="center">\n`;
-        md += `  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" style="max-width: 100%;" />\n`;
-        md += `</p>\n\n`;
-      }
-    }
 
     return md;
   };
@@ -917,7 +995,26 @@ export default function App() {
     const showBoard = formData.displayBoard && validProjects.length > 0;
 
     const mdWithoutBoard = (() => {
+      const tempOrder = [...formData.sectionOrder];
+      const boardIndex = tempOrder.indexOf("board");
+      if (boardIndex > -1) tempOrder.splice(boardIndex, 1);
+
+      const beforeBoard = tempOrder.filter(
+        (sec) =>
+          formData.sectionOrder.indexOf(sec) <
+          formData.sectionOrder.indexOf("board"),
+      );
+
       let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
+
+      const oldOrder = formData.sectionOrder;
+      formData.sectionOrder = beforeBoard;
+      md += generateMarkdown(true).replace(
+        `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`,
+        "",
+      );
+      formData.sectionOrder = oldOrder;
+
       if (showBoard) {
         md += `<div align="center">\n\n### 🏆 Prominent Projects\n\n</div>\n\n`;
       }
@@ -925,13 +1022,21 @@ export default function App() {
     })();
 
     const mdRest = (() => {
-      const full = generateMarkdown(true);
-      const aboutIdx = full.indexOf("## 🚀 About Me");
-      if (aboutIdx === -1) {
-        const connectIdx = full.indexOf("## 🌐");
-        return connectIdx !== -1 ? full.slice(connectIdx) : "";
-      }
-      return full.slice(aboutIdx);
+      const tempOrder = [...formData.sectionOrder];
+      const afterBoard = tempOrder.filter(
+        (sec) =>
+          formData.sectionOrder.indexOf(sec) >
+          formData.sectionOrder.indexOf("board"),
+      );
+
+      const oldOrder = formData.sectionOrder;
+      formData.sectionOrder = afterBoard;
+      let md = generateMarkdown(true).replace(
+        `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`,
+        "",
+      );
+      formData.sectionOrder = oldOrder;
+      return md;
     })();
 
     return (
@@ -1023,16 +1128,6 @@ export default function App() {
                 <h3 className="section-title">
                   <ImageIcon size={18} /> Display Board &amp; Projects
                 </h3>
-                <p
-                  style={{
-                    fontSize: "0.8rem",
-                    color: "var(--text-secondary)",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Shows a custom dynamic matrix board for your top projects.
-                  Cycling animates on deploy; preview shows one at a time.
-                </p>
                 <label
                   className="checkbox-label"
                   style={{ marginBottom: "1rem" }}
@@ -1222,30 +1317,229 @@ export default function App() {
                       checked={formData.statsDropdown}
                       onChange={handleInputChange}
                     />
-                    <span>Wrap Analytics in Dropdown (Details/Summary)</span>
+                    <span>Wrap Analytics in Dropdown</span>
                   </label>
+
                   {[
-                    {
-                      key: "activityOverview",
-                      label: "GitHub Activity Overview",
-                    },
-                    { key: "topLangs", label: "Top Languages" },
+                    { key: "visitors", label: "Profile Visitors Badge" },
+                    { key: "stats", label: "GitHub Stats" },
                     { key: "streak", label: "GitHub Streak Stats" },
+                    {
+                      key: "githubProfileSummary",
+                      label: "GitHub Profile Summary",
+                    },
+                    { key: "topLangsCommit", label: "Top Languages by Commit" },
+                    { key: "topLangsRepo", label: "Top Languages by Repo" },
                     { key: "pinball", label: "Pinball Activity Graph" },
                     { key: "snake", label: "Contribution Snake" },
+                    { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
                     {
-                      key: "showLeetcode",
-                      label: "Show LeetCode Stats (Heatmap & Contest)",
+                      key: "showLeetcodeContest",
+                      label: "LeetCode Contest Stats",
                     },
                   ].map(({ key, label }) => (
-                    <label key={key} className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={formData.animations[key]}
-                        onChange={() => toggleAnimation(key)}
-                      />
-                      <span>{label}</span>
-                    </label>
+                    <div
+                      key={key}
+                      style={{
+                        marginBottom: "1rem",
+                        background: "rgba(0,0,0,0.2)",
+                        padding: "0.75rem",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border-color)",
+                      }}
+                    >
+                      <label
+                        className="checkbox-label"
+                        style={{ margin: "0 0 0.5rem 0", width: "100%" }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.animations[key]}
+                          onChange={() => toggleAnimation(key)}
+                        />
+                        <span style={{ fontWeight: 600 }}>{label}</span>
+                      </label>
+                      {formData.animations[key] && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.4rem",
+                            marginLeft: "1.8rem",
+                          }}
+                        >
+                          <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <div style={{ flex: 1 }}>
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: "var(--text-secondary)",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                Scale
+                              </span>
+                              <input
+                                type="text"
+                                value={formData.dimensions[key].scale}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    "scale",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="e.g. 49%"
+                                style={{
+                                  width: "100%",
+                                  padding: "0.3rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid var(--border-color)",
+                                  background: "var(--input-bg)",
+                                  color: "var(--text-primary)",
+                                }}
+                              />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: "var(--text-secondary)",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                Width
+                              </span>
+                              <input
+                                type="text"
+                                value={formData.dimensions[key].w}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    "w",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="e.g. 400px"
+                                style={{
+                                  width: "100%",
+                                  padding: "0.3rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid var(--border-color)",
+                                  background: "var(--input-bg)",
+                                  color: "var(--text-primary)",
+                                }}
+                              />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: "var(--text-secondary)",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                Height
+                              </span>
+                              <input
+                                type="text"
+                                value={formData.dimensions[key].h}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    "h",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="e.g. 200px"
+                                style={{
+                                  width: "100%",
+                                  padding: "0.3rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid var(--border-color)",
+                                  background: "var(--input-bg)",
+                                  color: "var(--text-primary)",
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <div style={{ flex: 1 }}>
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: "var(--text-secondary)",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                X-Offset (Spaces)
+                              </span>
+                              <input
+                                type="number"
+                                value={formData.dimensions[key].x}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    "x",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="0"
+                                style={{
+                                  width: "100%",
+                                  padding: "0.3rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid var(--border-color)",
+                                  background: "var(--input-bg)",
+                                  color: "var(--text-primary)",
+                                }}
+                              />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  color: "var(--text-secondary)",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                Y-Offset (Breaks)
+                              </span>
+                              <input
+                                type="number"
+                                value={formData.dimensions[key].y}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    "y",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="0"
+                                style={{
+                                  width: "100%",
+                                  padding: "0.3rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid var(--border-color)",
+                                  background: "var(--input-bg)",
+                                  color: "var(--text-primary)",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
 
                   {formData.animations.snake && (
@@ -1262,20 +1556,6 @@ export default function App() {
                         border: "1px solid var(--border-color)",
                       }}
                     >
-                      <div
-                        style={{
-                          padding: "10px",
-                          background: "rgba(88,166,255,0.1)",
-                          borderLeft: "4px solid var(--accent-color)",
-                          borderRadius: "4px",
-                          fontSize: "0.85rem",
-                          color: "var(--text-primary)",
-                        }}
-                      >
-                        <strong>⚠️ Important:</strong> The snake requires a
-                        GitHub Action. Check the Markdown Code tab for the{" "}
-                        <code>snake.yml</code> you need to add to your repo.
-                      </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label>Snake Section Title</label>
                         <input
@@ -1332,20 +1612,76 @@ export default function App() {
                           ))}
                         </select>
                       </div>
-                      <p
-                        style={{
-                          fontSize: "0.75rem",
-                          color: "var(--text-secondary)",
-                          lineHeight: 1.4,
-                          margin: 0,
-                        }}
-                      >
-                        Colors apply when you deploy the GitHub Action. The live
-                        preview uses a demo snake SVG.
-                      </p>
                     </div>
                   )}
                 </div>
+              </div>
+
+              <div className="card">
+                <h3 className="section-title">
+                  <Settings size={18} /> Reorder Sections
+                </h3>
+                {formData.sectionOrder.map((sec, idx) => (
+                  <div
+                    key={sec}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      background: "var(--bg-secondary)",
+                      padding: "0.5rem",
+                      marginBottom: "0.25rem",
+                      borderRadius: "4px",
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.85rem",
+                        color: "var(--text-primary)",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {sec.replace(/([A-Z])/g, " $1").trim()}
+                    </span>
+                    <div style={{ display: "flex", gap: "0.25rem" }}>
+                      <button
+                        onClick={() => moveSection(idx, -1)}
+                        disabled={idx === 0}
+                        style={{
+                          padding: "0.2rem 0.4rem",
+                          background: "var(--accent-color)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: idx === 0 ? "not-allowed" : "pointer",
+                          opacity: idx === 0 ? 0.5 : 1,
+                        }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveSection(idx, 1)}
+                        disabled={idx === formData.sectionOrder.length - 1}
+                        style={{
+                          padding: "0.2rem 0.4rem",
+                          background: "var(--accent-color)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor:
+                            idx === formData.sectionOrder.length - 1
+                              ? "not-allowed"
+                              : "pointer",
+                          opacity:
+                            idx === formData.sectionOrder.length - 1 ? 0.5 : 1,
+                        }}
+                      >
+                        ↓
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="card">
@@ -1385,15 +1721,6 @@ export default function App() {
                 <h3 className="section-title">
                   <Settings size={18} /> Your Custom Skill Categories
                 </h3>
-                <p
-                  style={{
-                    fontSize: "0.8rem",
-                    color: "var(--text-secondary)",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Name your own section titles and add any skills!
-                </p>
                 <div
                   style={{
                     display: "flex",
@@ -1550,17 +1877,6 @@ export default function App() {
                           <Trash2 size={12} style={{ marginLeft: "4px" }} />
                         </div>
                       ))}
-                      {cat.skills.length === 0 && (
-                        <span
-                          style={{
-                            fontSize: "0.8rem",
-                            color: "var(--text-secondary)",
-                            fontStyle: "italic",
-                          }}
-                        >
-                          No skills added yet
-                        </span>
-                      )}
                     </div>
                   </div>
                 ))}
