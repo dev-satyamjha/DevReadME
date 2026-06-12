@@ -17,6 +17,9 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
 
+const STATE_PREFIX = "<!--DEVREADME-STATE:";
+const STATE_SUFFIX = "-->";
+
 const THEMES = [
   { id: "elegant-black", name: "Elegant Black", color: "#000000" },
   { id: "glassmorphic", name: "Glassmorphic", color: "#0f172a" },
@@ -77,6 +80,7 @@ const SKILLS_CATEGORIES = {
     "Lua",
     "Zig",
     "Nim",
+    "Ren'Py",
   ],
   Frontend: [
     "React",
@@ -162,6 +166,7 @@ const SKILLS_CATEGORIES = {
     "Heroku",
     "Cloudflare",
     "DigitalOcean",
+    "InfinityFree",
   ],
   Mobile_Desktop: [
     "React Native",
@@ -312,20 +317,17 @@ function DotMatrixString({ str, y, totalW, onColor }) {
   const strW = str.length * (CHAR_WIDTH + DOT_GAP * 3);
   const startX = Math.max(0, (totalW - strW) / 2);
   const dots = [];
-
   for (let i = 0; i < str.length; i++) {
-    const ch = str[i];
-    const matrix = MATRIX_FONT[ch] || MATRIX_FONT[" "];
+    const matrix = MATRIX_FONT[str[i]] || MATRIX_FONT[" "];
     const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
-
-    matrix.forEach((row, rowIdx) => {
-      for (let colIdx = 0; colIdx < 5; colIdx++) {
-        if ((row & (0x80 >> colIdx)) !== 0) {
-          const cx = charX + colIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          const cy = y + rowIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
+    matrix.forEach((row, ri) => {
+      for (let ci = 0; ci < 5; ci++) {
+        if ((row & (0x80 >> ci)) !== 0) {
+          const cx = charX + ci * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
+          const cy = y + ri * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
           dots.push(
             <circle
-              key={`${i}-${rowIdx}-${colIdx}`}
+              key={`${i}-${ri}-${ci}`}
               cx={cx}
               cy={cy}
               r={DOT_SIZE / 2}
@@ -344,39 +346,37 @@ function DisplayBoard({ projects, username }) {
   const validProjects = projects.filter((p) => p.trim() !== "");
   const [currentIdx, setCurrentIdx] = useState(0);
   const timerRef = useRef(null);
-
   const SVG_W = 650;
   const SVG_H = 440;
   const ON = "#ff0000";
-  const OFF = "#1a0000";
 
-  const rainDrops = useMemo(() => {
-    return Array.from({ length: 40 }).map((_, i) => ({
-      id: i,
-      cx: Math.floor(Math.random() * SVG_W),
-      dur: 1 + Math.random() * 2,
-      delay: Math.random() * 3,
-    }));
-  }, [SVG_W]);
+  const rainDrops = useMemo(
+    () =>
+      Array.from({ length: 40 }).map((_, i) => ({
+        id: i,
+        cx: Math.floor(Math.random() * SVG_W),
+        dur: 1 + Math.random() * 2,
+        delay: Math.random() * 3,
+      })),
+    [],
+  );
 
   useEffect(() => {
     if (validProjects.length <= 1) {
       setCurrentIdx(0);
       return;
     }
-    timerRef.current = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % validProjects.length);
-    }, 5000);
+    timerRef.current = setInterval(
+      () => setCurrentIdx((p) => (p + 1) % validProjects.length),
+      5000,
+    );
     return () => clearInterval(timerRef.current);
   }, [validProjects.length]);
 
-  if (validProjects.length === 0) return null;
+  if (!validProjects.length) return null;
 
-  const currentProject = validProjects[currentIdx];
-  const name = currentProject.slice(0, 12);
-  const stars = "★ 2";
   const targetUrl = username
-    ? `https://github.com/${username}/${currentProject}`
+    ? `https://github.com/${username}/${validProjects[currentIdx]}`
     : "#";
 
   return (
@@ -389,28 +389,13 @@ function DisplayBoard({ projects, username }) {
         justifyContent: "center",
         margin: "1rem 0",
         textDecoration: "none",
-        cursor: "pointer",
       }}
     >
-      <style>
-        {`
-          @keyframes blurTransition {
-            0% { filter: blur(8px); opacity: 0; }
-            15% { filter: blur(0px); opacity: 1; }
-            85% { filter: blur(0px); opacity: 1; }
-            100% { filter: blur(8px); opacity: 0; }
-          }
-          @keyframes drop {
-            0% { transform: translateY(-20px); opacity: 0; }
-            10% { opacity: 1; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(${SVG_H}px); opacity: 0; }
-          }
-          .blur-animate {
-            animation: blurTransition 5s infinite;
-          }
-        `}
-      </style>
+      <style>{`
+        @keyframes blurTransition{0%{filter:blur(8px);opacity:0}15%{filter:blur(0);opacity:1}85%{filter:blur(0);opacity:1}100%{filter:blur(8px);opacity:0}}
+        @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}
+        .blur-animate{animation:blurTransition 5s infinite}
+      `}</style>
       <svg
         width="100%"
         viewBox={`0 0 ${SVG_W} ${SVG_H}`}
@@ -439,17 +424,17 @@ function DisplayBoard({ projects, username }) {
           stroke="#110000"
           strokeWidth="12"
         />
-        <g className="rain-container">
-          {rainDrops.map((drop) => (
+        <g>
+          {rainDrops.map((d) => (
             <circle
-              key={drop.id}
-              cx={drop.cx}
+              key={d.id}
+              cx={d.cx}
               cy="0"
               r="2"
               fill={ON}
               filter="url(#glow)"
               style={{
-                animation: `drop ${drop.dur}s ${drop.delay}s infinite linear`,
+                animation: `drop ${d.dur}s ${d.delay}s infinite linear`,
               }}
             />
           ))}
@@ -459,14 +444,19 @@ function DisplayBoard({ projects, username }) {
           className={validProjects.length > 1 ? "blur-animate" : ""}
           filter="url(#glow)"
         >
-          <DotMatrixString str={name} totalW={SVG_W} y={140} onColor={ON} />
-          <DotMatrixString str={stars} totalW={SVG_W} y={260} onColor={ON} />
+          <DotMatrixString
+            str={validProjects[currentIdx].slice(0, 12)}
+            y={140}
+            totalW={SVG_W}
+            onColor={ON}
+          />
+          <DotMatrixString str={`★ 2`} y={260} totalW={SVG_W} onColor={ON} />
         </g>
         {validProjects.length > 1 && (
           <text
             x={SVG_W - 16}
             y={SVG_H - 16}
-            fill={OFF}
+            fill="#1a0000"
             fontSize="14"
             fontFamily="monospace"
             textAnchor="end"
@@ -479,82 +469,109 @@ function DisplayBoard({ projects, username }) {
   );
 }
 
+const DEFAULT_STATE = {
+  name: "John Doe",
+  subtitle: "Full Stack Developer | Open Source Enthusiast",
+  about:
+    "I am a passionate software engineer building scalable web applications.",
+  github: "dev-satyamjha",
+  joinedDate: "Sept 2021",
+  email: "",
+  twitter: "",
+  linkedin: "",
+  leetcode: "",
+  codeforces: "",
+  codestats: "",
+  instagram: "",
+  facebook: "",
+  snapchat: "",
+  portfolio: "",
+  customLinks: [],
+  skills: ["JavaScript", "React", "Node.js", "Python"],
+  customCategories: [],
+  projects: ["", "", "", "", ""],
+  displayBoard: true,
+  statsDropdown: false,
+  animations: {
+    visitors: true,
+    stats: true,
+    streak: true,
+    githubProfileSummary: true,
+    topLangsCommit: true,
+    topLangsRepo: true,
+    pinball: false,
+    snake: true,
+    showLeetcodeHeatmap: true,
+    showLeetcodeContest: true,
+    codeforces: true,
+  },
+  dimensions: {
+    displayBoard: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    stats: { w: "", h: "", scale: "46%", x: 0, y: 0 },
+    streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    topLangsRepo: { w: "", h: "", scale: "25%", x: 58, y: 0 },
+    pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    visitors: { w: "", h: "", scale: "8%", x: 0, y: 0 },
+    snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
+    codeforces: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+  },
+  sectionOrder: [
+    "board",
+    "about",
+    "skills",
+    "customSkills",
+    "funFact",
+    "socials",
+    "stats",
+    "summary",
+    "topLangs",
+    "pinball",
+    "visitors",
+    "snake",
+    "leetcode",
+  ],
+  snakeSkinColor: "#ff0000",
+  snakeFoodStyle: "white",
+  snakeTitle: "Dev Snake",
+  funFact: "I can solve a Rubik's cube in under a minute!",
+};
+
+function loadInitialState() {
+  try {
+    const saved = localStorage.getItem("devreadme-state");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.dimensions?.showLeetcodeContest) {
+        localStorage.removeItem("devreadme-state");
+        return DEFAULT_STATE;
+      }
+      return parsed;
+    }
+  } catch {}
+  return DEFAULT_STATE;
+}
+
 export default function App() {
   const [theme, setTheme] = useState("elegant-black");
   const [activeTab, setActiveTab] = useState("preview");
   const [copied, setCopied] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: "John Doe",
-    subtitle: "Full Stack Developer | Open Source Enthusiast",
-    about:
-      "I am a passionate software engineer building scalable web applications.",
-    github: "johndoe",
-    twitter: "",
-    linkedin: "",
-    leetcode: "",
-    codeforces: "",
-    codestats: "",
-    customLinks: [],
-    skills: ["JavaScript", "React", "Node.js", "Python"],
-    customCategories: [],
-    projects: ["", "", "", "", ""],
-    displayBoard: true,
-    statsDropdown: false,
-    animations: {
-      visitors: true,
-      stats: true,
-      streak: true,
-      githubProfileSummary: true,
-      topLangsCommit: true,
-      topLangsRepo: true,
-      pinball: false,
-      snake: true,
-      showLeetcodeHeatmap: true,
-      showLeetcodeContest: true,
-    },
-    dimensions: {
-      stats: { w: "", h: "", scale: "46%", x: 0, y: 0 },
-      streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-      githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
-      topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-      topLangsRepo: { w: "", h: "", scale: "25%", x: 58, y: 0 },
-      pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
-      visitors: { w: "", h: "", scale: "8%", x: 0, y: 0 },
-      snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
-      showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-      showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
-    },
-    sectionOrder: [
-      "board",
-      "about",
-      "skills",
-      "customSkills",
-      "funFact",
-      "socials",
-      "stats",
-      "summary",
-      "topLangs",
-      "pinball",
-      "visitors",
-      "snake",
-      "leetcode",
-    ],
-    snakeSkinColor: "#ff0000",
-    snakeFoodStyle: "white",
-    snakeTitle: "Dev Snake",
-    funFact: "I can solve a Rubik's cube in under a minute!",
-  });
-
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCustomSkill, setNewCustomSkill] = useState("");
-  const [newCustomSkillIcon, setNewCustomSkillIcon] = useState("");
-  const [selectedCatId, setSelectedCatId] = useState(null);
-
+  const [importText, setImportText] = useState("");
+  const [formData, setFormData] = useState(loadInitialState);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
   const [newLinkIcon, setNewLinkIcon] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [selectedCatId, setSelectedCatId] = useState(null);
+  const [newCustomSkill, setNewCustomSkill] = useState("");
+  const [newCustomSkillIcon, setNewCustomSkillIcon] = useState("");
 
+  useEffect(() => {
+    localStorage.setItem("devreadme-state", JSON.stringify(formData));
+  }, [formData]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
@@ -610,15 +627,15 @@ export default function App() {
 
   const addCustomCategory = () => {
     if (newCategoryName.trim()) {
-      const newId = Date.now();
+      const id = Date.now();
       setFormData((prev) => ({
         ...prev,
         customCategories: [
           ...prev.customCategories,
-          { id: newId, title: newCategoryName.trim(), skills: [] },
+          { id, title: newCategoryName.trim(), skills: [] },
         ],
       }));
-      setSelectedCatId(newId);
+      setSelectedCatId(id);
       setNewCategoryName("");
     }
   };
@@ -628,24 +645,19 @@ export default function App() {
       setFormData((prev) => ({
         ...prev,
         customCategories: prev.customCategories.map((cat) => {
-          if (cat.id === selectedCatId) {
-            const skillExists = cat.skills.some(
-              (s) => s.name === newCustomSkill.trim(),
-            );
-            if (!skillExists) {
-              return {
-                ...cat,
-                skills: [
-                  ...cat.skills,
-                  {
-                    name: newCustomSkill.trim(),
-                    icon: newCustomSkillIcon.trim() || newCustomSkill.trim(),
-                  },
-                ],
-              };
-            }
-          }
-          return cat;
+          if (cat.id !== selectedCatId) return cat;
+          if (cat.skills.some((s) => s.name === newCustomSkill.trim()))
+            return cat;
+          return {
+            ...cat,
+            skills: [
+              ...cat.skills,
+              {
+                name: newCustomSkill.trim(),
+                icon: newCustomSkillIcon.trim() || newCustomSkill.trim(),
+              },
+            ],
+          };
         }),
       }));
       setNewCustomSkill("");
@@ -699,20 +711,38 @@ export default function App() {
 
   const moveSection = (index, direction) => {
     setFormData((prev) => {
-      const newOrder = [...prev.sectionOrder];
-      if (direction === -1 && index > 0) {
-        [newOrder[index - 1], newOrder[index]] = [
-          newOrder[index],
-          newOrder[index - 1],
-        ];
-      } else if (direction === 1 && index < newOrder.length - 1) {
-        [newOrder[index + 1], newOrder[index]] = [
-          newOrder[index],
-          newOrder[index + 1],
-        ];
-      }
-      return { ...prev, sectionOrder: newOrder };
+      const order = [...prev.sectionOrder];
+      if (direction === -1 && index > 0)
+        [order[index - 1], order[index]] = [order[index], order[index - 1]];
+      else if (direction === 1 && index < order.length - 1)
+        [order[index + 1], order[index]] = [order[index], order[index + 1]];
+      return { ...prev, sectionOrder: order };
     });
+  };
+
+  const handleImportState = () => {
+    const startIdx = importText.indexOf(STATE_PREFIX);
+    const endIdx = importText.indexOf(
+      STATE_SUFFIX,
+      startIdx + STATE_PREFIX.length,
+    );
+    if (startIdx !== -1 && endIdx !== -1) {
+      try {
+        const raw = importText
+          .substring(startIdx + STATE_PREFIX.length, endIdx)
+          .replace(/[\r\n\s]+/g, "");
+        const parsed = JSON.parse(decodeURIComponent(atob(raw)));
+        setFormData(parsed);
+        alert("State successfully imported!");
+        setImportText("");
+      } catch (e) {
+        alert(`Failed to parse state. Error: ${e.message}`);
+      }
+    } else {
+      alert(
+        "No valid DEVREADME-STATE found. Copy the full markdown from the 'Markdown Code' tab.",
+      );
+    }
   };
 
   const getApiThemes = () => {
@@ -768,26 +798,39 @@ export default function App() {
     }
   };
 
-  const generateMarkdown = (isPreview = false) => {
+  const getTopHeader = () => {
+    const safeDate = formData.joinedDate
+      ? formData.joinedDate.trim().replace(/ /g, "%20")
+      : "";
+    const targetUrl = formData.github
+      ? `https://github.com/${formData.github}`
+      : "#";
+    const joinedBadge = formData.joinedDate
+      ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
+      : "";
+    return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3 align="center">${formData.subtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
+  };
+
+  const generateMarkdown = (
+    isPreview = false,
+    currentOrder = formData.sectionOrder,
+  ) => {
     const apiThemes = getApiThemes();
     const user = formData.github || "torvalds";
 
-    const buildImg = (key, src, alt, extraStyle = "") => {
+    const buildImg = (key, src, alt) => {
       const dim = formData.dimensions[key];
       if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
       const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
       const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
       let attrs = "";
-      if (dim.w && dim.w.trim() !== "") attrs += `width="${dim.w}" `;
-      if (dim.h && dim.h.trim() !== "") attrs += `height="${dim.h}" `;
-      if (attrs === "" && dim.scale && dim.scale.trim() !== "") {
-        attrs = `width="${dim.scale}" `;
-      }
-      return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()}${extraStyle ? ` style="${extraStyle}"` : ""} />\n`;
+      if (dim.w?.trim()) attrs += `width="${dim.w}" `;
+      if (dim.h?.trim()) attrs += `height="${dim.h}" `;
+      if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
+      return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
     };
 
-    let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
-
+    let md = getTopHeader();
     const analyticsGroup = [
       "stats",
       "summary",
@@ -800,61 +843,47 @@ export default function App() {
     let analyticsRendered = false;
 
     const renderSection = (section) => {
-      let secMd = "";
+      let s = "";
       switch (section) {
         case "visitors":
           if (formData.animations.visitors) {
-            const labelText = "VIEWS";
-            const eyeColor = "yellow";
-            const boxColor = "orange";
-            const labelBgColor = "red";
-            const eyeIconUrl = `https://api.iconify.design/mdi:eye.svg?color=${eyeColor}`;
-            const badgeUrl = `https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=${labelText}&color=${boxColor}&labelColor=${labelBgColor}`;
-
-            secMd += `<p align="center">\n`;
-            secMd += `  <img src="${eyeIconUrl}" height="28" alt="Views Icon" style="vertical-align: middle; margin-right: 4px;" />\n`;
-            secMd += `  ${buildImg("visitors", badgeUrl, "Profile views", "vertical-align: middle;")}`;
-            secMd += `</p>\n\n`;
+            s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
           }
           break;
         case "board":
           if (
             formData.displayBoard &&
-            formData.projects.filter((p) => p.trim() !== "").length > 0
+            formData.projects.filter((p) => p.trim()).length > 0
           ) {
             const base = isPreview
               ? window.location.origin
-              : "https://YOUR_DEPLOY_URL";
-            const validProj = formData.projects.filter((p) => p.trim() !== "");
-            const boardUrl = `${base}/.netlify/functions/seven-segment?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
-
-            secMd += `<div align="center">\n\n### 🏆 Prominent Works\n\n`;
-            secMd += `<a href="https://github.com/${user}/${validProj[0]}">\n`;
-            secMd += `  <img src="${boardUrl}" width="100%" alt="Projects Display Board" />\n`;
-            secMd += `</a>\n\n</div>\n\n`;
+              : "https://dev-readme.netlify.app";
+            const validProj = formData.projects.filter((p) => p.trim());
+            const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
+            s += `<div align="center">\n\n### 🏆 Prominent Works\n\n<a href="https://github.com/${user}/${validProj[0]}">\n  ${buildImg("displayBoard", boardUrl, "Projects Display Board")}</a>\n\n</div>\n\n`;
           }
           break;
         case "about":
-          if (formData.about) secMd += `## 🚀 About Me\n${formData.about}\n\n`;
+          if (formData.about) s += `## 🚀 About Me\n${formData.about}\n\n`;
           break;
         case "skills":
           if (formData.skills.length > 0) {
-            secMd += `## 💻 Core Tech Stack\n\n`;
+            s += `## 💻 Core Tech Stack\n\n`;
             Object.entries(SKILLS_CATEGORIES).forEach(
               ([category, categorySkills]) => {
-                const selected = categorySkills.filter((s) =>
-                  formData.skills.includes(s),
+                const selected = categorySkills.filter((sk) =>
+                  formData.skills.includes(sk),
                 );
                 if (selected.length > 0) {
-                  secMd += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
+                  s += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
                   selected.forEach((skill) => {
-                    const safeName = skill
+                    const safe = skill
                       .replace(/ /g, "%20")
                       .replace(/\+/g, "%2B")
                       .replace(/#/g, "%23");
-                    secMd += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
+                    s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
                   });
-                  secMd += `</p>\n\n`;
+                  s += `</p>\n\n`;
                 }
               },
             );
@@ -863,78 +892,91 @@ export default function App() {
         case "customSkills":
           formData.customCategories.forEach((cat) => {
             if (cat.skills.length > 0) {
-              secMd += `### ${cat.title}\n<p align="center">\n`;
+              s += `### ${cat.title}\n<p align="center">\n`;
               cat.skills.forEach((skillObj) => {
                 if (skillObj.icon.startsWith("http")) {
-                  secMd += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
+                  s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
                 } else {
-                  const safeName = skillObj.name
+                  const safe = skillObj.name
                     .replace(/ /g, "%20")
                     .replace(/\+/g, "%2B")
                     .replace(/#/g, "%23");
-                  const safeIcon = skillObj.icon
-                    .toLowerCase()
-                    .replace(/ /g, "");
-                  secMd += `  <img src="https://img.shields.io/badge/${safeName}-151515?style=for-the-badge&logo=${safeIcon}" alt="${skillObj.name}" />\n`;
+                  s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
                 }
               });
-              secMd += `</p>\n\n`;
+              s += `</p>\n\n`;
             }
           });
           break;
         case "funFact":
           if (formData.funFact)
-            secMd += `<h3 align="center">🌟 <i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+            s += `<h3 align="center">🌟 <i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
           break;
-        case "socials":
-          if (
+        case "socials": {
+          const hasSocials =
             formData.github ||
+            formData.email ||
             formData.twitter ||
             formData.linkedin ||
+            formData.leetcode ||
             formData.codestats ||
-            formData.customLinks.length > 0
-          ) {
-            secMd += `## 🌐 Connect with me\n<p align="center">\n`;
+            formData.instagram ||
+            formData.facebook ||
+            formData.snapchat ||
+            formData.portfolio ||
+            formData.customLinks.length > 0;
+          if (hasSocials) {
+            s += `## 🌐 Socials\n<p align="center">\n`;
             if (formData.github)
-              secMd += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github" alt="GitHub" /></a>\n`;
+              s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
+            if (formData.email)
+              s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
             if (formData.linkedin)
-              secMd += `  <a href="https://linkedin.com/in/${formData.linkedin}"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin" alt="LinkedIn" /></a>\n`;
+              s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
             if (formData.twitter)
-              secMd += `  <a href="https://twitter.com/${formData.twitter}"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter" alt="Twitter" /></a>\n`;
+              s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
+            if (formData.leetcode)
+              s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
             if (formData.codestats)
-              secMd += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-1F2937?style=for-the-badge&logo=codeforces" alt="Code::Stats" /></a>\n`;
+              s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
+            if (formData.instagram)
+              s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
+            if (formData.facebook)
+              s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
+            if (formData.snapchat)
+              s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
+            if (formData.portfolio)
+              s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
             formData.customLinks.forEach((link) => {
               if (link.icon.startsWith("http")) {
-                secMd += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" style="margin: 0 4px;" /></a>\n`;
+                s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
               } else {
-                const safeIcon = link.icon.toLowerCase().replace(/ /g, "");
-                secMd += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${safeIcon}" alt="${link.label}" /></a>\n`;
+                s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
               }
             });
-            secMd += `</p>\n\n`;
+            s += `</p>\n\n`;
           }
           break;
+        }
         case "stats":
           if (formData.animations.streak || formData.animations.stats) {
-            secMd += `<p align="center">\n`;
+            s += `<p align="center">\n`;
             if (formData.animations.streak)
-              secMd += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
+              s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
             if (formData.animations.stats)
-              secMd += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
-            secMd += `</p>\n\n`;
+              s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
+            s += `</p>\n\n`;
           }
           break;
         case "summary":
           if (formData.animations.githubProfileSummary) {
-            const summarySrc = isPreview
-              ? `https://placehold.co/800x200/111827/4ade80?text=Profile+Summary+Graph+(Requires+GitHub+Action)`
-              : `profile-summary-card-output/${apiThemes.summaryFolder}/0-profile-details.svg`;
-            secMd += `<p align="center">\n  ${buildImg("githubProfileSummary", summarySrc, "GitHub Profile Summary")}</p>\n\n`;
+            const themeName = apiThemes.stats.replace("theme=", "");
+            s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
           }
           break;
         case "pinball":
           if (formData.animations.pinball) {
-            secMd += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
+            s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
           }
           break;
         case "topLangs":
@@ -942,12 +984,12 @@ export default function App() {
             formData.animations.topLangsCommit ||
             formData.animations.topLangsRepo
           ) {
-            secMd += `<p align="center">\n`;
+            s += `<p align="center">\n`;
             if (formData.animations.topLangsCommit)
-              secMd += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
+              s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
             if (formData.animations.topLangsRepo)
-              secMd += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
-            secMd += `</p>\n\n`;
+              s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
+            s += `</p>\n\n`;
           }
           break;
         case "snake":
@@ -955,55 +997,47 @@ export default function App() {
             const snakeSrc = isPreview
               ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
               : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-            secMd += `<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
+            s += `## 🐍 ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
           }
           break;
         case "leetcode":
           if (
-            (formData.leetcode &&
-              (formData.animations.showLeetcodeHeatmap ||
-                formData.animations.showLeetcodeContest)) ||
-            formData.codeforces
+            formData.leetcode &&
+            (formData.animations.showLeetcodeHeatmap ||
+              formData.animations.showLeetcodeContest)
           ) {
-            if (
-              formData.leetcode &&
-              (formData.animations.showLeetcodeHeatmap ||
-                formData.animations.showLeetcodeContest)
-            ) {
-              secMd += `<p align="center">\n`;
-              if (formData.animations.showLeetcodeHeatmap)
-                secMd += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
-              if (formData.animations.showLeetcodeContest)
-                secMd += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
-              secMd += `</p>\n\n`;
-            }
-            if (formData.codeforces) {
-              secMd += `<p align="center">\n  <img src="https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight" alt="Codeforces Stats" width="100%" />\n</p>\n\n`;
-            }
+            s += `<p align="center">\n`;
+            if (formData.animations.showLeetcodeHeatmap)
+              s += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
+            if (formData.animations.showLeetcodeContest)
+              s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
+            s += `</p>\n\n`;
+          }
+          if (formData.codeforces && formData.animations.codeforces) {
+            s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
           }
           break;
         default:
           break;
       }
-      return secMd;
+      return s;
     };
 
-    formData.sectionOrder.forEach((section) => {
+    currentOrder.forEach((section) => {
       if (analyticsGroup.includes(section)) {
         if (!analyticsRendered) {
           analyticsRendered = true;
-          let analyticsBuffer = "";
-          const orderedAnalytics = formData.sectionOrder.filter((s) =>
-            analyticsGroup.includes(s),
-          );
-          orderedAnalytics.forEach((as) => {
-            analyticsBuffer += renderSection(as);
-          });
-          if (analyticsBuffer.trim() !== "") {
+          let buf = "";
+          currentOrder
+            .filter((s) => analyticsGroup.includes(s))
+            .forEach((as) => {
+              buf += renderSection(as);
+            });
+          if (buf.trim()) {
             if (formData.statsDropdown) {
-              md += `<details>\n<summary><b>🏆 View Stats</b></summary>\n<br>\n\n${analyticsBuffer}</details>\n\n`;
+              md += `<details>\n<summary><b>🏆 View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`;
             } else {
-              md += `<div align="center">\n\n### 🏆 View Stats\n\n</div>\n\n${analyticsBuffer}`;
+              md += `<div align="center">\n\n### 🏆 View Stats\n\n</div>\n\n${buf}`;
             }
           }
         }
@@ -1012,78 +1046,65 @@ export default function App() {
       }
     });
 
+    const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
+    md += `\n\n${STATE_PREFIX}${safeState}${STATE_SUFFIX}\n`;
     return md;
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generateMarkdown(false));
+    navigator.clipboard.writeText(
+      generateMarkdown(false, formData.sectionOrder),
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const PreviewContent = () => {
-    const validProjects = formData.projects.filter((p) => p.trim() !== "");
+    const validProjects = formData.projects.filter((p) => p.trim());
     const showBoard = formData.displayBoard && validProjects.length > 0;
-
-    const mdWithoutBoard = (() => {
-      const tempOrder = [...formData.sectionOrder];
-      const boardIndex = tempOrder.indexOf("board");
-      if (boardIndex > -1) tempOrder.splice(boardIndex, 1);
-
-      const beforeBoard = tempOrder.filter(
-        (sec) =>
-          formData.sectionOrder.indexOf(sec) <
-          formData.sectionOrder.indexOf("board"),
-      );
-
-      let md = `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`;
-
-      const oldOrder = formData.sectionOrder;
-      formData.sectionOrder = beforeBoard;
-      md += generateMarkdown(true).replace(
-        `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`,
-        "",
-      );
-      formData.sectionOrder = oldOrder;
-
-      if (showBoard) {
-        md += `<div align="center">\n\n### 🏆 Prominent Works\n\n</div>\n\n`;
-      }
-      return md;
-    })();
-
-    const mdRest = (() => {
-      const tempOrder = [...formData.sectionOrder];
-      const afterBoard = tempOrder.filter(
-        (sec) =>
-          formData.sectionOrder.indexOf(sec) >
-          formData.sectionOrder.indexOf("board"),
-      );
-
-      const oldOrder = formData.sectionOrder;
-      formData.sectionOrder = afterBoard;
-      let md = generateMarkdown(true).replace(
-        `<div align="center">\n  <h1>Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3>${formData.subtitle}</h3>\n</div>\n\n`,
-        "",
-      );
-      formData.sectionOrder = oldOrder;
-      return md;
-    })();
+    const boardIndex = formData.sectionOrder.indexOf("board");
+    const beforeBoard =
+      boardIndex > -1
+        ? formData.sectionOrder.slice(0, boardIndex)
+        : formData.sectionOrder;
+    const afterBoard =
+      boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
+    const topStr = getTopHeader();
+    const mdBefore =
+      topStr + generateMarkdown(true, beforeBoard).replace(topStr, "");
+    const mdAfter = generateMarkdown(true, afterBoard).replace(topStr, "");
 
     return (
       <div className="markdown-preview custom-scrollbar">
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-          {mdWithoutBoard}
-        </ReactMarkdown>
+        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdBefore}</ReactMarkdown>
         {showBoard && (
-          <DisplayBoard
-            projects={formData.projects}
-            username={formData.github}
-          />
+          <div
+            style={{
+              transform: `scale(${parseFloat(formData.dimensions.displayBoard.scale) / 100})`,
+              transformOrigin: "top center",
+              width: formData.dimensions.displayBoard.w || "100%",
+              height: formData.dimensions.displayBoard.h || "auto",
+            }}
+          >
+            <DisplayBoard
+              projects={formData.projects}
+              username={formData.github}
+            />
+          </div>
         )}
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdRest}</ReactMarkdown>
+        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdAfter}</ReactMarkdown>
       </div>
     );
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "0.3rem",
+    fontSize: "0.75rem",
+    borderRadius: "4px",
+    background: "var(--input-bg)",
+    color: "var(--text-primary)",
+    border: "1px solid var(--border-color)",
   };
 
   return (
@@ -1116,24 +1137,24 @@ export default function App() {
                 <h3 className="section-title">
                   <Globe size={18} /> Basic Info
                 </h3>
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Subtitle / Tagline</label>
-                  <input
-                    name="subtitle"
-                    value={formData.subtitle}
-                    onChange={handleInputChange}
-                    placeholder="Full Stack Developer"
-                  />
-                </div>
+                {[
+                  { name: "name", label: "Full Name", placeholder: "John Doe" },
+                  {
+                    name: "subtitle",
+                    label: "Subtitle / Tagline",
+                    placeholder: "Full Stack Developer",
+                  },
+                ].map((f) => (
+                  <div className="form-group" key={f.name}>
+                    <label>{f.label}</label>
+                    <input
+                      name={f.name}
+                      value={formData[f.name]}
+                      onChange={handleInputChange}
+                      placeholder={f.placeholder}
+                    />
+                  </div>
+                ))}
                 <div className="form-group">
                   <label>About Me</label>
                   <textarea
@@ -1157,7 +1178,7 @@ export default function App() {
 
               <div className="card">
                 <h3 className="section-title">
-                  <ImageIcon size={18} /> Display Board &amp; Projects
+                  <ImageIcon size={18} /> Display Board & Projects
                 </h3>
                 <label
                   className="checkbox-label"
@@ -1171,7 +1192,55 @@ export default function App() {
                   />
                   <span style={{ fontWeight: 600 }}>Enable Display Board</span>
                 </label>
-
+                {formData.displayBoard && (
+                  <div
+                    style={{
+                      marginBottom: "1rem",
+                      padding: "0.75rem",
+                      background: "rgba(0,0,0,0.2)",
+                      borderRadius: "6px",
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      {[
+                        { prop: "scale", label: "Scale (e.g. 100%)" },
+                        { prop: "w", label: "Width (e.g. 650px)" },
+                      ].map(({ prop, label }) => (
+                        <div key={prop} style={{ flex: 1 }}>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-secondary)",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            {label}
+                          </span>
+                          <input
+                            type="text"
+                            value={formData.dimensions.displayBoard[prop]}
+                            onChange={(e) =>
+                              handleDimensionChange(
+                                "displayBoard",
+                                prop,
+                                e.target.value,
+                              )
+                            }
+                            style={inputStyle}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {formData.displayBoard &&
                   formData.projects.map((proj, idx) => (
                     <div
@@ -1192,13 +1261,23 @@ export default function App() {
 
               <div className="card">
                 <h3 className="section-title">
-                  <LinkIcon size={18} /> Social &amp; Platforms
+                  <LinkIcon size={18} /> Social & Platforms
                 </h3>
                 {[
                   {
                     name: "github",
                     label: "GitHub Username (Crucial)",
                     placeholder: "torvalds",
+                  },
+                  {
+                    name: "joinedDate",
+                    label: "GitHub Joined Date",
+                    placeholder: "e.g. Sept 2021",
+                  },
+                  {
+                    name: "email",
+                    label: "Email Address",
+                    placeholder: "you@example.com",
                   },
                   {
                     name: "leetcode",
@@ -1211,14 +1290,39 @@ export default function App() {
                     placeholder: "tourist",
                   },
                   {
+                    name: "codestats",
+                    label: "Code::Stats Username",
+                    placeholder: "username",
+                  },
+                  {
                     name: "twitter",
-                    label: "Twitter / X",
+                    label: "X (Twitter) Username",
                     placeholder: "elonmusk",
                   },
                   {
                     name: "linkedin",
-                    label: "LinkedIn",
-                    placeholder: "williamgates",
+                    label: "LinkedIn Username or URL",
+                    placeholder: "https://linkedin.com/in/...",
+                  },
+                  {
+                    name: "instagram",
+                    label: "Instagram Handle",
+                    placeholder: "zuck",
+                  },
+                  {
+                    name: "facebook",
+                    label: "Facebook Username",
+                    placeholder: "zuck",
+                  },
+                  {
+                    name: "snapchat",
+                    label: "Snapchat Username",
+                    placeholder: "evanspiegel",
+                  },
+                  {
+                    name: "portfolio",
+                    label: "Portfolio URL",
+                    placeholder: "https://yoursite.com",
                   },
                 ].map((f) => (
                   <div className="form-group" key={f.name}>
@@ -1231,7 +1335,6 @@ export default function App() {
                     />
                   </div>
                 ))}
-
                 <div
                   style={{
                     marginTop: "1rem",
@@ -1259,7 +1362,7 @@ export default function App() {
                     <input
                       value={newLinkLabel}
                       onChange={(e) => setNewLinkLabel(e.target.value)}
-                      placeholder="Label (e.g. Portfolio)"
+                      placeholder="Label"
                       style={{
                         flex: 1,
                         padding: "0.6rem",
@@ -1332,7 +1435,7 @@ export default function App() {
 
               <div className="card">
                 <h3 className="section-title">
-                  <Sparkles size={18} /> Metrics &amp; Animations
+                  <Sparkles size={18} /> Metrics & Animations
                 </h3>
                 <div className="toggle-group" style={{ marginBottom: "1rem" }}>
                   <label
@@ -1351,14 +1454,13 @@ export default function App() {
                     />
                     <span>Wrap Analytics in Dropdown</span>
                   </label>
-
                   {[
                     { key: "visitors", label: "Profile Visitors Badge" },
                     { key: "stats", label: "GitHub Stats" },
                     { key: "streak", label: "GitHub Streak Stats" },
                     {
                       key: "githubProfileSummary",
-                      label: "GitHub Profile Summary",
+                      label: "GitHub Profile Metrics",
                     },
                     { key: "topLangsCommit", label: "Top Languages by Commit" },
                     { key: "topLangsRepo", label: "Top Languages by Repo" },
@@ -1369,6 +1471,7 @@ export default function App() {
                       key: "showLeetcodeContest",
                       label: "LeetCode Contest Stats",
                     },
+                    { key: "codeforces", label: "Codeforces Stats" },
                   ].map(({ key, label }) => (
                     <div
                       key={key}
@@ -1401,179 +1504,74 @@ export default function App() {
                           }}
                         >
                           <div style={{ display: "flex", gap: "0.5rem" }}>
-                            <div style={{ flex: 1 }}>
-                              <span
-                                style={{
-                                  fontSize: "0.65rem",
-                                  color: "var(--text-secondary)",
-                                  display: "block",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                Scale
-                              </span>
-                              <input
-                                type="text"
-                                value={formData.dimensions[key].scale}
-                                onChange={(e) =>
-                                  handleDimensionChange(
-                                    key,
-                                    "scale",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="e.g. 49%"
-                                style={{
-                                  width: "100%",
-                                  padding: "0.3rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border-color)",
-                                  background: "var(--input-bg)",
-                                  color: "var(--text-primary)",
-                                }}
-                              />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <span
-                                style={{
-                                  fontSize: "0.65rem",
-                                  color: "var(--text-secondary)",
-                                  display: "block",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                Width
-                              </span>
-                              <input
-                                type="text"
-                                value={formData.dimensions[key].w}
-                                onChange={(e) =>
-                                  handleDimensionChange(
-                                    key,
-                                    "w",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="e.g. 400px"
-                                style={{
-                                  width: "100%",
-                                  padding: "0.3rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border-color)",
-                                  background: "var(--input-bg)",
-                                  color: "var(--text-primary)",
-                                }}
-                              />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <span
-                                style={{
-                                  fontSize: "0.65rem",
-                                  color: "var(--text-secondary)",
-                                  display: "block",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                Height
-                              </span>
-                              <input
-                                type="text"
-                                value={formData.dimensions[key].h}
-                                onChange={(e) =>
-                                  handleDimensionChange(
-                                    key,
-                                    "h",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="e.g. 200px"
-                                style={{
-                                  width: "100%",
-                                  padding: "0.3rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border-color)",
-                                  background: "var(--input-bg)",
-                                  color: "var(--text-primary)",
-                                }}
-                              />
-                            </div>
+                            {[
+                              { prop: "scale", ph: "e.g. 49%", label: "Scale" },
+                              { prop: "w", ph: "e.g. 400px", label: "Width" },
+                              { prop: "h", ph: "e.g. 200px", label: "Height" },
+                            ].map(({ prop, ph, label: lbl }) => (
+                              <div key={prop} style={{ flex: 1 }}>
+                                <span
+                                  style={{
+                                    fontSize: "0.65rem",
+                                    color: "var(--text-secondary)",
+                                    display: "block",
+                                    marginBottom: "2px",
+                                  }}
+                                >
+                                  {lbl}
+                                </span>
+                                <input
+                                  type="text"
+                                  value={formData.dimensions[key][prop]}
+                                  onChange={(e) =>
+                                    handleDimensionChange(
+                                      key,
+                                      prop,
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder={ph}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            ))}
                           </div>
                           <div style={{ display: "flex", gap: "0.5rem" }}>
-                            <div style={{ flex: 1 }}>
-                              <span
-                                style={{
-                                  fontSize: "0.65rem",
-                                  color: "var(--text-secondary)",
-                                  display: "block",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                X-Offset (Spaces)
-                              </span>
-                              <input
-                                type="number"
-                                value={formData.dimensions[key].x}
-                                onChange={(e) =>
-                                  handleDimensionChange(
-                                    key,
-                                    "x",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="0"
-                                style={{
-                                  width: "100%",
-                                  padding: "0.3rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border-color)",
-                                  background: "var(--input-bg)",
-                                  color: "var(--text-primary)",
-                                }}
-                              />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <span
-                                style={{
-                                  fontSize: "0.65rem",
-                                  color: "var(--text-secondary)",
-                                  display: "block",
-                                  marginBottom: "2px",
-                                }}
-                              >
-                                Y-Offset (Breaks)
-                              </span>
-                              <input
-                                type="number"
-                                value={formData.dimensions[key].y}
-                                onChange={(e) =>
-                                  handleDimensionChange(
-                                    key,
-                                    "y",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="0"
-                                style={{
-                                  width: "100%",
-                                  padding: "0.3rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border-color)",
-                                  background: "var(--input-bg)",
-                                  color: "var(--text-primary)",
-                                }}
-                              />
-                            </div>
+                            {[
+                              { prop: "x", label: "X-Offset (Spaces)" },
+                              { prop: "y", label: "Y-Offset (Breaks)" },
+                            ].map(({ prop, label: lbl }) => (
+                              <div key={prop} style={{ flex: 1 }}>
+                                <span
+                                  style={{
+                                    fontSize: "0.65rem",
+                                    color: "var(--text-secondary)",
+                                    display: "block",
+                                    marginBottom: "2px",
+                                  }}
+                                >
+                                  {lbl}
+                                </span>
+                                <input
+                                  type="number"
+                                  value={formData.dimensions[key][prop]}
+                                  onChange={(e) =>
+                                    handleDimensionChange(
+                                      key,
+                                      prop,
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="0"
+                                  style={inputStyle}
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
                     </div>
                   ))}
-
                   {formData.animations.snake && (
                     <div
                       style={{
@@ -1677,40 +1675,31 @@ export default function App() {
                       {sec.replace(/([A-Z])/g, " $1").trim()}
                     </span>
                     <div style={{ display: "flex", gap: "0.25rem" }}>
-                      <button
-                        onClick={() => moveSection(idx, -1)}
-                        disabled={idx === 0}
-                        style={{
-                          padding: "0.2rem 0.4rem",
-                          background: "var(--accent-color)",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: idx === 0 ? "not-allowed" : "pointer",
-                          opacity: idx === 0 ? 0.5 : 1,
-                        }}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        onClick={() => moveSection(idx, 1)}
-                        disabled={idx === formData.sectionOrder.length - 1}
-                        style={{
-                          padding: "0.2rem 0.4rem",
-                          background: "var(--accent-color)",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor:
-                            idx === formData.sectionOrder.length - 1
-                              ? "not-allowed"
-                              : "pointer",
-                          opacity:
-                            idx === formData.sectionOrder.length - 1 ? 0.5 : 1,
-                        }}
-                      >
-                        ↓
-                      </button>
+                      {[
+                        { dir: -1, label: "↑", disabled: idx === 0 },
+                        {
+                          dir: 1,
+                          label: "↓",
+                          disabled: idx === formData.sectionOrder.length - 1,
+                        },
+                      ].map(({ dir, label, disabled }) => (
+                        <button
+                          key={dir}
+                          onClick={() => moveSection(idx, dir)}
+                          disabled={disabled}
+                          style={{
+                            padding: "0.2rem 0.4rem",
+                            background: "var(--accent-color)",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: disabled ? "not-allowed" : "pointer",
+                            opacity: disabled ? 0.5 : 1,
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -1785,7 +1774,6 @@ export default function App() {
                     Create
                   </button>
                 </div>
-
                 {formData.customCategories.map((cat) => (
                   <div
                     key={cat.id}
@@ -1850,7 +1838,7 @@ export default function App() {
                           setSelectedCatId(cat.id);
                           setNewCustomSkill(e.target.value);
                         }}
-                        placeholder={`Skill (e.g. MongoDB)`}
+                        placeholder="Skill (e.g. MongoDB)"
                         style={{
                           flex: 1,
                           padding: "0.4rem 0.6rem",
@@ -1874,7 +1862,7 @@ export default function App() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") addSkillToCustomCategory();
                         }}
-                        placeholder={`Icon Name or URL`}
+                        placeholder="Icon Name or URL"
                         style={{
                           flex: 0.8,
                           padding: "0.4rem 0.6rem",
@@ -1931,22 +1919,78 @@ export default function App() {
                 >
                   <Code2 size={16} className="icon-inline" /> Markdown Code
                 </button>
+                <button
+                  className={`tab-btn ${activeTab === "import" ? "active" : ""}`}
+                  onClick={() => setActiveTab("import")}
+                >
+                  <Settings size={16} className="icon-inline" /> Import MD
+                </button>
               </div>
               {activeTab === "code" && (
                 <button className="copy-btn" onClick={copyToClipboard}>
-                  {copied ? <Check size={18} /> : <Copy size={18} />}
-                  {copied ? "Copied to Clipboard" : "Copy Code"}
+                  {copied ? <Check size={18} /> : <Copy size={18} />}{" "}
+                  {copied ? "Copied" : "Copy"}
                 </button>
               )}
             </div>
-
             <div className="preview-container card">
-              {activeTab === "preview" ? (
-                <PreviewContent />
-              ) : (
+              {activeTab === "preview" && <PreviewContent />}
+              {activeTab === "code" && (
                 <pre className="code-view custom-scrollbar">
-                  {generateMarkdown(false)}
+                  {generateMarkdown(false, formData.sectionOrder)}
                 </pre>
+              )}
+              {activeTab === "import" && (
+                <div style={{ padding: "1rem" }}>
+                  <h3
+                    style={{
+                      color: "var(--text-primary)",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Import Generated Markdown
+                  </h3>
+                  <p
+                    style={{
+                      color: "var(--text-secondary)",
+                      fontSize: "0.9rem",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Paste markdown generated by this tool to instantly restore
+                    all your settings.
+                  </p>
+                  <textarea
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                    placeholder="Paste markdown here..."
+                    style={{
+                      width: "100%",
+                      height: "300px",
+                      padding: "1rem",
+                      background: "var(--bg-secondary)",
+                      color: "var(--text-primary)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      fontFamily: "monospace",
+                      marginBottom: "1rem",
+                    }}
+                  />
+                  <button
+                    onClick={handleImportState}
+                    style={{
+                      padding: "0.8rem 1.5rem",
+                      background: "var(--accent-color)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Restore State
+                  </button>
+                </div>
               )}
             </div>
           </section>
