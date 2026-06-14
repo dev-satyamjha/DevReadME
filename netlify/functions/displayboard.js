@@ -76,8 +76,9 @@ const FADE_SEC = 1.5;
 
 function getDotMatrix(str, y, totalW) {
   const strW = str.length * (CHAR_WIDTH + DOT_GAP * 3);
-  const startX = Math.max(0, (totalW - strW) / 2);
-  let out = "";
+  const fits = strW <= totalW;
+  const startX = fits ? Math.max(0, (totalW - strW) / 2) : 8;
+  let dots = "";
   for (let i = 0; i < str.length; i++) {
     const matrix = MATRIX_FONT[str[i]] || MATRIX_FONT[" "];
     const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
@@ -86,12 +87,17 @@ function getDotMatrix(str, y, totalW) {
         if ((row & (0x80 >> ci)) !== 0) {
           const cx = charX + ci * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
           const cy = y + ri * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          out += `<circle cx="${cx}" cy="${cy}" r="${DOT_SIZE / 2}" fill="${ON}" filter="url(#glow)"/>`;
+          dots += `<circle cx="${cx}" cy="${cy}" r="${DOT_SIZE / 2}" fill="${ON}" filter="url(#glow)"/>`;
         }
       }
     });
   }
-  return out;
+  if (!fits) {
+    const scrollDur = Math.max(3, strW / 50).toFixed(1);
+    const totalScroll = strW + totalW;
+    return `<g><animateTransform attributeName="transform" type="translate" from="${totalW},0" to="${-strW},0" dur="${scrollDur}s" repeatCount="indefinite"/>${dots}</g>`;
+  }
+  return dots;
 }
 
 function getRain() {
@@ -105,23 +111,21 @@ function getRain() {
   return out;
 }
 
-function buildPerSlideCSS(repos, totalDur) {
+function buildPerSlideCSS(n, totalDur) {
   let css = `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}`;
-  repos.forEach((_, i) => {
-    const n = repos.length;
+  for (let i = 0; i < n; i++) {
     const slotStart = i / n;
     const slotEnd = (i + 1) / n;
     const p0 = (slotStart * 100).toFixed(2);
     const p1 = (slotEnd * 100).toFixed(2);
     const pFadeIn = (slotStart * 100 + (FADE_SEC / totalDur) * 100).toFixed(2);
     const pFadeOut = (slotEnd * 100 - (FADE_SEC / totalDur) * 100).toFixed(2);
-
     if (i === 0) {
-      css += `@keyframes s${i}{0%{opacity:1;filter:blur(0)}${pFadeOut}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
+      css += `@keyframes s0{0%{opacity:1;filter:blur(0)}${pFadeOut}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
     } else {
       css += `@keyframes s${i}{0%,${p0}%{opacity:0;filter:blur(8px)}${pFadeIn}%{opacity:1;filter:blur(0)}${pFadeOut}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
     }
-  });
+  }
   return css;
 }
 
@@ -140,7 +144,11 @@ exports.handler = async (event) => {
   try {
     const results = await Promise.all(
       repoNames.map((repo) =>
-        fetch(`https://api.github.com/repos/${user}/${repo}`)
+        fetch(`https://api.github.com/repos/${user}/${repo}`, {
+          headers: process.env.GITHUB_TOKEN
+            ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+            : {},
+        })
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null),
       ),
@@ -154,24 +162,39 @@ exports.handler = async (event) => {
     const totalDur = n * 5;
     const css =
       n > 1
-        ? buildPerSlideCSS(repos, totalDur)
+        ? buildPerSlideCSS(n, totalDur)
         : `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}`;
 
     const slides = repos
       .map((repo, i) => {
-        const name = repo.name.slice(0, 12);
+        const name = repo.name;
         const stars = `★ ${repo.stargazers_count || 0}`;
         const anim =
           n > 1 ? `style="animation:s${i} ${totalDur}s infinite linear"` : "";
         const counter =
           n > 1
-            ? `<text x="${SVG_W - 16}" y="${SVG_H - 16}" fill="#1a0000" font-size="14" font-family="monospace" text-anchor="end">${i + 1}/${n}</text>`
+            ? `<text x="${SVG_W - 16}" y="${SVG_H - 16}" fill="#3a0000" font-size="14" font-family="monospace" text-anchor="end">${i + 1}/${n}</text>`
             : "";
         return `<g ${anim} filter="url(#glow)">${getDotMatrix(name, 140, SVG_W)}${getDotMatrix(stars, 260, SVG_W)}${counter}</g>`;
       })
       .join("");
 
-    const svg = `<svg width="${SVG_W}" height="${SVG_H}" viewBox="0 0 ${SVG_W} ${SVG_H}" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#050100"/><circle cx="4" cy="4" r="2" fill="#110000"/></pattern><filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><style>${css}</style><rect width="${SVG_W}" height="${SVG_H}" fill="url(#dots)" rx="16"/><rect width="${SVG_W}" height="${SVG_H}" fill="none" rx="16" stroke="#110000" stroke-width="12"/><g>${getRain()}</g>${slides}</svg>`;
+    const svg = `<svg width="${SVG_W}" height="${SVG_H}" viewBox="0 0 ${SVG_W} ${SVG_H}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a0a0a"/><stop offset="100%" stop-color="#1a0000"/></linearGradient>
+<linearGradient id="borderGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0000" stop-opacity="0.6"/><stop offset="50%" stop-color="#330000" stop-opacity="0.3"/><stop offset="100%" stop-color="#ff0000" stop-opacity="0.6"/></linearGradient>
+<pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#050100"/><circle cx="4" cy="4" r="2" fill="#110000"/></pattern>
+<filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<clipPath id="board-clip"><rect width="${SVG_W}" height="${SVG_H}" rx="16"/></clipPath>
+</defs>
+<style>${css}</style>
+<rect width="${SVG_W}" height="${SVG_H}" fill="url(#bgGrad)" rx="16"/>
+<rect width="${SVG_W}" height="${SVG_H}" fill="url(#dots)" rx="16" opacity="0.6"/>
+<rect width="${SVG_W}" height="${SVG_H}" fill="none" rx="16" stroke="url(#borderGrad)" stroke-width="3"/>
+<rect x="1.5" y="1.5" width="${SVG_W - 3}" height="${SVG_H - 3}" fill="none" rx="15" stroke="#ff000033" stroke-width="1"/>
+<g clip-path="url(#board-clip)">${getRain()}</g>
+<g clip-path="url(#board-clip)">${slides}</g>
+</svg>`;
 
     return {
       statusCode: 200,

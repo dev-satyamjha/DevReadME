@@ -13,6 +13,7 @@ import {
   Settings,
   ImageIcon,
   Save,
+  RefreshCw,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -33,36 +34,42 @@ const SNAKE_COLOR_SCHEMES = [
   {
     label: "Red Classic",
     snake: "ff0000",
+    bg: "000000",
     light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
     dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
   },
   {
     label: "White Ghost",
     snake: "ffffff",
+    bg: "0d1117",
     light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
     dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
   },
   {
     label: "Gold Rush",
     snake: "d4a017",
+    bg: "0a0700",
     light: "#ebedf0,#fff3b0,#ffe066,#ffc200,#d4a017",
     dark: "#161b22,#3d2e00,#7a5c00,#b38600,#d4a017",
   },
   {
     label: "Purple Haze",
     snake: "6e40c9",
+    bg: "0d0a1a",
     light: "#ebedf0,#d8b4fe,#a855f7,#7c3aed,#6e40c9",
     dark: "#161b22,#2e1065,#4c1d95,#5b21b6,#6e40c9",
   },
   {
     label: "Ocean Blue",
     snake: "1f6feb",
+    bg: "0a0f1a",
     light: "#ebedf0,#bfdbfe,#60a5fa,#3b82f6,#1f6feb",
     dark: "#161b22,#0c1a2e,#0d2d5e,#1a4a8a,#1f6feb",
   },
   {
     label: "Neon Green",
     snake: "39d353",
+    bg: "0a1a0d",
     light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
     dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
   },
@@ -366,13 +373,13 @@ function DisplayBoard({ projects, username }) {
   const validProjects = projects.filter((p) => p.trim() !== "");
   const [currentIdx, setCurrentIdx] = useState(0);
   const timerRef = useRef(null);
-  const SVG_W = 650;
-  const SVG_H = 440;
+  const SVG_W = 900;
+  const SVG_H = 300;
   const ON = "#ff0000";
 
   const rainDrops = useMemo(
     () =>
-      Array.from({ length: 40 }).map((_, i) => ({
+      Array.from({ length: 50 }).map((_, i) => ({
         id: i,
         cx: Math.floor(Math.random() * SVG_W),
         dur: 1 + Math.random() * 2,
@@ -397,112 +404,123 @@ function DisplayBoard({ projects, username }) {
 
   return (
     <div
-      style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}
+      style={{
+        width: "100%",
+        background: "#050505",
+        borderRadius: 12,
+        overflow: "hidden",
+        boxShadow: "0 0 40px #ff000022, inset 0 0 60px #0a0000",
+        border: "2px solid #1a0000",
+      }}
     >
-      <style>{`
-        @keyframes blurTransition{0%{filter:blur(8px);opacity:0}15%{filter:blur(0);opacity:1}85%{filter:blur(0);opacity:1}100%{filter:blur(8px);opacity:0}}
-        @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}
-        .blur-animate{animation:blurTransition 5s infinite}
-      `}</style>
-      <svg
-        width="100%"
-        viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ maxWidth: SVG_W, borderRadius: 16 }}
+      <div
+        style={{
+          background: "linear-gradient(90deg,#1a0000,#0d0000,#1a0000)",
+          borderBottom: "1px solid #2a0000",
+          padding: "6px 16px",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
       >
-        <defs>
-          <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0a0a0a" />
-            <stop offset="100%" stopColor="#1a0000" />
-          </linearGradient>
-          <linearGradient id="borderGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#ff0000" stopOpacity="0.6" />
-            <stop offset="50%" stopColor="#330000" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#ff0000" stopOpacity="0.6" />
-          </linearGradient>
-          <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse">
-            <rect width="8" height="8" fill="#050100" />
-            <circle cx="4" cy="4" r="2" fill="#110000" />
-          </pattern>
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <clipPath id="board-clip">
-            <rect width={SVG_W} height={SVG_H} rx="16" />
-          </clipPath>
-        </defs>
-        <rect width={SVG_W} height={SVG_H} fill="url(#bgGrad)" rx="16" />
-        <rect
-          width={SVG_W}
-          height={SVG_H}
-          fill="url(#dots)"
-          rx="16"
-          opacity="0.6"
-        />
-        <rect
-          width={SVG_W}
-          height={SVG_H}
-          fill="none"
-          rx="16"
-          stroke="url(#borderGrad)"
-          strokeWidth="3"
-        />
-        <rect
-          x="1.5"
-          y="1.5"
-          width={SVG_W - 3}
-          height={SVG_H - 3}
-          fill="none"
-          rx="15"
-          stroke="#ff000033"
-          strokeWidth="1"
-        />
-        <g clipPath="url(#board-clip)">
-          {rainDrops.map((d) => (
-            <circle
-              key={d.id}
-              cx={d.cx}
-              cy="0"
-              r="2"
-              fill={ON}
-              filter="url(#glow)"
-              style={{
-                animation: `drop ${d.dur}s ${d.delay}s infinite linear`,
-              }}
-            />
-          ))}
-        </g>
-        <g
-          clipPath="url(#board-clip)"
-          key={currentIdx}
-          className={validProjects.length > 1 ? "blur-animate" : ""}
-          filter="url(#glow)"
-        >
-          <DotMatrixString
-            str={validProjects[currentIdx].slice(0, 12)}
-            y={140}
-            totalW={SVG_W}
-            onColor={ON}
+        {["#ff5f57", "#febc2e", "#28c840"].map((c, i) => (
+          <div
+            key={i}
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              background: c,
+            }}
           />
-          <DotMatrixString str="★ 2" y={260} totalW={SVG_W} onColor={ON} />
-        </g>
+        ))}
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontSize: 11,
+            color: "#440000",
+            marginLeft: 8,
+          }}
+        >
+          DISPLAY BOARD — PROMINENT WORKS
+        </span>
         {validProjects.length > 1 && (
-          <text
-            x={SVG_W - 16}
-            y={SVG_H - 16}
-            fill="#1a0000"
-            fontSize="14"
-            fontFamily="monospace"
-            textAnchor="end"
+          <span
+            style={{
+              fontFamily: "monospace",
+              fontSize: 11,
+              color: "#330000",
+              marginLeft: "auto",
+            }}
           >
             {currentIdx + 1}/{validProjects.length}
-          </text>
+          </span>
         )}
-      </svg>
+      </div>
+      <div style={{ padding: "4px 0" }}>
+        <style>{`
+          @keyframes blurTransition{0%{filter:blur(8px);opacity:0}15%{filter:blur(0);opacity:1}85%{filter:blur(0);opacity:1}100%{filter:blur(8px);opacity:0}}
+          @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}
+          .blur-animate{animation:blurTransition 5s infinite}
+        `}</style>
+        <svg
+          width="100%"
+          viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern
+              id="dots"
+              width="8"
+              height="8"
+              patternUnits="userSpaceOnUse"
+            >
+              <rect width="8" height="8" fill="#030000" />
+              <circle cx="4" cy="4" r="1.5" fill="#0d0000" />
+            </pattern>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <clipPath id="board-clip">
+              <rect width={SVG_W} height={SVG_H} />
+            </clipPath>
+          </defs>
+          <rect width={SVG_W} height={SVG_H} fill="url(#dots)" />
+          <g clipPath="url(#board-clip)">
+            {rainDrops.map((d) => (
+              <circle
+                key={d.id}
+                cx={d.cx}
+                cy="0"
+                r="1.5"
+                fill={ON}
+                filter="url(#glow)"
+                style={{
+                  animation: `drop ${d.dur}s ${d.delay}s infinite linear`,
+                }}
+              />
+            ))}
+          </g>
+          <g
+            clipPath="url(#board-clip)"
+            key={currentIdx}
+            className={validProjects.length > 1 ? "blur-animate" : ""}
+            filter="url(#glow)"
+          >
+            <DotMatrixString
+              str={validProjects[currentIdx].slice(0, 16)}
+              y={60}
+              totalW={SVG_W}
+              onColor={ON}
+            />
+            <DotMatrixString str="★ 2" y={180} totalW={SVG_W} onColor={ON} />
+          </g>
+        </svg>
+      </div>
     </div>
   );
 }
@@ -591,46 +609,137 @@ function loadInitialState() {
   return DEFAULT_STATE;
 }
 
-const cardStyle = {
-  background: "var(--bg-secondary)",
-  border: "1px solid var(--border-color)",
-  borderRadius: "8px",
-  padding: "1rem",
-  marginBottom: "1rem",
-};
-const stepStyle = {
-  display: "flex",
-  gap: "0.75rem",
-  alignItems: "flex-start",
-  marginBottom: "0.75rem",
-};
-const stepNumStyle = {
-  minWidth: "24px",
-  height: "24px",
-  borderRadius: "50%",
-  background: "var(--accent-color)",
-  color: "#fff",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "0.75rem",
-  fontWeight: 700,
-  flexShrink: 0,
-};
-const stepTextStyle = {
-  fontSize: "0.85rem",
-  color: "var(--text-secondary)",
-  lineHeight: 1.5,
-};
-const codeChipStyle = {
-  display: "inline-block",
-  background: "rgba(0,0,0,0.4)",
-  border: "1px solid var(--border-color)",
-  borderRadius: "4px",
-  padding: "0.1rem 0.4rem",
-  fontFamily: "monospace",
-  fontSize: "0.8rem",
-  color: "var(--accent-color)",
+const S = {
+  label: {
+    display: "block",
+    fontSize: "0.72rem",
+    fontWeight: 600,
+    color: "var(--text-secondary)",
+    marginBottom: "4px",
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+  },
+  input: {
+    width: "100%",
+    padding: "8px 10px",
+    borderRadius: 6,
+    border: "1px solid var(--border-color)",
+    background: "var(--input-bg)",
+    color: "var(--text-primary)",
+    fontSize: "0.85rem",
+    boxSizing: "border-box",
+    outline: "none",
+  },
+  sectionHead: {
+    fontSize: "0.7rem",
+    fontWeight: 700,
+    color: "var(--accent-color)",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottom: "1px solid var(--border-color)",
+  },
+  card: {
+    background: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+    borderRadius: 8,
+    padding: "14px",
+    marginBottom: 10,
+  },
+  stepRow: {
+    display: "flex",
+    gap: 10,
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  stepNum: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: "50%",
+    background: "var(--accent-color)",
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "0.68rem",
+    fontWeight: 700,
+    flexShrink: 0,
+    marginTop: 1,
+  },
+  stepText: {
+    fontSize: "0.82rem",
+    color: "var(--text-secondary)",
+    lineHeight: 1.55,
+  },
+  chip: {
+    display: "inline-block",
+    background: "rgba(0,0,0,0.35)",
+    border: "1px solid var(--border-color)",
+    borderRadius: 4,
+    padding: "1px 6px",
+    fontFamily: "monospace",
+    fontSize: "0.78rem",
+    color: "var(--accent-color)",
+  },
+  btn: {
+    padding: "8px 16px",
+    borderRadius: 6,
+    border: "none",
+    cursor: "pointer",
+    fontWeight: 600,
+    fontSize: "0.82rem",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+  },
+  tag: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    padding: "3px 8px",
+    borderRadius: 4,
+    fontSize: "0.75rem",
+    cursor: "pointer",
+    border: "1px solid var(--border-color)",
+    background: "transparent",
+    color: "var(--text-secondary)",
+    transition: "all 0.12s",
+  },
+  tagSel: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    padding: "3px 8px",
+    borderRadius: 4,
+    fontSize: "0.75rem",
+    cursor: "pointer",
+    border: "1px solid var(--accent-color)",
+    background: "var(--accent-color)22",
+    color: "var(--accent-color)",
+    transition: "all 0.12s",
+  },
+  dimInput: {
+    padding: "5px 7px",
+    borderRadius: 4,
+    border: "1px solid var(--border-color)",
+    background: "var(--input-bg)",
+    color: "var(--text-primary)",
+    fontSize: "0.72rem",
+    width: "100%",
+    boxSizing: "border-box",
+  },
+  dimLabel: {
+    fontSize: "0.62rem",
+    color: "var(--text-secondary)",
+    display: "block",
+    marginBottom: 2,
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+  },
 };
 
 export default function App() {
@@ -657,77 +766,63 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
+  const set = (name, value) => setFormData((p) => ({ ...p, [name]: value }));
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    set(name, type === "checkbox" ? checked : value);
   };
-
   const handleProjectChange = (index, value) => {
     const updated = [...formData.projects];
     updated[index] = value;
-    setFormData((prev) => ({ ...prev, projects: updated }));
+    set("projects", updated);
   };
-
-  const toggleSkill = (skill) => {
-    setFormData((prev) => ({
-      ...prev,
-      skills: prev.skills.includes(skill)
-        ? prev.skills.filter((s) => s !== skill)
-        : [...prev.skills, skill],
-    }));
-  };
-
+  const toggleSkill = (skill) =>
+    set(
+      "skills",
+      formData.skills.includes(skill)
+        ? formData.skills.filter((s) => s !== skill)
+        : [...formData.skills, skill],
+    );
   const addCustomLink = () => {
     if (newLinkLabel.trim() && newLinkUrl.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        customLinks: [
-          ...prev.customLinks,
-          {
-            label: newLinkLabel.trim(),
-            url: newLinkUrl.trim(),
-            icon: newLinkIcon.trim() || newLinkLabel.trim(),
-          },
-        ],
-      }));
+      set("customLinks", [
+        ...formData.customLinks,
+        {
+          label: newLinkLabel.trim(),
+          url: newLinkUrl.trim(),
+          icon: newLinkIcon.trim() || newLinkLabel.trim(),
+        },
+      ]);
       setNewLinkLabel("");
       setNewLinkUrl("");
       setNewLinkIcon("");
     }
   };
-
-  const removeCustomLink = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      customLinks: prev.customLinks.filter((_, i) => i !== index),
-    }));
-  };
-
+  const removeCustomLink = (i) =>
+    set(
+      "customLinks",
+      formData.customLinks.filter((_, idx) => idx !== i),
+    );
   const addCustomCategory = () => {
     if (newCategoryName.trim()) {
       const id = Date.now();
-      setFormData((prev) => ({
-        ...prev,
-        customCategories: [
-          ...prev.customCategories,
-          { id, title: newCategoryName.trim(), skills: [] },
-        ],
-      }));
+      set("customCategories", [
+        ...formData.customCategories,
+        { id, title: newCategoryName.trim(), skills: [] },
+      ]);
       setSelectedCatId(id);
       setNewCategoryName("");
     }
   };
-
   const addSkillToCustomCategory = () => {
     if (newCustomSkill.trim() && selectedCatId) {
-      setFormData((prev) => ({
-        ...prev,
-        customCategories: prev.customCategories.map((cat) => {
-          if (cat.id !== selectedCatId) return cat;
-          if (cat.skills.some((s) => s.name === newCustomSkill.trim()))
+      set(
+        "customCategories",
+        formData.customCategories.map((cat) => {
+          if (
+            cat.id !== selectedCatId ||
+            cat.skills.some((s) => s.name === newCustomSkill.trim())
+          )
             return cat;
           return {
             ...cat,
@@ -740,88 +835,78 @@ export default function App() {
             ],
           };
         }),
-      }));
+      );
       setNewCustomSkill("");
       setNewCustomSkillIcon("");
     }
   };
-
-  const removeCustomCategory = (id) => {
-    setFormData((prev) => ({
-      ...prev,
-      customCategories: prev.customCategories.filter((c) => c.id !== id),
-    }));
-  };
-
-  const removeSkillFromCustomCategory = (catId, skillName) => {
-    setFormData((prev) => ({
-      ...prev,
-      customCategories: prev.customCategories.map((cat) =>
+  const removeCustomCategory = (id) =>
+    set(
+      "customCategories",
+      formData.customCategories.filter((c) => c.id !== id),
+    );
+  const removeSkillFromCustomCategory = (catId, skillName) =>
+    set(
+      "customCategories",
+      formData.customCategories.map((cat) =>
         cat.id === catId
           ? { ...cat, skills: cat.skills.filter((s) => s.name !== skillName) }
           : cat,
       ),
-    }));
-  };
-
-  const updateCustomCategoryTitle = (catId, newTitle) => {
-    setFormData((prev) => ({
-      ...prev,
-      customCategories: prev.customCategories.map((cat) =>
-        cat.id === catId ? { ...cat, title: newTitle } : cat,
+    );
+  const updateCustomCategoryTitle = (catId, title) =>
+    set(
+      "customCategories",
+      formData.customCategories.map((cat) =>
+        cat.id === catId ? { ...cat, title } : cat,
       ),
+    );
+  const toggleAnimation = (anim) =>
+    setFormData((p) => ({
+      ...p,
+      animations: { ...p.animations, [anim]: !p.animations[anim] },
     }));
-  };
-
-  const toggleAnimation = (anim) => {
-    setFormData((prev) => ({
-      ...prev,
-      animations: { ...prev.animations, [anim]: !prev.animations[anim] },
-    }));
-  };
-
-  const handleDimensionChange = (key, prop, value) => {
-    setFormData((prev) => ({
-      ...prev,
+  const handleDimensionChange = (key, prop, value) =>
+    setFormData((p) => ({
+      ...p,
       dimensions: {
-        ...prev.dimensions,
-        [key]: { ...prev.dimensions[key], [prop]: value },
+        ...p.dimensions,
+        [key]: { ...p.dimensions[key], [prop]: value },
       },
     }));
-  };
-
   const moveSection = (index, direction) => {
-    setFormData((prev) => {
-      const order = [...prev.sectionOrder];
+    setFormData((p) => {
+      const order = [...p.sectionOrder];
       if (direction === -1 && index > 0)
         [order[index - 1], order[index]] = [order[index], order[index - 1]];
       else if (direction === 1 && index < order.length - 1)
         [order[index + 1], order[index]] = [order[index], order[index + 1]];
-      return { ...prev, sectionOrder: order };
+      return { ...p, sectionOrder: order };
     });
   };
-
   const handleImportState = () => {
-    const startIdx = importText.indexOf(STATE_PREFIX);
-    const endIdx = importText.indexOf(
-      STATE_SUFFIX,
-      startIdx + STATE_PREFIX.length,
-    );
-    if (startIdx !== -1 && endIdx !== -1) {
+    const s = importText.indexOf(STATE_PREFIX),
+      e = importText.indexOf(STATE_SUFFIX, s + STATE_PREFIX.length);
+    if (s !== -1 && e !== -1) {
       try {
-        const raw = importText
-          .substring(startIdx + STATE_PREFIX.length, endIdx)
-          .replace(/[\r\n\s]+/g, "");
-        const parsed = JSON.parse(decodeURIComponent(atob(raw)));
+        const parsed = JSON.parse(
+          decodeURIComponent(
+            atob(
+              importText
+                .substring(s + STATE_PREFIX.length, e)
+                .replace(/[\r\n\s]+/g, ""),
+            ),
+          ),
+        );
         setFormData(parsed);
-        alert("Session restored successfully!");
+        alert("Session restored!");
         setImportText("");
-      } catch (e) {
-        alert(`Failed to restore session. Error: ${e.message}`);
+      } catch (err) {
+        alert(`Failed: ${err.message}`);
       }
     } else {
       alert(
-        "No valid session data found. Copy the full text from the 'Save Session' tab.",
+        "No valid session found. Paste the full text from Save Session tab.",
       );
     }
   };
@@ -893,7 +978,6 @@ export default function App() {
   ) => {
     const apiThemes = getApiThemes();
     const user = formData.github || "torvalds";
-
     const buildImg = (key, src, alt) => {
       const dim = formData.dimensions[key];
       if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
@@ -905,7 +989,6 @@ export default function App() {
       if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
       return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
     };
-
     let md = getTopHeader();
     const analyticsGroup = [
       "stats",
@@ -917,14 +1000,12 @@ export default function App() {
       "visitors",
     ];
     let analyticsRendered = false;
-
     const renderSection = (section) => {
       let s = "";
       switch (section) {
         case "visitors":
-          if (formData.animations.visitors) {
+          if (formData.animations.visitors)
             s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
-          }
           break;
         case "board":
           if (
@@ -1024,11 +1105,10 @@ export default function App() {
             if (formData.portfolio)
               s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
             formData.customLinks.forEach((link) => {
-              if (link.icon.startsWith("http")) {
+              if (link.icon.startsWith("http"))
                 s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
-              } else {
+              else
                 s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
-              }
             });
             s += `</p>\n\n`;
           }
@@ -1053,9 +1133,8 @@ export default function App() {
           }
           break;
         case "pinball":
-          if (formData.animations.pinball) {
+          if (formData.animations.pinball)
             s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
-          }
           break;
         case "topLangs":
           if (
@@ -1084,9 +1163,8 @@ export default function App() {
               (formData.animations.showLeetcodeHeatmap ||
                 formData.animations.showLeetcodeContest)) ||
             (formData.codeforces && formData.animations.codeforces)
-          ) {
+          )
             s += `## ⚔️ Arena Stats\n\n`;
-          }
           if (
             formData.leetcode &&
             (formData.animations.showLeetcodeHeatmap ||
@@ -1099,16 +1177,14 @@ export default function App() {
               s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
             s += `</p>\n\n`;
           }
-          if (formData.codeforces && formData.animations.codeforces) {
+          if (formData.codeforces && formData.animations.codeforces)
             s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
-          }
           break;
         default:
           break;
       }
       return s;
     };
-
     currentOrder.forEach((section) => {
       if (analyticsGroup.includes(section)) {
         if (!analyticsRendered) {
@@ -1119,32 +1195,22 @@ export default function App() {
             .forEach((as) => {
               buf += renderSection(as);
             });
-          if (buf.trim()) {
-            if (formData.statsDropdown) {
-              md += `<details>\n<summary><b>🏆 View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`;
-            } else {
-              md += `<div align="center">\n\n### 🏆 View Stats\n\n</div>\n\n${buf}`;
-            }
-          }
+          if (buf.trim())
+            md += formData.statsDropdown
+              ? `<details>\n<summary><b>🏆 View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`
+              : `<div align="center">\n\n### 🏆 View Stats\n\n</div>\n\n${buf}`;
         }
       } else {
         md += renderSection(section);
       }
     });
-
-    if (includeState) {
-      const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
-      md += `\n\n${STATE_PREFIX}${safeState}${STATE_SUFFIX}\n`;
-    }
-
+    if (includeState)
+      md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
     return md;
   };
 
-  const generateSessionBlob = () => {
-    const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
-    return `${STATE_PREFIX}${safeState}${STATE_SUFFIX}`;
-  };
-
+  const generateSessionBlob = () =>
+    `${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}`;
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
       generateMarkdown(false, formData.sectionOrder, false),
@@ -1152,12 +1218,14 @@ export default function App() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   const copySession = () => {
     navigator.clipboard.writeText(generateSessionBlob());
     setCopiedSession(true);
     setTimeout(() => setCopiedSession(false), 2000);
   };
+
+  const scheme = SNAKE_COLOR_SCHEMES[selectedSnakeScheme];
+  const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${scheme.snake}&color_dots=${scheme.light}&color_background=%23${scheme.bg}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${scheme.snake}&color_dots=${scheme.dark}&color_background=%23${scheme.bg}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n\n      - uses: crazy-max/ghaction-github-pages@v3\n        with:\n          target_branch: output\n          build_dir: dist\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`;
 
   const PreviewContent = () => {
     const validProjects = formData.projects.filter((p) => p.trim());
@@ -1176,7 +1244,6 @@ export default function App() {
       topStr,
       "",
     );
-
     return (
       <div className="markdown-preview custom-scrollbar">
         <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdBefore}</ReactMarkdown>
@@ -1186,7 +1253,7 @@ export default function App() {
               transform: `scale(${parseFloat(formData.dimensions.displayBoard.scale) / 100})`,
               transformOrigin: "top center",
               width: formData.dimensions.displayBoard.w || "100%",
-              height: formData.dimensions.displayBoard.h || "auto",
+              marginBottom: 16,
             }}
           >
             <DisplayBoard
@@ -1200,35 +1267,74 @@ export default function App() {
     );
   };
 
-  const inputStyle = {
-    width: "100%",
-    padding: "0.3rem",
-    fontSize: "0.75rem",
-    borderRadius: "4px",
-    background: "var(--input-bg)",
-    color: "var(--text-primary)",
-    border: "1px solid var(--border-color)",
-  };
+  const Field = ({ name, label, placeholder, type = "text" }) => (
+    <div style={{ marginBottom: 12 }}>
+      <label style={S.label}>{label}</label>
+      <input
+        name={name}
+        type={type}
+        value={formData[name]}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        style={S.input}
+      />
+    </div>
+  );
 
-  const scheme = SNAKE_COLOR_SCHEMES[selectedSnakeScheme];
-  const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${scheme.snake}&color_dots=${scheme.light}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${scheme.snake}&color_dots=${scheme.dark}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n\n      - uses: crazy-max/ghaction-github-pages@v3\n        with:\n          target_branch: output\n          build_dir: dist\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`;
+  const animKeys = [
+    { key: "visitors", label: "Profile Visitors Badge" },
+    { key: "stats", label: "GitHub Stats" },
+    { key: "streak", label: "GitHub Streak Stats" },
+    { key: "githubProfileSummary", label: "GitHub Profile Metrics" },
+    { key: "topLangsCommit", label: "Top Langs by Commit" },
+    { key: "topLangsRepo", label: "Top Langs by Repo" },
+    { key: "pinball", label: "Activity Graph" },
+    { key: "snake", label: "Contribution Snake" },
+    { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
+    { key: "showLeetcodeContest", label: "LeetCode Contest" },
+    { key: "codeforces", label: "Codeforces Stats" },
+  ];
 
   return (
     <>
       <CursorBubbles />
       <div className="app-container">
-        <header className="header">
+        <header
+          className="header"
+          style={{
+            borderBottom: "1px solid var(--border-color)",
+            background: "var(--bg-primary)",
+          }}
+        >
           <div className="logo-area">
-            <Sparkles className="logo-icon" size={20} />
-            <h1>DevReadME</h1>
+            <Sparkles className="logo-icon" size={18} />
+            <h1 style={{ fontSize: "1rem", letterSpacing: "0.05em" }}>
+              DevReadME
+            </h1>
           </div>
-          <div className="theme-selector">
-            <span className="theme-label">Theme:</span>
+          <div className="theme-selector" style={{ gap: 6 }}>
+            <span
+              className="theme-label"
+              style={{
+                fontSize: "0.7rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Theme
+            </span>
             {THEMES.map((t) => (
               <button
                 key={t.id}
                 className={`theme-btn ${theme === t.id ? "active" : ""}`}
-                style={{ backgroundColor: t.color }}
+                style={{
+                  backgroundColor: t.color,
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  border:
+                    theme === t.id ? "2px solid #fff" : "2px solid transparent",
+                }}
                 onClick={() => setTheme(t.id)}
                 title={t.name}
               />
@@ -1237,58 +1343,51 @@ export default function App() {
         </header>
 
         <main className="main-content">
-          <aside className="sidebar">
-            <div className="sidebar-scrollable">
-              <div className="card">
-                <h3 className="section-title">
-                  <Globe size={18} /> Basic Info
-                </h3>
-                {[
-                  { name: "name", label: "Full Name", placeholder: "John Doe" },
-                  {
-                    name: "subtitle",
-                    label: "Subtitle / Tagline",
-                    placeholder: "Full Stack Developer",
-                  },
-                ].map((f) => (
-                  <div className="form-group" key={f.name}>
-                    <label>{f.label}</label>
-                    <input
-                      name={f.name}
-                      value={formData[f.name]}
-                      onChange={handleInputChange}
-                      placeholder={f.placeholder}
-                    />
-                  </div>
-                ))}
-                <div className="form-group">
-                  <label>About Me</label>
+          <aside
+            className="sidebar"
+            style={{ borderRight: "1px solid var(--border-color)" }}
+          >
+            <div className="sidebar-scrollable" style={{ padding: "12px" }}>
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <Globe size={13} /> Basic Info
+                </div>
+                <Field name="name" label="Full Name" placeholder="John Doe" />
+                <Field
+                  name="subtitle"
+                  label="Subtitle"
+                  placeholder="Full Stack Developer"
+                />
+                <div style={{ marginBottom: 12 }}>
+                  <label style={S.label}>About Me</label>
                   <textarea
                     name="about"
                     value={formData.about}
                     onChange={handleInputChange}
                     rows={3}
                     placeholder="Tell the world about yourself..."
+                    style={{ ...S.input, resize: "vertical" }}
                   />
                 </div>
-                <div className="form-group">
-                  <label>Fun Fact</label>
-                  <input
-                    name="funFact"
-                    value={formData.funFact}
-                    onChange={handleInputChange}
-                    placeholder="I can solve a Rubik's cube..."
-                  />
-                </div>
+                <Field
+                  name="funFact"
+                  label="Fun Fact"
+                  placeholder="I can solve a Rubik's cube..."
+                />
               </div>
 
-              <div className="card">
-                <h3 className="section-title">
-                  <ImageIcon size={18} /> Display Board & Projects
-                </h3>
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <ImageIcon size={13} /> Display Board
+                </div>
                 <label
-                  className="checkbox-label"
-                  style={{ marginBottom: "1rem", width: "100%" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 10,
+                    cursor: "pointer",
+                  }}
                 >
                   <input
                     type="checkbox"
@@ -1296,34 +1395,25 @@ export default function App() {
                     checked={formData.displayBoard}
                     onChange={handleInputChange}
                   />
-                  <span style={{ fontWeight: 600 }}>Enable Display Board</span>
-                </label>
-                {formData.displayBoard && (
-                  <div
+                  <span
                     style={{
-                      marginBottom: "1rem",
-                      padding: "0.75rem",
-                      background: "rgba(0,0,0,0.2)",
-                      borderRadius: "6px",
-                      border: "1px solid var(--border-color)",
+                      fontSize: "0.82rem",
+                      color: "var(--text-primary)",
+                      fontWeight: 600,
                     }}
                   >
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                    Enable Display Board
+                  </span>
+                </label>
+                {formData.displayBoard && (
+                  <>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                       {[
-                        { prop: "scale", label: "Scale (e.g. 100%)" },
-                        { prop: "w", label: "Width (e.g. 650px)" },
+                        { prop: "scale", label: "Scale" },
+                        { prop: "w", label: "Width" },
                       ].map(({ prop, label }) => (
                         <div key={prop} style={{ flex: 1 }}>
-                          <span
-                            style={{
-                              fontSize: "0.65rem",
-                              color: "var(--text-secondary)",
-                              display: "block",
-                              marginBottom: "2px",
-                            }}
-                          >
-                            {label}
-                          </span>
+                          <span style={S.dimLabel}>{label}</span>
                           <input
                             type="text"
                             value={formData.dimensions.displayBoard[prop]}
@@ -1334,177 +1424,136 @@ export default function App() {
                                 e.target.value,
                               )
                             }
-                            style={inputStyle}
+                            style={S.dimInput}
+                            placeholder={prop === "scale" ? "100%" : "650px"}
                           />
                         </div>
                       ))}
                     </div>
-                  </div>
+                    {formData.projects.map((proj, idx) => (
+                      <div key={idx} style={{ marginBottom: 6 }}>
+                        <input
+                          value={proj}
+                          onChange={(e) =>
+                            handleProjectChange(idx, e.target.value)
+                          }
+                          placeholder={`Repo ${idx + 1} name`}
+                          style={{ ...S.input, fontSize: "0.8rem" }}
+                        />
+                      </div>
+                    ))}
+                  </>
                 )}
-                {formData.displayBoard &&
-                  formData.projects.map((proj, idx) => (
-                    <div
-                      className="form-group"
-                      key={idx}
-                      style={{ marginBottom: "0.5rem" }}
-                    >
-                      <input
-                        value={proj}
-                        onChange={(e) =>
-                          handleProjectChange(idx, e.target.value)
-                        }
-                        placeholder={`Project ${idx + 1} repo name`}
-                      />
-                    </div>
-                  ))}
               </div>
 
-              <div className="card">
-                <h3 className="section-title">
-                  <LinkIcon size={18} /> Social & Platforms
-                </h3>
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <LinkIcon size={13} /> Socials & Platforms
+                </div>
                 {[
                   {
                     name: "github",
-                    label: "GitHub Username (Crucial)",
+                    label: "GitHub Username",
                     placeholder: "torvalds",
                   },
                   {
                     name: "joinedDate",
-                    label: "GitHub Joined Date",
-                    placeholder: "e.g. Sept 2021",
+                    label: "Joined Date",
+                    placeholder: "Sept 2021",
                   },
                   {
                     name: "email",
-                    label: "Email Address",
+                    label: "Email",
                     placeholder: "you@example.com",
                   },
                   {
                     name: "leetcode",
-                    label: "LeetCode Username",
-                    placeholder: "your_leetcode",
+                    label: "LeetCode",
+                    placeholder: "username",
                   },
                   {
                     name: "codeforces",
-                    label: "Codeforces Handle",
-                    placeholder: "tourist",
+                    label: "Codeforces",
+                    placeholder: "handle",
                   },
                   {
                     name: "codestats",
-                    label: "Code::Stats Username",
+                    label: "Code::Stats",
                     placeholder: "username",
                   },
                   {
                     name: "twitter",
-                    label: "X (Twitter) Username",
-                    placeholder: "elonmusk",
+                    label: "X (Twitter)",
+                    placeholder: "handle",
                   },
                   {
                     name: "linkedin",
-                    label: "LinkedIn Username or URL",
-                    placeholder: "https://linkedin.com/in/...",
+                    label: "LinkedIn",
+                    placeholder: "username or URL",
                   },
                   {
                     name: "instagram",
-                    label: "Instagram Handle",
-                    placeholder: "zuck",
+                    label: "Instagram",
+                    placeholder: "handle",
                   },
                   {
                     name: "facebook",
-                    label: "Facebook Username",
-                    placeholder: "zuck",
+                    label: "Facebook",
+                    placeholder: "username",
                   },
                   {
                     name: "snapchat",
-                    label: "Snapchat Username",
-                    placeholder: "evanspiegel",
+                    label: "Snapchat",
+                    placeholder: "username",
                   },
                   {
                     name: "portfolio",
-                    label: "Portfolio URL",
+                    label: "Portfolio",
                     placeholder: "https://yoursite.com",
                   },
                 ].map((f) => (
-                  <div className="form-group" key={f.name}>
-                    <label>{f.label}</label>
-                    <input
-                      name={f.name}
-                      value={formData[f.name]}
-                      onChange={handleInputChange}
-                      placeholder={f.placeholder}
-                    />
-                  </div>
+                  <Field key={f.name} {...f} />
                 ))}
+
                 <div
                   style={{
-                    marginTop: "1rem",
                     borderTop: "1px solid var(--border-color)",
-                    paddingTop: "1rem",
+                    paddingTop: 12,
+                    marginTop: 4,
                   }}
                 >
-                  <h4
-                    style={{
-                      fontSize: "0.9rem",
-                      fontWeight: 700,
-                      color: "var(--accent-color)",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    + Add Custom Link
-                  </h4>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "0.5rem",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
+                  <div style={{ ...S.sectionHead, marginBottom: 8 }}>
+                    + Custom Link
+                  </div>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
                     <input
                       value={newLinkLabel}
                       onChange={(e) => setNewLinkLabel(e.target.value)}
                       placeholder="Label"
-                      style={{
-                        flex: 1,
-                        padding: "0.6rem",
-                        borderRadius: "6px",
-                        border: "1px solid var(--border-color)",
-                        background: "var(--input-bg)",
-                        color: "var(--text-primary)",
-                      }}
+                      style={{ ...S.input, flex: 1 }}
                     />
                     <input
                       value={newLinkIcon}
                       onChange={(e) => setNewLinkIcon(e.target.value)}
-                      placeholder="Icon Name or URL"
-                      style={{
-                        flex: 1,
-                        padding: "0.6rem",
-                        borderRadius: "6px",
-                        border: "1px solid var(--border-color)",
-                        background: "var(--input-bg)",
-                        color: "var(--text-primary)",
-                      }}
+                      placeholder="Icon / URL"
+                      style={{ ...S.input, flex: 1 }}
                     />
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", gap: 6 }}>
                     <input
                       value={newLinkUrl}
                       onChange={(e) => setNewLinkUrl(e.target.value)}
-                      placeholder="https://yoursite.com"
-                      style={{
-                        flex: 1,
-                        padding: "0.6rem",
-                        borderRadius: "6px",
-                        border: "1px solid var(--border-color)",
-                        background: "var(--input-bg)",
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
-                      }}
+                      placeholder="https://..."
+                      style={{ ...S.input, flex: 1 }}
                     />
                     <button
                       onClick={addCustomLink}
-                      className="add-skill-btn"
-                      style={{ width: "auto", padding: "0 0.8rem" }}
+                      style={{
+                        ...S.btn,
+                        background: "var(--accent-color)",
+                        color: "#fff",
+                        padding: "8px 12px",
+                      }}
                     >
                       Add
                     </button>
@@ -1512,20 +1561,19 @@ export default function App() {
                   {formData.customLinks.length > 0 && (
                     <div
                       style={{
-                        marginTop: "0.75rem",
+                        marginTop: 8,
                         display: "flex",
                         flexWrap: "wrap",
-                        gap: "0.5rem",
+                        gap: 4,
                       }}
                     >
                       {formData.customLinks.map((link, idx) => (
                         <div
                           key={idx}
-                          className="skill-tag selected"
+                          style={S.tagSel}
                           onClick={() => removeCustomLink(idx)}
                         >
-                          {link.label}{" "}
-                          <Trash2 size={12} style={{ marginLeft: "4px" }} />
+                          {link.label} <Trash2 size={10} />
                         </div>
                       ))}
                     </div>
@@ -1533,187 +1581,163 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="card">
-                <h3 className="section-title">
-                  <Sparkles size={18} /> Metrics & Animations
-                </h3>
-                <div className="toggle-group" style={{ marginBottom: "1rem" }}>
-                  <label
-                    className="checkbox-label"
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <Sparkles size={13} /> Metrics & Animations
+                </div>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    name="statsDropdown"
+                    checked={formData.statsDropdown}
+                    onChange={handleInputChange}
+                  />
+                  <span
                     style={{
-                      borderBottom: "1px solid var(--border-color)",
-                      paddingBottom: "0.5rem",
-                      marginBottom: "0.5rem",
+                      fontSize: "0.78rem",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    <input
-                      type="checkbox"
-                      name="statsDropdown"
-                      checked={formData.statsDropdown}
-                      onChange={handleInputChange}
-                    />
-                    <span>Wrap Analytics in Dropdown</span>
-                  </label>
-                  {[
-                    { key: "visitors", label: "Profile Visitors Badge" },
-                    { key: "stats", label: "GitHub Stats" },
-                    { key: "streak", label: "GitHub Streak Stats" },
-                    {
-                      key: "githubProfileSummary",
-                      label: "GitHub Profile Metrics",
-                    },
-                    { key: "topLangsCommit", label: "Top Languages by Commit" },
-                    { key: "topLangsRepo", label: "Top Languages by Repo" },
-                    { key: "pinball", label: "Pinball Activity Graph" },
-                    { key: "snake", label: "Contribution Snake" },
-                    { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
-                    {
-                      key: "showLeetcodeContest",
-                      label: "LeetCode Contest Stats",
-                    },
-                    { key: "codeforces", label: "Codeforces Stats" },
-                  ].map(({ key, label }) => (
-                    <div
-                      key={key}
+                    Wrap Stats in Dropdown
+                  </span>
+                </label>
+                {animKeys.map(({ key, label }) => (
+                  <div
+                    key={key}
+                    style={{
+                      marginBottom: 8,
+                      background: "rgba(0,0,0,0.15)",
+                      borderRadius: 6,
+                      padding: "8px 10px",
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <label
                       style={{
-                        marginBottom: "1rem",
-                        background: "rgba(0,0,0,0.2)",
-                        padding: "0.75rem",
-                        borderRadius: "6px",
-                        border: "1px solid var(--border-color)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer",
+                        marginBottom: formData.animations[key] ? 8 : 0,
                       }}
                     >
-                      <label
-                        className="checkbox-label"
-                        style={{ margin: "0 0 0.5rem 0", width: "100%" }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.animations[key]}
-                          onChange={() => toggleAnimation(key)}
-                        />
-                        <span style={{ fontWeight: 600 }}>{label}</span>
-                      </label>
-                      {formData.animations[key] && (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.4rem",
-                            marginLeft: "1.8rem",
-                          }}
-                        >
-                          <div style={{ display: "flex", gap: "0.5rem" }}>
-                            {[
-                              { prop: "scale", ph: "e.g. 49%", label: "Scale" },
-                              { prop: "w", ph: "e.g. 400px", label: "Width" },
-                              { prop: "h", ph: "e.g. 200px", label: "Height" },
-                            ].map(({ prop, ph, label: lbl }) => (
-                              <div key={prop} style={{ flex: 1 }}>
-                                <span
-                                  style={{
-                                    fontSize: "0.65rem",
-                                    color: "var(--text-secondary)",
-                                    display: "block",
-                                    marginBottom: "2px",
-                                  }}
-                                >
-                                  {lbl}
-                                </span>
-                                <input
-                                  type="text"
-                                  value={formData.dimensions[key][prop]}
-                                  onChange={(e) =>
-                                    handleDimensionChange(
-                                      key,
-                                      prop,
-                                      e.target.value,
-                                    )
-                                  }
-                                  placeholder={ph}
-                                  style={inputStyle}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          <div style={{ display: "flex", gap: "0.5rem" }}>
-                            {[
-                              { prop: "x", label: "X-Offset (Spaces)" },
-                              { prop: "y", label: "Y-Offset (Breaks)" },
-                            ].map(({ prop, label: lbl }) => (
-                              <div key={prop} style={{ flex: 1 }}>
-                                <span
-                                  style={{
-                                    fontSize: "0.65rem",
-                                    color: "var(--text-secondary)",
-                                    display: "block",
-                                    marginBottom: "2px",
-                                  }}
-                                >
-                                  {lbl}
-                                </span>
-                                <input
-                                  type="number"
-                                  value={formData.dimensions[key][prop]}
-                                  onChange={(e) =>
-                                    handleDimensionChange(
-                                      key,
-                                      prop,
-                                      e.target.value,
-                                    )
-                                  }
-                                  placeholder="0"
-                                  style={inputStyle}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {formData.animations.snake && (
-                    <div
-                      style={{
-                        marginLeft: "2rem",
-                        marginTop: "0.75rem",
-                        padding: "0.75rem",
-                        background: "var(--input-bg)",
-                        borderRadius: "8px",
-                        border: "1px solid var(--border-color)",
-                      }}
-                    >
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label>Snake Section Title</label>
-                        <input
-                          name="snakeTitle"
-                          value={formData.snakeTitle}
-                          onChange={handleInputChange}
-                          placeholder="Dev Snake"
-                        />
-                      </div>
-                      <p
+                      <input
+                        type="checkbox"
+                        checked={formData.animations[key]}
+                        onChange={() => toggleAnimation(key)}
+                      />
+                      <span
                         style={{
-                          fontSize: "0.75rem",
-                          color: "var(--text-secondary)",
-                          marginTop: "0.5rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          color: "var(--text-primary)",
                         }}
                       >
-                        To change snake color, use the{" "}
-                        <strong style={{ color: "var(--accent-color)" }}>
-                          Snake YML
-                        </strong>{" "}
-                        tab.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                        {label}
+                      </span>
+                    </label>
+                    {formData.animations[key] && (
+                      <div style={{ paddingLeft: 24 }}>
+                        <div
+                          style={{ display: "flex", gap: 6, marginBottom: 4 }}
+                        >
+                          {[
+                            { prop: "scale", ph: "49%" },
+                            { prop: "w", ph: "400px" },
+                            { prop: "h", ph: "auto" },
+                          ].map(({ prop, ph }) => (
+                            <div key={prop} style={{ flex: 1 }}>
+                              <span style={S.dimLabel}>{prop}</span>
+                              <input
+                                type="text"
+                                value={formData.dimensions[key][prop]}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    prop,
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder={ph}
+                                style={S.dimInput}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          {[
+                            { prop: "x", ph: "0" },
+                            { prop: "y", ph: "0" },
+                          ].map(({ prop, ph }) => (
+                            <div key={prop} style={{ flex: 1 }}>
+                              <span style={S.dimLabel}>{prop}-offset</span>
+                              <input
+                                type="number"
+                                value={formData.dimensions[key][prop]}
+                                onChange={(e) =>
+                                  handleDimensionChange(
+                                    key,
+                                    prop,
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder={ph}
+                                style={S.dimInput}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {formData.animations.snake && (
+                  <div
+                    style={{
+                      marginTop: 4,
+                      padding: "8px 10px",
+                      background: "rgba(0,0,0,0.15)",
+                      borderRadius: 6,
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <label style={S.label}>Snake Section Title</label>
+                    <input
+                      name="snakeTitle"
+                      value={formData.snakeTitle}
+                      onChange={handleInputChange}
+                      placeholder="Dev Snake"
+                      style={S.input}
+                    />
+                    <p
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "var(--text-secondary)",
+                        marginTop: 6,
+                      }}
+                    >
+                      Color scheme →{" "}
+                      <strong style={{ color: "var(--accent-color)" }}>
+                        Snake YML
+                      </strong>{" "}
+                      tab
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <div className="card">
-                <h3 className="section-title">
-                  <Settings size={18} /> Reorder Sections
-                </h3>
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <Settings size={13} /> Section Order
+                </div>
                 {formData.sectionOrder.map((sec, idx) => (
                   <div
                     key={sec}
@@ -1721,23 +1745,23 @@ export default function App() {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      background: "var(--bg-secondary)",
-                      padding: "0.5rem",
-                      marginBottom: "0.25rem",
-                      borderRadius: "4px",
+                      padding: "5px 8px",
+                      marginBottom: 4,
+                      borderRadius: 4,
+                      background: "rgba(0,0,0,0.15)",
                       border: "1px solid var(--border-color)",
                     }}
                   >
                     <span
                       style={{
-                        fontSize: "0.85rem",
+                        fontSize: "0.78rem",
                         color: "var(--text-primary)",
                         textTransform: "capitalize",
                       }}
                     >
                       {sec.replace(/([A-Z])/g, " $1").trim()}
                     </span>
-                    <div style={{ display: "flex", gap: "0.25rem" }}>
+                    <div style={{ display: "flex", gap: 3 }}>
                       {[
                         { dir: -1, label: "↑", disabled: idx === 0 },
                         {
@@ -1751,13 +1775,16 @@ export default function App() {
                           onClick={() => moveSection(idx, dir)}
                           disabled={disabled}
                           style={{
-                            padding: "0.2rem 0.4rem",
+                            width: 22,
+                            height: 22,
+                            padding: 0,
                             background: "var(--accent-color)",
                             color: "#fff",
                             border: "none",
-                            borderRadius: "4px",
+                            borderRadius: 3,
                             cursor: disabled ? "not-allowed" : "pointer",
-                            opacity: disabled ? 0.5 : 1,
+                            opacity: disabled ? 0.35 : 1,
+                            fontSize: "0.8rem",
                           }}
                         >
                           {label}
@@ -1768,26 +1795,35 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="card">
-                <h3 className="section-title">
-                  <Code2 size={18} /> Global Skills Database
-                </h3>
+              <div style={S.card}>
+                <div style={S.sectionHead}>
+                  <Code2 size={13} /> Skills Database
+                </div>
                 {Object.entries(SKILLS_CATEGORIES).map(([category, skills]) => (
-                  <div key={category} className="skill-category">
-                    <h4 className="category-title">
-                      {category === "Games_Platforms" && (
-                        <Gamepad2
-                          size={14}
-                          style={{ display: "inline", marginRight: "4px" }}
-                        />
-                      )}
+                  <div key={category} style={{ marginBottom: 14 }}>
+                    <div
+                      style={{
+                        fontSize: "0.68rem",
+                        fontWeight: 700,
+                        color: "var(--text-secondary)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        marginBottom: 6,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      {category === "Games_Platforms" && <Gamepad2 size={11} />}
                       {category.replace(/_/g, " & ")}
-                    </h4>
-                    <div className="skills-grid">
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                       {skills.map((skill) => (
                         <div
                           key={skill}
-                          className={`skill-tag ${formData.skills.includes(skill) ? "selected" : ""}`}
+                          style={
+                            formData.skills.includes(skill) ? S.tagSel : S.tag
+                          }
                           onClick={() => toggleSkill(skill)}
                         >
                           {skill}
@@ -1798,20 +1834,11 @@ export default function App() {
                 ))}
               </div>
 
-              <div
-                className="card"
-                style={{ border: "1px solid var(--accent-color)" }}
-              >
-                <h3 className="section-title">
-                  <Settings size={18} /> Your Custom Skill Categories
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginBottom: "1.5rem",
-                  }}
-                >
+              <div style={{ ...S.card, borderColor: "var(--accent-color)" }}>
+                <div style={S.sectionHead}>
+                  <Plus size={13} /> Custom Skill Categories
+                </div>
+                <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
                   <input
                     type="text"
                     value={newCategoryName}
@@ -1819,20 +1846,16 @@ export default function App() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") addCustomCategory();
                     }}
-                    placeholder="E.g. Tools I Use Daily"
-                    style={{
-                      flex: 1,
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid var(--border-color)",
-                      background: "var(--input-bg)",
-                      color: "var(--text-primary)",
-                    }}
+                    placeholder="Category name..."
+                    style={{ ...S.input, flex: 1 }}
                   />
                   <button
                     onClick={addCustomCategory}
-                    className="add-skill-btn"
-                    style={{ width: "auto", padding: "0 1rem" }}
+                    style={{
+                      ...S.btn,
+                      background: "var(--accent-color)",
+                      color: "#fff",
+                    }}
                   >
                     Create
                   </button>
@@ -1841,19 +1864,19 @@ export default function App() {
                   <div
                     key={cat.id}
                     style={{
-                      marginBottom: "1.5rem",
-                      background: "var(--bg-secondary)",
-                      padding: "1rem",
-                      borderRadius: "8px",
+                      marginBottom: 12,
+                      background: "rgba(0,0,0,0.15)",
+                      padding: "10px",
+                      borderRadius: 6,
                       border: "1px solid var(--border-color)",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "space-between",
                         alignItems: "center",
-                        marginBottom: "0.75rem",
+                        gap: 6,
+                        marginBottom: 8,
                       }}
                     >
                       <input
@@ -1868,10 +1891,9 @@ export default function App() {
                           borderBottom: "1px solid var(--accent-color)",
                           color: "var(--accent-color)",
                           fontWeight: 700,
-                          fontSize: "0.95rem",
+                          fontSize: "0.85rem",
                           outline: "none",
                           flex: 1,
-                          marginRight: "0.5rem",
                         }}
                       />
                       <button
@@ -1881,18 +1903,13 @@ export default function App() {
                           border: "none",
                           color: "#ff4444",
                           cursor: "pointer",
+                          padding: 0,
                         }}
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "0.5rem",
-                        marginBottom: "0.75rem",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                       <input
                         type="text"
                         value={selectedCatId === cat.id ? newCustomSkill : ""}
@@ -1901,16 +1918,8 @@ export default function App() {
                           setSelectedCatId(cat.id);
                           setNewCustomSkill(e.target.value);
                         }}
-                        placeholder="Skill (e.g. MongoDB)"
-                        style={{
-                          flex: 1,
-                          padding: "0.4rem 0.6rem",
-                          borderRadius: "4px",
-                          border: "1px solid var(--border-color)",
-                          background: "var(--input-bg)",
-                          color: "var(--text-primary)",
-                          fontSize: "0.85rem",
-                        }}
+                        placeholder="Skill name"
+                        style={{ ...S.input, flex: 1, fontSize: "0.78rem" }}
                       />
                       <input
                         type="text"
@@ -1925,39 +1934,34 @@ export default function App() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") addSkillToCustomCategory();
                         }}
-                        placeholder="Icon Name or URL"
-                        style={{
-                          flex: 0.8,
-                          padding: "0.4rem 0.6rem",
-                          borderRadius: "4px",
-                          border: "1px solid var(--border-color)",
-                          background: "var(--input-bg)",
-                          color: "var(--text-primary)",
-                          fontSize: "0.85rem",
-                        }}
+                        placeholder="Icon / URL"
+                        style={{ ...S.input, flex: 1, fontSize: "0.78rem" }}
                       />
                       <button
                         onClick={() => {
                           setSelectedCatId(cat.id);
                           addSkillToCustomCategory();
                         }}
-                        className="add-skill-btn"
-                        style={{ width: "32px", height: "32px", flexShrink: 0 }}
+                        style={{
+                          ...S.btn,
+                          background: "var(--accent-color)",
+                          color: "#fff",
+                          padding: "0 10px",
+                        }}
                       >
-                        <Plus size={16} />
+                        <Plus size={14} />
                       </button>
                     </div>
-                    <div className="skills-grid">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                       {cat.skills.map((skillObj) => (
                         <div
                           key={skillObj.name}
-                          className="skill-tag selected"
+                          style={S.tagSel}
                           onClick={() =>
                             removeSkillFromCustomCategory(cat.id, skillObj.name)
                           }
                         >
-                          {skillObj.name}{" "}
-                          <Trash2 size={12} style={{ marginLeft: "4px" }} />
+                          {skillObj.name} <Trash2 size={10} />
                         </div>
                       ))}
                     </div>
@@ -1968,54 +1972,101 @@ export default function App() {
           </aside>
 
           <section className="preview-area">
-            <div className="preview-header">
-              <div className="preview-tabs">
-                <button
-                  className={`tab-btn ${activeTab === "preview" ? "active" : ""}`}
-                  onClick={() => setActiveTab("preview")}
-                >
-                  <Eye size={16} className="icon-inline" /> Live Preview
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === "code" ? "active" : ""}`}
-                  onClick={() => setActiveTab("code")}
-                >
-                  <Code2 size={16} className="icon-inline" /> Markdown
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === "session" ? "active" : ""}`}
-                  onClick={() => setActiveTab("session")}
-                >
-                  <Save size={16} className="icon-inline" /> Save Session
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === "import" ? "active" : ""}`}
-                  onClick={() => setActiveTab("import")}
-                >
-                  <Settings size={16} className="icon-inline" /> Restore Session
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === "snake" ? "active" : ""}`}
-                  onClick={() => setActiveTab("snake")}
-                >
-                  <Gamepad2 size={16} className="icon-inline" /> Snake YML
-                </button>
+            <div
+              className="preview-header"
+              style={{
+                borderBottom: "1px solid var(--border-color)",
+                padding: "0 12px",
+                gap: 0,
+              }}
+            >
+              <div className="preview-tabs" style={{ gap: 0 }}>
+                {[
+                  { id: "preview", icon: <Eye size={13} />, label: "Preview" },
+                  { id: "code", icon: <Code2 size={13} />, label: "Markdown" },
+                  {
+                    id: "session",
+                    icon: <Save size={13} />,
+                    label: "Save Session",
+                  },
+                  {
+                    id: "import",
+                    icon: <RefreshCw size={13} />,
+                    label: "Restore",
+                  },
+                  {
+                    id: "snake",
+                    icon: <Gamepad2 size={13} />,
+                    label: "Snake YML",
+                  },
+                ].map(({ id, icon, label }) => (
+                  <button
+                    key={id}
+                    className={`tab-btn ${activeTab === id ? "active" : ""}`}
+                    onClick={() => setActiveTab(id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      fontSize: "0.78rem",
+                      padding: "10px 14px",
+                      borderRadius: 0,
+                      borderBottom:
+                        activeTab === id
+                          ? "2px solid var(--accent-color)"
+                          : "2px solid transparent",
+                    }}
+                  >
+                    {icon} {label}
+                  </button>
+                ))}
               </div>
-              {activeTab === "code" && (
-                <button className="copy-btn" onClick={copyToClipboard}>
-                  {copied ? <Check size={18} /> : <Copy size={18} />}{" "}
-                  {copied ? "Copied" : "Copy"}
-                </button>
-              )}
-              {activeTab === "session" && (
-                <button className="copy-btn" onClick={copySession}>
-                  {copiedSession ? <Check size={18} /> : <Copy size={18} />}{" "}
-                  {copiedSession ? "Copied" : "Copy"}
-                </button>
-              )}
+              <div
+                style={{
+                  marginLeft: "auto",
+                  display: "flex",
+                  gap: 6,
+                  alignItems: "center",
+                  padding: "6px 0",
+                }}
+              >
+                {activeTab === "code" && (
+                  <button
+                    className="copy-btn"
+                    onClick={copyToClipboard}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      fontSize: "0.78rem",
+                    }}
+                  >
+                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                    {copied ? "Copied" : "Copy MD"}
+                  </button>
+                )}
+                {activeTab === "session" && (
+                  <button
+                    className="copy-btn"
+                    onClick={copySession}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      fontSize: "0.78rem",
+                    }}
+                  >
+                    {copiedSession ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedSession ? "Copied" : "Copy Session"}
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="preview-container card">
+            <div
+              className="preview-container card"
+              style={{ borderRadius: 0, border: "none", borderTop: "none" }}
+            >
               {activeTab === "preview" && <PreviewContent />}
 
               {activeTab === "code" && (
@@ -2024,25 +2075,28 @@ export default function App() {
                     display: "flex",
                     flexDirection: "column",
                     height: "100%",
+                    overflow: "hidden",
                   }}
                 >
                   <div
                     style={{
-                      ...cardStyle,
-                      margin: "1rem 1rem 0",
+                      padding: "12px 16px",
+                      borderBottom: "1px solid var(--border-color)",
                       flexShrink: 0,
                     }}
                   >
-                    <h4
+                    <div
                       style={{
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
-                        marginBottom: "0.75rem",
+                        color: "var(--text-primary)",
+                        marginBottom: 10,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      📋 How to use your README
-                    </h4>
+                      📋 How to publish your README
+                    </div>
                     {[
                       {
                         n: 1,
@@ -2052,8 +2106,7 @@ export default function App() {
                             <strong>
                               github.com/your-username/your-username
                             </strong>{" "}
-                            — create this repo if it doesn't exist (same name as
-                            your GitHub username).
+                            — create it if it doesn't exist.
                           </>
                         ),
                       },
@@ -2061,9 +2114,8 @@ export default function App() {
                         n: 2,
                         text: (
                           <>
-                            Click the pencil icon to edit{" "}
-                            <code style={codeChipStyle}>README.md</code>, select
-                            all, delete everything.
+                            Edit <code style={S.chip}>README.md</code>, select
+                            all, delete, paste the copied markdown.
                           </>
                         ),
                       },
@@ -2071,11 +2123,11 @@ export default function App() {
                         n: 3,
                         text: (
                           <>
-                            Click{" "}
-                            <strong style={{ color: "var(--accent-color)" }}>
-                              Copy
-                            </strong>{" "}
-                            above, then paste the full markdown into the editor.
+                            Replace{" "}
+                            <code style={S.chip}>
+                              YOUR-ACTUAL-SITE.netlify.app
+                            </code>{" "}
+                            with your real domain.
                           </>
                         ),
                       },
@@ -2083,33 +2135,26 @@ export default function App() {
                         n: 4,
                         text: (
                           <>
-                            Replace{" "}
-                            <code style={codeChipStyle}>
-                              YOUR-ACTUAL-SITE.netlify.app
-                            </code>{" "}
-                            with your real Netlify domain before committing.
-                          </>
-                        ),
-                      },
-                      {
-                        n: 5,
-                        text: (
-                          <>
-                            Click <strong>Commit changes</strong> and your
-                            profile README goes live instantly.
+                            Click <strong>Commit changes</strong>. Your profile
+                            goes live instantly.
                           </>
                         ),
                       },
                     ].map(({ n, text }) => (
-                      <div key={n} style={stepStyle}>
-                        <div style={stepNumStyle}>{n}</div>
-                        <div style={stepTextStyle}>{text}</div>
+                      <div key={n} style={S.stepRow}>
+                        <div style={S.stepNum}>{n}</div>
+                        <div style={S.stepText}>{text}</div>
                       </div>
                     ))}
                   </div>
                   <pre
                     className="code-view custom-scrollbar"
-                    style={{ flex: 1, margin: "1rem" }}
+                    style={{
+                      flex: 1,
+                      margin: 0,
+                      borderRadius: 0,
+                      padding: "16px",
+                    }}
                   >
                     {generateMarkdown(false, formData.sectionOrder, false)}
                   </pre>
@@ -2117,44 +2162,40 @@ export default function App() {
               )}
 
               {activeTab === "session" && (
-                <div style={{ padding: "1rem" }}>
-                  <div style={cardStyle}>
-                    <h4
+                <div style={{ padding: 16 }}>
+                  <div style={S.card}>
+                    <div
                       style={{
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
-                        marginBottom: "0.75rem",
+                        color: "var(--text-primary)",
+                        marginBottom: 8,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      💾 What is a Session?
-                    </h4>
-                    <p style={{ ...stepTextStyle, marginBottom: "0.5rem" }}>
-                      This tool saves your progress automatically in your
-                      browser. But if you clear your browser data, switch
-                      devices, or want to share your setup — use this session
-                      blob.
-                    </p>
-                    <p style={stepTextStyle}>
-                      Copy the text below and paste it somewhere safe (a note, a
-                      private gist, a message to yourself). When you want to
-                      restore, go to the{" "}
-                      <strong style={{ color: "var(--accent-color)" }}>
-                        Restore Session
-                      </strong>{" "}
-                      tab and paste it there.
+                      💾 Save Your Session
+                    </div>
+                    <p style={S.stepText}>
+                      Your work auto-saves in this browser. To back it up or
+                      move to another device, copy the blob below and store it
+                      safely — in a note, gist, or message to yourself.
                     </p>
                   </div>
                   <div
                     style={{
-                      ...cardStyle,
+                      background: "var(--bg-secondary)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: 6,
+                      padding: 12,
                       fontFamily: "monospace",
-                      fontSize: "0.72rem",
+                      fontSize: "0.7rem",
                       color: "var(--text-secondary)",
                       wordBreak: "break-all",
-                      maxHeight: "300px",
+                      maxHeight: 280,
                       overflowY: "auto",
                       lineHeight: 1.6,
+                      marginBottom: 10,
                     }}
                   >
                     {generateSessionBlob()}
@@ -2162,86 +2203,77 @@ export default function App() {
                   <button
                     onClick={copySession}
                     style={{
-                      marginTop: "0.75rem",
-                      padding: "0.8rem 1.5rem",
+                      ...S.btn,
                       background: "var(--accent-color)",
                       color: "#fff",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
                     }}
                   >
-                    {copiedSession ? <Check size={16} /> : <Copy size={16} />}{" "}
+                    {copiedSession ? <Check size={14} /> : <Copy size={14} />}{" "}
                     {copiedSession ? "Copied!" : "Copy Session"}
                   </button>
                 </div>
               )}
 
               {activeTab === "import" && (
-                <div style={{ padding: "1rem" }}>
-                  <div style={cardStyle}>
-                    <h4
+                <div style={{ padding: 16 }}>
+                  <div style={S.card}>
+                    <div
                       style={{
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
-                        marginBottom: "0.75rem",
+                        color: "var(--text-primary)",
+                        marginBottom: 8,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      🔄 How to restore your session
-                    </h4>
+                      🔄 Restore a Session
+                    </div>
                     {[
                       {
                         n: 1,
-                        text: "Go to the Save Session tab and copy your session blob, OR open a previously saved note/gist where you stored it.",
+                        text: "Go to Save Session tab and copy your blob, or open where you stored it.",
                       },
                       {
                         n: 2,
-                        text: "Paste the full text into the box below — it should start with <!--DEVREADME-STATE: and end with -->.",
+                        text: "Paste the full text below. It starts with <!--DEVREADME-STATE: and ends with -->.",
                       },
                       {
                         n: 3,
-                        text: "Click Restore Session. All your settings, skills, projects, and links will be loaded instantly.",
+                        text: "Click Restore. All your settings load instantly.",
                       },
                     ].map(({ n, text }) => (
-                      <div key={n} style={stepStyle}>
-                        <div style={stepNumStyle}>{n}</div>
-                        <div style={stepTextStyle}>{text}</div>
+                      <div key={n} style={S.stepRow}>
+                        <div style={S.stepNum}>{n}</div>
+                        <div style={S.stepText}>{text}</div>
                       </div>
                     ))}
                   </div>
                   <textarea
                     value={importText}
                     onChange={(e) => setImportText(e.target.value)}
-                    placeholder="Paste your session blob here..."
+                    placeholder="Paste session blob here..."
                     style={{
                       width: "100%",
-                      height: "220px",
-                      padding: "1rem",
+                      height: 200,
+                      padding: 12,
                       background: "var(--bg-secondary)",
                       color: "var(--text-primary)",
                       border: "1px solid var(--border-color)",
-                      borderRadius: "8px",
+                      borderRadius: 6,
                       fontFamily: "monospace",
-                      fontSize: "0.8rem",
-                      marginBottom: "1rem",
+                      fontSize: "0.78rem",
+                      marginBottom: 10,
                       boxSizing: "border-box",
+                      resize: "vertical",
                     }}
                   />
                   <button
                     onClick={handleImportState}
                     style={{
-                      padding: "0.8rem 1.5rem",
+                      ...S.btn,
                       background: "var(--accent-color)",
                       color: "#fff",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontWeight: "bold",
                     }}
                   >
                     Restore Session
@@ -2250,28 +2282,29 @@ export default function App() {
               )}
 
               {activeTab === "snake" && (
-                <div style={{ padding: "1rem" }}>
-                  <div style={cardStyle}>
-                    <h4
+                <div style={{ padding: 16 }}>
+                  <div style={S.card}>
+                    <div
                       style={{
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem",
+                        fontSize: "0.72rem",
                         fontWeight: 700,
-                        marginBottom: "0.75rem",
+                        color: "var(--text-primary)",
+                        marginBottom: 8,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      🐍 How to set up the Contribution Snake
-                    </h4>
+                      🐍 Contribution Snake Setup
+                    </div>
                     {[
                       {
                         n: 1,
                         text: (
                           <>
-                            Go to your profile repo on GitHub —{" "}
-                            <code style={codeChipStyle}>
+                            Go to your profile repo:{" "}
+                            <code style={S.chip}>
                               github.com/username/username
                             </code>
-                            .
                           </>
                         ),
                       },
@@ -2279,12 +2312,10 @@ export default function App() {
                         n: 2,
                         text: (
                           <>
-                            <strong>Add file → Create new file</strong>. In the
-                            filename box type:{" "}
-                            <code style={codeChipStyle}>
+                            <strong>Add file → Create new file</strong>, type:{" "}
+                            <code style={S.chip}>
                               .github/workflows/snake.yml
-                            </code>{" "}
-                            (GitHub auto-creates the folders).
+                            </code>
                           </>
                         ),
                       },
@@ -2292,11 +2323,8 @@ export default function App() {
                         n: 3,
                         text: (
                           <>
-                            Pick a color scheme below, click{" "}
-                            <strong style={{ color: "var(--accent-color)" }}>
-                              Copy YML
-                            </strong>
-                            , paste it into the file editor, and commit.
+                            Pick a scheme below → Copy YML → paste into the file
+                            → commit.
                           </>
                         ),
                       },
@@ -2304,13 +2332,10 @@ export default function App() {
                         n: 4,
                         text: (
                           <>
-                            Go to{" "}
                             <strong>
                               Settings → Actions → General → Workflow
-                              permissions
+                              permissions → Read and write
                             </strong>
-                            , select <strong>Read and write permissions</strong>
-                            , save.
                           </>
                         ),
                       },
@@ -2318,81 +2343,131 @@ export default function App() {
                         n: 5,
                         text: (
                           <>
-                            Go to{" "}
                             <strong>
-                              Actions tab → Generate Snake → Run workflow
-                            </strong>{" "}
-                            (dropdown button on the right). It runs and creates
-                            an <code style={codeChipStyle}>output</code> branch
-                            with your snake SVG.
+                              Actions → Generate Snake → Run workflow
+                            </strong>
+                            . Creates the <code style={S.chip}>output</code>{" "}
+                            branch with your SVG.
                           </>
                         ),
                       },
                       {
                         n: 6,
-                        text: "After that, it auto-runs daily at midnight UTC via the cron schedule. No fake commits — it only writes to the output branch, not main.",
+                        text: "Runs daily via cron. No fake commits — only writes to the output branch.",
                       },
                     ].map(({ n, text }) => (
-                      <div key={n} style={stepStyle}>
-                        <div style={stepNumStyle}>{n}</div>
-                        <div style={stepTextStyle}>{text}</div>
+                      <div key={n} style={S.stepRow}>
+                        <div style={S.stepNum}>{n}</div>
+                        <div style={S.stepText}>{text}</div>
                       </div>
                     ))}
                   </div>
-                  <h4
+
+                  <div
                     style={{
-                      color: "var(--text-primary)",
-                      fontSize: "0.9rem",
+                      fontSize: "0.72rem",
                       fontWeight: 700,
-                      marginBottom: "0.75rem",
+                      color: "var(--text-primary)",
+                      marginBottom: 8,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
                     }}
                   >
-                    Pick a Color Scheme
-                  </h4>
+                    Color Scheme
+                  </div>
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
-                      gap: "0.5rem",
-                      marginBottom: "1rem",
+                      gap: 6,
+                      marginBottom: 14,
                     }}
                   >
-                    {SNAKE_COLOR_SCHEMES.map((s, i) => (
+                    {SNAKE_COLOR_SCHEMES.map((sc, i) => (
                       <button
                         key={i}
                         onClick={() => setSelectedSnakeScheme(i)}
                         style={{
-                          padding: "0.4rem 0.9rem",
-                          borderRadius: "6px",
-                          border: `2px solid ${selectedSnakeScheme === i ? `#${s.snake}` : "var(--border-color)"}`,
+                          padding: "5px 12px",
+                          borderRadius: 5,
+                          border: `2px solid ${selectedSnakeScheme === i ? `#${sc.snake}` : "var(--border-color)"}`,
                           background:
                             selectedSnakeScheme === i
-                              ? `#${s.snake}22`
+                              ? `#${sc.snake}22`
                               : "transparent",
-                          color: `#${s.snake}`,
-                          fontWeight: 600,
+                          color: `#${sc.snake}`,
+                          fontWeight: 700,
                           cursor: "pointer",
-                          fontSize: "0.8rem",
-                          transition: "all 0.15s",
+                          fontSize: "0.78rem",
+                          transition: "all 0.12s",
                         }}
                       >
-                        {s.label}
+                        {sc.label}
                       </button>
                     ))}
                   </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      marginBottom: 14,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {[
+                      { label: "Snake", color: `#${scheme.snake}` },
+                      ...scheme.dark
+                        .split(",")
+                        .map((c, i) => ({
+                          label: ["BG", "Lvl1", "Lvl2", "Lvl3", "Lvl4"][i],
+                          color: c,
+                        })),
+                    ].map(({ label, color }) => (
+                      <div
+                        key={label}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: 5,
+                            background: color,
+                            border: "1px solid var(--border-color)",
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontSize: "0.62rem",
+                            color: "var(--text-secondary)",
+                          }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
                   <pre
                     style={{
                       background: "var(--bg-secondary)",
                       color: "var(--text-primary)",
-                      padding: "1rem",
-                      borderRadius: "8px",
+                      padding: 14,
+                      borderRadius: 6,
                       border: "1px solid var(--border-color)",
                       fontFamily: "monospace",
-                      fontSize: "0.78rem",
+                      fontSize: "0.75rem",
                       overflowX: "auto",
-                      marginBottom: "1rem",
+                      marginBottom: 10,
                       whiteSpace: "pre-wrap",
                       wordBreak: "break-all",
+                      lineHeight: 1.6,
                     }}
                   >
                     {snakeYml}
@@ -2404,19 +2479,12 @@ export default function App() {
                       setTimeout(() => setCopiedYml(false), 2000);
                     }}
                     style={{
-                      padding: "0.8rem 1.5rem",
+                      ...S.btn,
                       background: "var(--accent-color)",
                       color: "#fff",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
                     }}
                   >
-                    {copiedYml ? <Check size={16} /> : <Copy size={16} />}{" "}
+                    {copiedYml ? <Check size={14} /> : <Copy size={14} />}{" "}
                     {copiedYml ? "Copied!" : "Copy YML"}
                   </button>
                 </div>
