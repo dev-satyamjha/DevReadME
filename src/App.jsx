@@ -12,6 +12,7 @@ import {
   Gamepad2,
   Settings,
   ImageIcon,
+  Save,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -28,24 +29,43 @@ const THEMES = [
   { id: "game-orange", name: "Game Orange", color: "#ff8c00" },
 ];
 
-const SNAKE_SKIN_OPTIONS = [
-  { value: "#000000", label: "Black" },
-  { value: "#ffffff", label: "White" },
-  { value: "#d4a017", label: "Gold" },
-  { value: "#216e39", label: "Green" },
-  { value: "#ff0000", label: "Red" },
-  { value: "#6e40c9", label: "Purple" },
-  { value: "#1f6feb", label: "Blue" },
-];
-
-const SNAKE_FOOD_OPTIONS = [
-  { value: "gold", label: "Golden Stars" },
-  { value: "green", label: "Classic Green" },
-  { value: "red", label: "Red Hot" },
-  { value: "yellow", label: "Neon Yellow" },
-  { value: "white", label: "White Minimal" },
-  { value: "purple", label: "Violet Vibes" },
-  { value: "blue", label: "Ocean Blue" },
+const SNAKE_COLOR_SCHEMES = [
+  {
+    label: "Red Classic",
+    snake: "ff0000",
+    light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
+    dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
+  },
+  {
+    label: "White Ghost",
+    snake: "ffffff",
+    light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
+    dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
+  },
+  {
+    label: "Gold Rush",
+    snake: "d4a017",
+    light: "#ebedf0,#fff3b0,#ffe066,#ffc200,#d4a017",
+    dark: "#161b22,#3d2e00,#7a5c00,#b38600,#d4a017",
+  },
+  {
+    label: "Purple Haze",
+    snake: "6e40c9",
+    light: "#ebedf0,#d8b4fe,#a855f7,#7c3aed,#6e40c9",
+    dark: "#161b22,#2e1065,#4c1d95,#5b21b6,#6e40c9",
+  },
+  {
+    label: "Ocean Blue",
+    snake: "1f6feb",
+    light: "#ebedf0,#bfdbfe,#60a5fa,#3b82f6,#1f6feb",
+    dark: "#161b22,#0c1a2e,#0d2d5e,#1a4a8a,#1f6feb",
+  },
+  {
+    label: "Neon Green",
+    snake: "39d353",
+    light: "#ebedf0,#9be9a8,#40c463,#30a14e,#216e39",
+    dark: "#161b22,#0e4429,#006d32,#26a641,#39d353",
+  },
 ];
 
 const SKILLS_CATEGORIES = {
@@ -375,21 +395,9 @@ function DisplayBoard({ projects, username }) {
 
   if (!validProjects.length) return null;
 
-  const targetUrl = username
-    ? `https://github.com/${username}/${validProjects[currentIdx]}`
-    : "#";
-
   return (
-    <a
-      href={targetUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        margin: "1rem 0",
-        textDecoration: "none",
-      }}
+    <div
+      style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}
     >
       <style>{`
         @keyframes blurTransition{0%{filter:blur(8px);opacity:0}15%{filter:blur(0);opacity:1}85%{filter:blur(0);opacity:1}100%{filter:blur(8px);opacity:0}}
@@ -403,6 +411,15 @@ function DisplayBoard({ projects, username }) {
         style={{ maxWidth: SVG_W, borderRadius: 16 }}
       >
         <defs>
+          <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0a0a0a" />
+            <stop offset="100%" stopColor="#1a0000" />
+          </linearGradient>
+          <linearGradient id="borderGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#ff0000" stopOpacity="0.6" />
+            <stop offset="50%" stopColor="#330000" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#ff0000" stopOpacity="0.6" />
+          </linearGradient>
           <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse">
             <rect width="8" height="8" fill="#050100" />
             <circle cx="4" cy="4" r="2" fill="#110000" />
@@ -414,17 +431,37 @@ function DisplayBoard({ projects, username }) {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <clipPath id="board-clip">
+            <rect width={SVG_W} height={SVG_H} rx="16" />
+          </clipPath>
         </defs>
-        <rect width={SVG_W} height={SVG_H} fill="url(#dots)" rx="16" />
+        <rect width={SVG_W} height={SVG_H} fill="url(#bgGrad)" rx="16" />
+        <rect
+          width={SVG_W}
+          height={SVG_H}
+          fill="url(#dots)"
+          rx="16"
+          opacity="0.6"
+        />
         <rect
           width={SVG_W}
           height={SVG_H}
           fill="none"
           rx="16"
-          stroke="#110000"
-          strokeWidth="12"
+          stroke="url(#borderGrad)"
+          strokeWidth="3"
         />
-        <g>
+        <rect
+          x="1.5"
+          y="1.5"
+          width={SVG_W - 3}
+          height={SVG_H - 3}
+          fill="none"
+          rx="15"
+          stroke="#ff000033"
+          strokeWidth="1"
+        />
+        <g clipPath="url(#board-clip)">
           {rainDrops.map((d) => (
             <circle
               key={d.id}
@@ -440,6 +477,7 @@ function DisplayBoard({ projects, username }) {
           ))}
         </g>
         <g
+          clipPath="url(#board-clip)"
           key={currentIdx}
           className={validProjects.length > 1 ? "blur-animate" : ""}
           filter="url(#glow)"
@@ -450,7 +488,7 @@ function DisplayBoard({ projects, username }) {
             totalW={SVG_W}
             onColor={ON}
           />
-          <DotMatrixString str={`★ 2`} y={260} totalW={SVG_W} onColor={ON} />
+          <DotMatrixString str="★ 2" y={260} totalW={SVG_W} onColor={ON} />
         </g>
         {validProjects.length > 1 && (
           <text
@@ -465,7 +503,7 @@ function DisplayBoard({ projects, username }) {
           </text>
         )}
       </svg>
-    </a>
+    </div>
   );
 }
 
@@ -534,8 +572,6 @@ const DEFAULT_STATE = {
     "snake",
     "leetcode",
   ],
-  snakeSkinColor: "#ff0000",
-  snakeFoodStyle: "white",
   snakeTitle: "Dev Snake",
   funFact: "I can solve a Rubik's cube in under a minute!",
 };
@@ -555,11 +591,56 @@ function loadInitialState() {
   return DEFAULT_STATE;
 }
 
+const cardStyle = {
+  background: "var(--bg-secondary)",
+  border: "1px solid var(--border-color)",
+  borderRadius: "8px",
+  padding: "1rem",
+  marginBottom: "1rem",
+};
+const stepStyle = {
+  display: "flex",
+  gap: "0.75rem",
+  alignItems: "flex-start",
+  marginBottom: "0.75rem",
+};
+const stepNumStyle = {
+  minWidth: "24px",
+  height: "24px",
+  borderRadius: "50%",
+  background: "var(--accent-color)",
+  color: "#fff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "0.75rem",
+  fontWeight: 700,
+  flexShrink: 0,
+};
+const stepTextStyle = {
+  fontSize: "0.85rem",
+  color: "var(--text-secondary)",
+  lineHeight: 1.5,
+};
+const codeChipStyle = {
+  display: "inline-block",
+  background: "rgba(0,0,0,0.4)",
+  border: "1px solid var(--border-color)",
+  borderRadius: "4px",
+  padding: "0.1rem 0.4rem",
+  fontFamily: "monospace",
+  fontSize: "0.8rem",
+  color: "var(--accent-color)",
+};
+
 export default function App() {
   const [theme, setTheme] = useState("elegant-black");
   const [activeTab, setActiveTab] = useState("preview");
   const [copied, setCopied] = useState(false);
+  const [copiedSession, setCopiedSession] = useState(false);
+  const [copiedYml, setCopiedYml] = useState(false);
   const [importText, setImportText] = useState("");
+  const [selectedSnakeScheme, setSelectedSnakeScheme] = useState(0);
   const [formData, setFormData] = useState(loadInitialState);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
@@ -733,14 +814,14 @@ export default function App() {
           .replace(/[\r\n\s]+/g, "");
         const parsed = JSON.parse(decodeURIComponent(atob(raw)));
         setFormData(parsed);
-        alert("State successfully imported!");
+        alert("Session restored successfully!");
         setImportText("");
       } catch (e) {
-        alert(`Failed to parse state. Error: ${e.message}`);
+        alert(`Failed to restore session. Error: ${e.message}`);
       }
     } else {
       alert(
-        "No valid DEVREADME-STATE found. Copy the full markdown from the 'Markdown Code' tab.",
+        "No valid session data found. Copy the full text from the 'Save Session' tab.",
       );
     }
   };
@@ -755,7 +836,6 @@ export default function App() {
             "background=000000&border=30363d&stroke=30363d&ring=ff0000&fire=ff0000&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=8b949e&sideLabels=8b949e&dates=8b949e",
           activity:
             "bg_color=000000&color=8b949e&line=ff0000&point=ffffff&hide_border=true",
-          summaryFolder: "github-dark",
         };
       case "glassmorphic":
         return {
@@ -765,35 +845,30 @@ export default function App() {
             "background=0f172a&border=1e293b&stroke=1e293b&ring=38bdf8&fire=38bdf8&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=94a3b8&sideLabels=94a3b8&dates=94a3b8",
           activity:
             "bg_color=0f172a&color=94a3b8&line=38bdf8&point=ffffff&hide_border=true",
-          summaryFolder: "tokyonight",
         };
       case "colorful":
         return {
           stats: "theme=radical",
           streak: "theme=radical",
           activity: "theme=radical&hide_border=true",
-          summaryFolder: "radical",
         };
       case "vibe-coded":
         return {
           stats: "theme=synthwave",
           streak: "theme=synthwave",
           activity: "theme=synthwave&hide_border=true",
-          summaryFolder: "synthwave",
         };
       case "game-orange":
         return {
           stats: "theme=gruvbox",
           streak: "theme=gruvbox",
           activity: "theme=gruvbox&hide_border=true",
-          summaryFolder: "gruvbox",
         };
       default:
         return {
           stats: "theme=dark",
           streak: "theme=dark",
           activity: "theme=dark&hide_border=true",
-          summaryFolder: "dark",
         };
     }
   };
@@ -814,6 +889,7 @@ export default function App() {
   const generateMarkdown = (
     isPreview = false,
     currentOrder = formData.sectionOrder,
+    includeState = false,
   ) => {
     const apiThemes = getApiThemes();
     const user = formData.github || "torvalds";
@@ -857,10 +933,10 @@ export default function App() {
           ) {
             const base = isPreview
               ? window.location.origin
-              : "https://dev-readme.netlify.app";
+              : "https://YOUR-ACTUAL-SITE.netlify.app";
             const validProj = formData.projects.filter((p) => p.trim());
             const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
-            s += `<div align="center">\n\n### 🏆 Prominent Works\n\n<a href="https://github.com/${user}/${validProj[0]}">\n  ${buildImg("displayBoard", boardUrl, "Projects Display Board")}</a>\n\n</div>\n\n`;
+            s += `<div align="center">\n\n### 🏆 Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
           }
           break;
         case "about":
@@ -970,7 +1046,9 @@ export default function App() {
           break;
         case "summary":
           if (formData.animations.githubProfileSummary) {
-            const themeName = apiThemes.stats.replace("theme=", "");
+            const themeName = apiThemes.stats.includes("theme=")
+              ? apiThemes.stats.replace("theme=", "")
+              : "dark";
             s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
           }
           break;
@@ -1001,6 +1079,14 @@ export default function App() {
           }
           break;
         case "leetcode":
+          if (
+            (formData.leetcode &&
+              (formData.animations.showLeetcodeHeatmap ||
+                formData.animations.showLeetcodeContest)) ||
+            (formData.codeforces && formData.animations.codeforces)
+          ) {
+            s += `## ⚔️ Arena Stats\n\n`;
+          }
           if (
             formData.leetcode &&
             (formData.animations.showLeetcodeHeatmap ||
@@ -1046,17 +1132,31 @@ export default function App() {
       }
     });
 
-    const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
-    md += `\n\n${STATE_PREFIX}${safeState}${STATE_SUFFIX}\n`;
+    if (includeState) {
+      const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
+      md += `\n\n${STATE_PREFIX}${safeState}${STATE_SUFFIX}\n`;
+    }
+
     return md;
+  };
+
+  const generateSessionBlob = () => {
+    const safeState = btoa(encodeURIComponent(JSON.stringify(formData)));
+    return `${STATE_PREFIX}${safeState}${STATE_SUFFIX}`;
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
-      generateMarkdown(false, formData.sectionOrder),
+      generateMarkdown(false, formData.sectionOrder, false),
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copySession = () => {
+    navigator.clipboard.writeText(generateSessionBlob());
+    setCopiedSession(true);
+    setTimeout(() => setCopiedSession(false), 2000);
   };
 
   const PreviewContent = () => {
@@ -1071,8 +1171,11 @@ export default function App() {
       boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
     const topStr = getTopHeader();
     const mdBefore =
-      topStr + generateMarkdown(true, beforeBoard).replace(topStr, "");
-    const mdAfter = generateMarkdown(true, afterBoard).replace(topStr, "");
+      topStr + generateMarkdown(true, beforeBoard, false).replace(topStr, "");
+    const mdAfter = generateMarkdown(true, afterBoard, false).replace(
+      topStr,
+      "",
+    );
 
     return (
       <div className="markdown-preview custom-scrollbar">
@@ -1106,6 +1209,9 @@ export default function App() {
     color: "var(--text-primary)",
     border: "1px solid var(--border-color)",
   };
+
+  const scheme = SNAKE_COLOR_SCHEMES[selectedSnakeScheme];
+  const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${scheme.snake}&color_dots=${scheme.light}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${scheme.snake}&color_dots=${scheme.dark}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n\n      - uses: crazy-max/ghaction-github-pages@v3\n        with:\n          target_branch: output\n          build_dir: dist\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`;
 
   return (
     <>
@@ -1202,13 +1308,7 @@ export default function App() {
                       border: "1px solid var(--border-color)",
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "0.5rem",
-                        marginBottom: "0.5rem",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
                       {[
                         { prop: "scale", label: "Scale (e.g. 100%)" },
                         { prop: "w", label: "Width (e.g. 650px)" },
@@ -1577,10 +1677,7 @@ export default function App() {
                       style={{
                         marginLeft: "2rem",
                         marginTop: "0.75rem",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "0.75rem",
-                        padding: "1rem",
+                        padding: "0.75rem",
                         background: "var(--input-bg)",
                         borderRadius: "8px",
                         border: "1px solid var(--border-color)",
@@ -1595,53 +1692,19 @@ export default function App() {
                           placeholder="Dev Snake"
                         />
                       </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label>Snake Skin Color</label>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <select
-                            name="snakeSkinColor"
-                            value={formData.snakeSkinColor}
-                            onChange={handleInputChange}
-                            style={{ flex: 1 }}
-                          >
-                            {SNAKE_SKIN_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
-                          <div
-                            style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: "50%",
-                              background: formData.snakeSkinColor,
-                              border: "2px solid var(--border-color)",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label>Food / Commit Dot Color</label>
-                        <select
-                          name="snakeFoodStyle"
-                          value={formData.snakeFoodStyle}
-                          onChange={handleInputChange}
-                        >
-                          {SNAKE_FOOD_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <p
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--text-secondary)",
+                          marginTop: "0.5rem",
+                        }}
+                      >
+                        To change snake color, use the{" "}
+                        <strong style={{ color: "var(--accent-color)" }}>
+                          Snake YML
+                        </strong>{" "}
+                        tab.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1917,13 +1980,25 @@ export default function App() {
                   className={`tab-btn ${activeTab === "code" ? "active" : ""}`}
                   onClick={() => setActiveTab("code")}
                 >
-                  <Code2 size={16} className="icon-inline" /> Markdown Code
+                  <Code2 size={16} className="icon-inline" /> Markdown
+                </button>
+                <button
+                  className={`tab-btn ${activeTab === "session" ? "active" : ""}`}
+                  onClick={() => setActiveTab("session")}
+                >
+                  <Save size={16} className="icon-inline" /> Save Session
                 </button>
                 <button
                   className={`tab-btn ${activeTab === "import" ? "active" : ""}`}
                   onClick={() => setActiveTab("import")}
                 >
-                  <Settings size={16} className="icon-inline" /> Import MD
+                  <Settings size={16} className="icon-inline" /> Restore Session
+                </button>
+                <button
+                  className={`tab-btn ${activeTab === "snake" ? "active" : ""}`}
+                  onClick={() => setActiveTab("snake")}
+                >
+                  <Gamepad2 size={16} className="icon-inline" /> Snake YML
                 </button>
               </div>
               {activeTab === "code" && (
@@ -1932,48 +2007,229 @@ export default function App() {
                   {copied ? "Copied" : "Copy"}
                 </button>
               )}
+              {activeTab === "session" && (
+                <button className="copy-btn" onClick={copySession}>
+                  {copiedSession ? <Check size={18} /> : <Copy size={18} />}{" "}
+                  {copiedSession ? "Copied" : "Copy"}
+                </button>
+              )}
             </div>
+
             <div className="preview-container card">
               {activeTab === "preview" && <PreviewContent />}
+
               {activeTab === "code" && (
-                <pre className="code-view custom-scrollbar">
-                  {generateMarkdown(false, formData.sectionOrder)}
-                </pre>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      ...cardStyle,
+                      margin: "1rem 1rem 0",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <h4
+                      style={{
+                        color: "var(--text-primary)",
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        marginBottom: "0.75rem",
+                      }}
+                    >
+                      📋 How to use your README
+                    </h4>
+                    {[
+                      {
+                        n: 1,
+                        text: (
+                          <>
+                            Go to{" "}
+                            <strong>
+                              github.com/your-username/your-username
+                            </strong>{" "}
+                            — create this repo if it doesn't exist (same name as
+                            your GitHub username).
+                          </>
+                        ),
+                      },
+                      {
+                        n: 2,
+                        text: (
+                          <>
+                            Click the pencil icon to edit{" "}
+                            <code style={codeChipStyle}>README.md</code>, select
+                            all, delete everything.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 3,
+                        text: (
+                          <>
+                            Click{" "}
+                            <strong style={{ color: "var(--accent-color)" }}>
+                              Copy
+                            </strong>{" "}
+                            above, then paste the full markdown into the editor.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 4,
+                        text: (
+                          <>
+                            Replace{" "}
+                            <code style={codeChipStyle}>
+                              YOUR-ACTUAL-SITE.netlify.app
+                            </code>{" "}
+                            with your real Netlify domain before committing.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 5,
+                        text: (
+                          <>
+                            Click <strong>Commit changes</strong> and your
+                            profile README goes live instantly.
+                          </>
+                        ),
+                      },
+                    ].map(({ n, text }) => (
+                      <div key={n} style={stepStyle}>
+                        <div style={stepNumStyle}>{n}</div>
+                        <div style={stepTextStyle}>{text}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <pre
+                    className="code-view custom-scrollbar"
+                    style={{ flex: 1, margin: "1rem" }}
+                  >
+                    {generateMarkdown(false, formData.sectionOrder, false)}
+                  </pre>
+                </div>
               )}
+
+              {activeTab === "session" && (
+                <div style={{ padding: "1rem" }}>
+                  <div style={cardStyle}>
+                    <h4
+                      style={{
+                        color: "var(--text-primary)",
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        marginBottom: "0.75rem",
+                      }}
+                    >
+                      💾 What is a Session?
+                    </h4>
+                    <p style={{ ...stepTextStyle, marginBottom: "0.5rem" }}>
+                      This tool saves your progress automatically in your
+                      browser. But if you clear your browser data, switch
+                      devices, or want to share your setup — use this session
+                      blob.
+                    </p>
+                    <p style={stepTextStyle}>
+                      Copy the text below and paste it somewhere safe (a note, a
+                      private gist, a message to yourself). When you want to
+                      restore, go to the{" "}
+                      <strong style={{ color: "var(--accent-color)" }}>
+                        Restore Session
+                      </strong>{" "}
+                      tab and paste it there.
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      ...cardStyle,
+                      fontFamily: "monospace",
+                      fontSize: "0.72rem",
+                      color: "var(--text-secondary)",
+                      wordBreak: "break-all",
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {generateSessionBlob()}
+                  </div>
+                  <button
+                    onClick={copySession}
+                    style={{
+                      marginTop: "0.75rem",
+                      padding: "0.8rem 1.5rem",
+                      background: "var(--accent-color)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {copiedSession ? <Check size={16} /> : <Copy size={16} />}{" "}
+                    {copiedSession ? "Copied!" : "Copy Session"}
+                  </button>
+                </div>
+              )}
+
               {activeTab === "import" && (
                 <div style={{ padding: "1rem" }}>
-                  <h3
-                    style={{
-                      color: "var(--text-primary)",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    Import Generated Markdown
-                  </h3>
-                  <p
-                    style={{
-                      color: "var(--text-secondary)",
-                      fontSize: "0.9rem",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    Paste markdown generated by this tool to instantly restore
-                    all your settings.
-                  </p>
+                  <div style={cardStyle}>
+                    <h4
+                      style={{
+                        color: "var(--text-primary)",
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        marginBottom: "0.75rem",
+                      }}
+                    >
+                      🔄 How to restore your session
+                    </h4>
+                    {[
+                      {
+                        n: 1,
+                        text: "Go to the Save Session tab and copy your session blob, OR open a previously saved note/gist where you stored it.",
+                      },
+                      {
+                        n: 2,
+                        text: "Paste the full text into the box below — it should start with <!--DEVREADME-STATE: and end with -->.",
+                      },
+                      {
+                        n: 3,
+                        text: "Click Restore Session. All your settings, skills, projects, and links will be loaded instantly.",
+                      },
+                    ].map(({ n, text }) => (
+                      <div key={n} style={stepStyle}>
+                        <div style={stepNumStyle}>{n}</div>
+                        <div style={stepTextStyle}>{text}</div>
+                      </div>
+                    ))}
+                  </div>
                   <textarea
                     value={importText}
                     onChange={(e) => setImportText(e.target.value)}
-                    placeholder="Paste markdown here..."
+                    placeholder="Paste your session blob here..."
                     style={{
                       width: "100%",
-                      height: "300px",
+                      height: "220px",
                       padding: "1rem",
                       background: "var(--bg-secondary)",
                       color: "var(--text-primary)",
                       border: "1px solid var(--border-color)",
                       borderRadius: "8px",
                       fontFamily: "monospace",
+                      fontSize: "0.8rem",
                       marginBottom: "1rem",
+                      boxSizing: "border-box",
                     }}
                   />
                   <button
@@ -1988,7 +2244,180 @@ export default function App() {
                       fontWeight: "bold",
                     }}
                   >
-                    Restore State
+                    Restore Session
+                  </button>
+                </div>
+              )}
+
+              {activeTab === "snake" && (
+                <div style={{ padding: "1rem" }}>
+                  <div style={cardStyle}>
+                    <h4
+                      style={{
+                        color: "var(--text-primary)",
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        marginBottom: "0.75rem",
+                      }}
+                    >
+                      🐍 How to set up the Contribution Snake
+                    </h4>
+                    {[
+                      {
+                        n: 1,
+                        text: (
+                          <>
+                            Go to your profile repo on GitHub —{" "}
+                            <code style={codeChipStyle}>
+                              github.com/username/username
+                            </code>
+                            .
+                          </>
+                        ),
+                      },
+                      {
+                        n: 2,
+                        text: (
+                          <>
+                            <strong>Add file → Create new file</strong>. In the
+                            filename box type:{" "}
+                            <code style={codeChipStyle}>
+                              .github/workflows/snake.yml
+                            </code>{" "}
+                            (GitHub auto-creates the folders).
+                          </>
+                        ),
+                      },
+                      {
+                        n: 3,
+                        text: (
+                          <>
+                            Pick a color scheme below, click{" "}
+                            <strong style={{ color: "var(--accent-color)" }}>
+                              Copy YML
+                            </strong>
+                            , paste it into the file editor, and commit.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 4,
+                        text: (
+                          <>
+                            Go to{" "}
+                            <strong>
+                              Settings → Actions → General → Workflow
+                              permissions
+                            </strong>
+                            , select <strong>Read and write permissions</strong>
+                            , save.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 5,
+                        text: (
+                          <>
+                            Go to{" "}
+                            <strong>
+                              Actions tab → Generate Snake → Run workflow
+                            </strong>{" "}
+                            (dropdown button on the right). It runs and creates
+                            an <code style={codeChipStyle}>output</code> branch
+                            with your snake SVG.
+                          </>
+                        ),
+                      },
+                      {
+                        n: 6,
+                        text: "After that, it auto-runs daily at midnight UTC via the cron schedule. No fake commits — it only writes to the output branch, not main.",
+                      },
+                    ].map(({ n, text }) => (
+                      <div key={n} style={stepStyle}>
+                        <div style={stepNumStyle}>{n}</div>
+                        <div style={stepTextStyle}>{text}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <h4
+                    style={{
+                      color: "var(--text-primary)",
+                      fontSize: "0.9rem",
+                      fontWeight: 700,
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    Pick a Color Scheme
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "0.5rem",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    {SNAKE_COLOR_SCHEMES.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedSnakeScheme(i)}
+                        style={{
+                          padding: "0.4rem 0.9rem",
+                          borderRadius: "6px",
+                          border: `2px solid ${selectedSnakeScheme === i ? `#${s.snake}` : "var(--border-color)"}`,
+                          background:
+                            selectedSnakeScheme === i
+                              ? `#${s.snake}22`
+                              : "transparent",
+                          color: `#${s.snake}`,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontSize: "0.8rem",
+                          transition: "all 0.15s",
+                        }}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                  <pre
+                    style={{
+                      background: "var(--bg-secondary)",
+                      color: "var(--text-primary)",
+                      padding: "1rem",
+                      borderRadius: "8px",
+                      border: "1px solid var(--border-color)",
+                      fontFamily: "monospace",
+                      fontSize: "0.78rem",
+                      overflowX: "auto",
+                      marginBottom: "1rem",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {snakeYml}
+                  </pre>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(snakeYml);
+                      setCopiedYml(true);
+                      setTimeout(() => setCopiedYml(false), 2000);
+                    }}
+                    style={{
+                      padding: "0.8rem 1.5rem",
+                      background: "var(--accent-color)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {copiedYml ? <Check size={16} /> : <Copy size={16} />}{" "}
+                    {copiedYml ? "Copied!" : "Copy YML"}
                   </button>
                 </div>
               )}
