@@ -21,7 +21,8 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
 
-const STATE_PREFIX = "";
+const STATE_PREFIX = "<!--DEVREADME_STATE:";
+const STATE_SUFFIX = ":DEVREADME_STATE-->";
 
 const THEMES = [
   { id: "elegant-black", name: "Elegant Black", color: "#000000" },
@@ -434,24 +435,20 @@ function DisplayBoard({ projects }) {
     [],
   );
 
-  const sideStrips = useMemo(() => {
-    const cols = 5;
-    const spacing = 16;
+  const fullMatrix = useMemo(() => {
+    const spacing = 18;
+    const cols = Math.floor(BW / spacing);
     const rows = Math.floor(BH / spacing);
+    const offsetX = (BW - cols * spacing) / 2;
+    const offsetY = (BH - rows * spacing) / 2;
     const dots = [];
     for (let r = 0; r <= rows; r++) {
-      for (let c = 0; c < cols; c++) {
+      for (let c = 0; c <= cols; c++) {
         const delay = (r * 0.05).toFixed(2);
         dots.push({
-          id: `L-${r}-${c}`,
-          cx: 20 + c * spacing,
-          cy: r * spacing,
-          delay,
-        });
-        dots.push({
-          id: `R-${r}-${c}`,
-          cx: BW - 20 - (cols - 1) * spacing + c * spacing,
-          cy: r * spacing,
+          id: `M-${r}-${c}`,
+          cx: offsetX + c * spacing,
+          cy: offsetY + r * spacing,
           delay,
         });
       }
@@ -521,6 +518,14 @@ function DisplayBoard({ projects }) {
             <rect width="8" height="8" fill="#040000" />
             <circle cx="4" cy="4" r="1.2" fill="#0b0000" />
           </pattern>
+          <pattern
+            id="matrixdots"
+            width="18"
+            height="18"
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx="9" cy="9" r="2" fill={ON} />
+          </pattern>
           <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge>
@@ -539,15 +544,15 @@ function DisplayBoard({ projects }) {
             <rect x={PX} y={PY} width={PW} height={PH} />
           </clipPath>
           <style>{`
-            @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}
-            @keyframes blurSlide{0%{opacity:0;filter:blur(6px)}15%{opacity:1;filter:blur(0)}80%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(6px)}}
-            @keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }
-            @keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }
-          `}</style>
+                      @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}
+                      @keyframes blurSlide{0%{opacity:0;filter:blur(6px)}15%{opacity:1;filter:blur(0)}80%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(6px)}}
+                      @keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }
+                      @keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }
+                    `}</style>
         </defs>
         <rect width={BW} height={BH} fill="url(#bgdots)" />
 
-        {sideStrips.map((d) => (
+        {fullMatrix.map((d) => (
           <circle
             key={d.id}
             cx={d.cx}
@@ -1253,244 +1258,255 @@ export default function App() {
     currentOrder = formData.sectionOrder,
     includeState = false,
   ) => {
-    const apiThemes = getApiThemes();
-    const user = formData.github ? String(formData.github).trim() : "torvalds";
-    const buildImg = (key, src, alt) => {
-      const dim = formData.dimensions[key];
-      if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
-      const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
-      const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
-      let attrs = "";
-      if (dim.w?.trim()) attrs += `width="${dim.w}" `;
-      if (dim.h?.trim()) attrs += `height="${dim.h}" `;
-      if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
-      return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
-    };
-    let md = getTopHeader();
-    const analyticsGroup = [
-      "stats",
-      "summary",
-      "pinball",
-      "topLangs",
-      "snake",
-      "leetcode",
-      "visitors",
-    ];
-    let analyticsRendered = false;
+    try {
+      const apiThemes = getApiThemes();
+      const user = formData.github
+        ? String(formData.github).trim()
+        : "torvalds";
+      const buildImg = (key, src, alt) => {
+        const dim = formData.dimensions[key];
+        if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
+        const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
+        const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
+        let attrs = "";
+        if (dim.w?.trim()) attrs += `width="${dim.w}" `;
+        if (dim.h?.trim()) attrs += `height="${dim.h}" `;
+        if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
+        return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
+      };
+      let md = getTopHeader();
+      const analyticsGroup = [
+        "stats",
+        "summary",
+        "pinball",
+        "topLangs",
+        "snake",
+        "leetcode",
+        "visitors",
+      ];
+      let analyticsRendered = false;
 
-    const renderSection = (section) => {
-      let s = "";
-      switch (section) {
-        case "visitors":
-          if (formData.animations.visitors)
-            s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
-          break;
-        case "board":
-          if (
-            formData.displayBoard &&
-            formData.projects.filter((p) => p && String(p).trim()).length > 0
-          ) {
-            const base = isPreview
-              ? window.location.origin
-              : "https://YOUR-ACTUAL-SITE.netlify.app";
-            const validProj = formData.projects.filter(
-              (p) => p && String(p).trim(),
-            );
-            const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
-            s += `<div align="center">\n\n### Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
-          }
-          break;
-        case "about":
-          if (formData.about) s += `## About Me\n${formData.about}\n\n`;
-          break;
-        case "skills":
-          if (formData.skills.length > 0) {
-            s += `## Core Tech Stack\n\n`;
-            Object.entries(SKILLS_CATEGORIES).forEach(
-              ([category, categorySkills]) => {
-                const selected = categorySkills.filter((sk) =>
-                  formData.skills.includes(sk),
-                );
-                if (selected.length > 0) {
-                  s += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
-                  selected.forEach((skill) => {
-                    const safe = skill
+      const renderSection = (section) => {
+        let s = "";
+        switch (section) {
+          case "visitors":
+            if (formData.animations.visitors)
+              s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
+            break;
+          case "board":
+            if (
+              formData.displayBoard &&
+              formData.projects.filter((p) => p && String(p).trim()).length > 0
+            ) {
+              const base = isPreview
+                ? window.location.origin
+                : "https://YOUR-ACTUAL-SITE.netlify.app";
+              const validProj = formData.projects.filter(
+                (p) => p && String(p).trim(),
+              );
+              const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
+              s += `<div align="center">\n\n### Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
+            }
+            break;
+          case "about":
+            if (formData.about) s += `## About Me\n${formData.about}\n\n`;
+            break;
+          case "skills":
+            if (formData.skills.length > 0) {
+              s += `## Core Tech Stack\n\n`;
+              Object.entries(SKILLS_CATEGORIES).forEach(
+                ([category, categorySkills]) => {
+                  const selected = categorySkills.filter((sk) =>
+                    formData.skills.includes(sk),
+                  );
+                  if (selected.length > 0) {
+                    s += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
+                    selected.forEach((skill) => {
+                      const safe = skill
+                        .replace(/ /g, "%20")
+                        .replace(/\+/g, "%2B")
+                        .replace(/#/g, "%23");
+                      s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
+                    });
+                    s += `</p>\n\n`;
+                  }
+                },
+              );
+            }
+            break;
+          case "customSkills":
+            formData.customCategories.forEach((cat) => {
+              if (cat.skills.length > 0) {
+                s += `### ${cat.title}\n<p align="center">\n`;
+                cat.skills.forEach((skillObj) => {
+                  if (skillObj.icon.startsWith("http"))
+                    s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
+                  else {
+                    const safe = skillObj.name
                       .replace(/ /g, "%20")
                       .replace(/\+/g, "%2B")
                       .replace(/#/g, "%23");
-                    s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
-                  });
-                  s += `</p>\n\n`;
-                }
-              },
-            );
-          }
-          break;
-        case "customSkills":
-          formData.customCategories.forEach((cat) => {
-            if (cat.skills.length > 0) {
-              s += `### ${cat.title}\n<p align="center">\n`;
-              cat.skills.forEach((skillObj) => {
-                if (skillObj.icon.startsWith("http"))
-                  s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
-                else {
-                  const safe = skillObj.name
-                    .replace(/ /g, "%20")
-                    .replace(/\+/g, "%2B")
-                    .replace(/#/g, "%23");
-                  s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
-                }
+                    s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
+                  }
+                });
+                s += `</p>\n\n`;
+              }
+            });
+            break;
+          case "funFact":
+            if (formData.funFact)
+              s += `<h3 align="center"><i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+            break;
+          case "socials": {
+            const hasSocials =
+              formData.github ||
+              formData.email ||
+              formData.twitter ||
+              formData.linkedin ||
+              formData.leetcode ||
+              formData.codestats ||
+              formData.instagram ||
+              formData.facebook ||
+              formData.snapchat ||
+              formData.portfolio ||
+              formData.customLinks.length > 0;
+            if (hasSocials) {
+              s += `## Socials\n<p align="center">\n`;
+              if (formData.github)
+                s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
+              if (formData.email)
+                s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
+              if (formData.linkedin)
+                s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
+              if (formData.twitter)
+                s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
+              if (formData.leetcode)
+                s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
+              if (formData.codestats)
+                s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
+              if (formData.instagram)
+                s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
+              if (formData.facebook)
+                s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
+              if (formData.snapchat)
+                s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
+              if (formData.portfolio)
+                s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
+              formData.customLinks.forEach((link) => {
+                if (link.icon.startsWith("http"))
+                  s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
+                else
+                  s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
               });
               s += `</p>\n\n`;
             }
-          });
-          break;
-        case "funFact":
-          if (formData.funFact)
-            s += `<h3 align="center"><i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
-          break;
-        case "socials": {
-          const hasSocials =
-            formData.github ||
-            formData.email ||
-            formData.twitter ||
-            formData.linkedin ||
-            formData.leetcode ||
-            formData.codestats ||
-            formData.instagram ||
-            formData.facebook ||
-            formData.snapchat ||
-            formData.portfolio ||
-            formData.customLinks.length > 0;
-          if (hasSocials) {
-            s += `## Socials\n<p align="center">\n`;
-            if (formData.github)
-              s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
-            if (formData.email)
-              s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
-            if (formData.linkedin)
-              s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
-            if (formData.twitter)
-              s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
-            if (formData.leetcode)
-              s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
-            if (formData.codestats)
-              s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
-            if (formData.instagram)
-              s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
-            if (formData.facebook)
-              s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
-            if (formData.snapchat)
-              s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
-            if (formData.portfolio)
-              s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
-            formData.customLinks.forEach((link) => {
-              if (link.icon.startsWith("http"))
-                s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
-              else
-                s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
-            });
-            s += `</p>\n\n`;
+            break;
           }
-          break;
-        }
-        case "stats":
-          if (formData.animations.streak || formData.animations.stats) {
-            s += `<p align="center">\n`;
-            if (formData.animations.streak)
-              s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
-            if (formData.animations.stats)
-              s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
-            s += `</p>\n\n`;
-          }
-          break;
-        case "summary":
-          if (formData.animations.githubProfileSummary) {
-            const themeName = apiThemes.stats.includes("theme=")
-              ? apiThemes.stats.replace("theme=", "")
-              : "dark";
-            s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
-          }
-          break;
-        case "pinball":
-          if (formData.animations.pinball)
-            s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
-          break;
-        case "topLangs":
-          if (
-            formData.animations.topLangsCommit ||
-            formData.animations.topLangsRepo
-          ) {
-            s += `<p align="center">\n`;
-            if (formData.animations.topLangsCommit)
-              s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
-            if (formData.animations.topLangsRepo)
-              s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
-            s += `</p>\n\n`;
-          }
-          break;
-        case "snake":
-          if (formData.animations.snake) {
-            const snakeSrc = isPreview
-              ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
-              : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-            s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
-          }
-          break;
-        case "leetcode":
-          if (
-            (formData.leetcode &&
+          case "stats":
+            if (formData.animations.streak || formData.animations.stats) {
+              s += `<p align="center">\n`;
+              if (formData.animations.streak)
+                s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
+              if (formData.animations.stats)
+                s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
+              s += `</p>\n\n`;
+            }
+            break;
+          case "summary":
+            if (formData.animations.githubProfileSummary) {
+              const themeName = apiThemes.stats.includes("theme=")
+                ? apiThemes.stats.replace("theme=", "")
+                : "dark";
+              s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
+            }
+            break;
+          case "pinball":
+            if (formData.animations.pinball)
+              s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
+            break;
+          case "topLangs":
+            if (
+              formData.animations.topLangsCommit ||
+              formData.animations.topLangsRepo
+            ) {
+              s += `<p align="center">\n`;
+              if (formData.animations.topLangsCommit)
+                s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
+              if (formData.animations.topLangsRepo)
+                s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
+              s += `</p>\n\n`;
+            }
+            break;
+          case "snake":
+            if (formData.animations.snake) {
+              const snakeSrc = isPreview
+                ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
+                : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
+              s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
+            }
+            break;
+          case "leetcode":
+            if (
+              (formData.leetcode &&
+                (formData.animations.showLeetcodeHeatmap ||
+                  formData.animations.showLeetcodeContest)) ||
+              (formData.codeforces && formData.animations.codeforces)
+            )
+              s += `## Arena Stats\n\n`;
+            if (
+              formData.leetcode &&
               (formData.animations.showLeetcodeHeatmap ||
-                formData.animations.showLeetcodeContest)) ||
-            (formData.codeforces && formData.animations.codeforces)
-          )
-            s += `## Arena Stats\n\n`;
-          if (
-            formData.leetcode &&
-            (formData.animations.showLeetcodeHeatmap ||
-              formData.animations.showLeetcodeContest)
-          ) {
-            s += `<p align="center">\n`;
-            if (formData.animations.showLeetcodeHeatmap)
-              s += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
-            if (formData.animations.showLeetcodeContest)
-              s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
-            s += `</p>\n\n`;
-          }
-          if (formData.codeforces && formData.animations.codeforces)
-            s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
-          break;
-        default:
-          break;
-      }
-      return s;
-    };
-
-    currentOrder.forEach((section) => {
-      if (analyticsGroup.includes(section)) {
-        if (!analyticsRendered) {
-          analyticsRendered = true;
-          let buf = "";
-          currentOrder
-            .filter((s) => analyticsGroup.includes(s))
-            .forEach((as) => {
-              buf += renderSection(as);
-            });
-          if (buf.trim())
-            md += formData.statsDropdown
-              ? `<details>\n<summary><b>View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`
-              : `<div align="center">\n\n### View Stats\n\n</div>\n\n${buf}`;
+                formData.animations.showLeetcodeContest)
+            ) {
+              s += `<p align="center">\n`;
+              if (formData.animations.showLeetcodeHeatmap)
+                s += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
+              if (formData.animations.showLeetcodeContest)
+                s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
+              s += `</p>\n\n`;
+            }
+            if (formData.codeforces && formData.animations.codeforces)
+              s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
+            break;
+          default:
+            break;
         }
-      } else md += renderSection(section);
-    });
+        return s;
+      };
 
-    if (includeState)
-      md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
-    return md;
+      currentOrder.forEach((section) => {
+        if (analyticsGroup.includes(section)) {
+          if (!analyticsRendered) {
+            analyticsRendered = true;
+            let buf = "";
+            currentOrder
+              .filter((s) => analyticsGroup.includes(s))
+              .forEach((as) => {
+                buf += renderSection(as);
+              });
+            if (buf.trim())
+              md += formData.statsDropdown
+                ? `<details>\n<summary><b>View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`
+                : `<div align="center">\n\n### View Stats\n\n</div>\n\n${buf}`;
+          }
+        } else md += renderSection(section);
+      });
+
+      if (includeState)
+        md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
+      return md;
+    } catch (err) {
+      return `ERROR GENERATING MARKDOWN:\n\n${err.message}\n${err.stack}`;
+    }
   };
 
-  const generateSessionBlob = () =>
-    `${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}`;
+  const generateSessionBlob = () => {
+    try {
+      return `${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}`;
+    } catch (err) {
+      return `ERROR GENERATING SESSION: ${err.message}`;
+    }
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
@@ -1584,12 +1600,15 @@ jobs:
         : formData.sectionOrder;
     const afterBoard =
       boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
-    const topStr = getTopHeader();
-    const mdBefore =
-      topStr + generateMarkdown(true, beforeBoard, false).replace(topStr, "");
-    const mdAfter = generateMarkdown(true, afterBoard, false).replace(
-      topStr,
-      "",
+    const topStr = useMemo(() => getTopHeader(), [formData]);
+    const mdBefore = useMemo(
+      () =>
+        topStr + generateMarkdown(true, beforeBoard, false).replace(topStr, ""),
+      [topStr, beforeBoard, formData],
+    );
+    const mdAfter = useMemo(
+      () => generateMarkdown(true, afterBoard, false).replace(topStr, ""),
+      [topStr, afterBoard, formData],
     );
 
     return (
@@ -2629,18 +2648,6 @@ jobs:
                       n: 3,
                       text: (
                         <>
-                          Replace{" "}
-                          <code style={S.chip}>
-                            YOUR-ACTUAL-SITE.netlify.app
-                          </code>{" "}
-                          with your real domain.
-                        </>
-                      ),
-                    },
-                    {
-                      n: 4,
-                      text: (
-                        <>
                           Click <strong>Commit changes</strong>. Your profile
                           goes live instantly.
                         </>
@@ -2662,7 +2669,7 @@ jobs:
                     padding: "16px",
                   }}
                 >
-                  {generateMarkdown(false, formData.sectionOrder, true)}
+                  {generateMarkdown(false, formData.sectionOrder, false)}
                 </pre>
               </div>
             )}

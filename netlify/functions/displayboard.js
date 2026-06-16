@@ -127,22 +127,20 @@ function buildRain() {
   return drops.join("");
 }
 
-function buildSideStrips() {
-  const cols = 5;
-  const spacing = 16;
+function buildFullMatrix() {
+  const spacing = 18;
+  const cols = Math.floor(BW / spacing);
   const rows = Math.floor(BH / spacing);
+  const offsetX = (BW - cols * spacing) / 2;
+  const offsetY = (BH - rows * spacing) / 2;
   const strips = [];
   for (let r = 0; r <= rows; r++) {
-    for (let c = 0; c < cols; c++) {
+    for (let c = 0; c <= cols; c++) {
       const delay = (r * 0.05).toFixed(2);
-      const y = r * spacing;
-      const xL = 20 + c * spacing;
-      const xR = BW - 20 - (cols - 1) * spacing + c * spacing;
+      const cx = offsetX + c * spacing;
+      const cy = offsetY + r * spacing;
       strips.push(
-        `<circle cx="${xL}" cy="${y}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
-      );
-      strips.push(
-        `<circle cx="${xR}" cy="${y}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
+        `<circle cx="${cx}" cy="${cy}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
       );
     }
   }
@@ -233,7 +231,7 @@ exports.handler = async (event) => {
       <rect width="${BW}" height="${BH}" fill="#060000" rx="12"/>
       <rect width="${BW}" height="${BH}" fill="url(#bgd)" rx="12"/>
 
-      ${buildSideStrips()}
+      ${buildFullMatrix()}
 
       <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="#0a0000" stroke="#330000" stroke-width="2"/>
       <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="none" stroke="${ON}" stroke-width="4" stroke-dasharray="250 ${innerPerimeter - 250}" filter="url(#redglow)" style="animation: chase 3s linear infinite;"/>
