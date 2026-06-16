@@ -17,7 +17,7 @@ const MATRIX_FONT = {
   P: [0xf0, 0x88, 0x88, 0xf0, 0x80, 0x80, 0x80],
   Q: [0x70, 0x88, 0x88, 0x88, 0xa8, 0x90, 0x68],
   R: [0xf0, 0x88, 0x88, 0xf0, 0xa0, 0x90, 0x88],
-  S: [0x70, 0x88, 0x80, 0x70, 0x08, 0x88, 0x70],
+  S: [0x70, 0x88, 0x88, 0x70, 0x08, 0x88, 0x70],
   T: [0xf8, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20],
   U: [0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70],
   V: [0x88, 0x88, 0x88, 0x88, 0x88, 0x50, 0x20],
@@ -66,67 +66,65 @@ const MATRIX_FONT = {
   "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
 };
 
-const DOT_SIZE = 6;
-const DOT_GAP = 2;
-const CHAR_WIDTH = 5 * (DOT_SIZE + DOT_GAP);
-const SVG_W = 650;
-const SVG_H = 440;
-const ON = "#ff0000";
+const DOT = 6;
+const GAP = 2;
+const CW = 5 * (DOT + GAP);
+const ON = "#ff2200";
+const BW = 950;
+const BH = 520;
+const PW = 700;
+const PH = 380;
+const PX = (BW - PW) / 2;
+const PY = (BH - PH) / 2;
 const FADE_SEC = 1.5;
 
-function getDotMatrix(str, y, totalW) {
-  const strW = str.length * (CHAR_WIDTH + DOT_GAP * 3);
-  const fits = strW <= totalW;
-  const startX = fits ? Math.max(0, (totalW - strW) / 2) : 8;
-  let dots = "";
+function dotMatrix(str, y, pw, px, offsetX = null) {
+  const strW = str.length * (CW + GAP * 3);
+  const startX = offsetX !== null ? offsetX : px + (pw - strW) / 2;
+  const dots = [];
   for (let i = 0; i < str.length; i++) {
     const matrix = MATRIX_FONT[str[i]] || MATRIX_FONT[" "];
-    const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
+    const charX = startX + i * (CW + GAP * 3);
     matrix.forEach((row, ri) => {
       for (let ci = 0; ci < 5; ci++) {
         if ((row & (0x80 >> ci)) !== 0) {
-          const cx = charX + ci * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          const cy = y + ri * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          dots += `<circle cx="${cx}" cy="${cy}" r="${DOT_SIZE / 2}" fill="${ON}" filter="url(#glow)"/>`;
+          dots.push(
+            `<circle cx="${charX + ci * (DOT + GAP) + DOT / 2}" cy="${y + ri * (DOT + GAP) + DOT / 2}" r="${DOT / 2}" fill="${ON}" filter="url(#glow)"/>`,
+          );
         }
       }
     });
   }
-  if (!fits) {
-    const scrollDur = Math.max(3, strW / 50).toFixed(1);
-    const totalScroll = strW + totalW;
-    return `<g><animateTransform attributeName="transform" type="translate" from="${totalW},0" to="${-strW},0" dur="${scrollDur}s" repeatCount="indefinite"/>${dots}</g>`;
-  }
-  return dots;
+  return dots.join("");
 }
 
-function getRain() {
-  let out = "";
-  for (let i = 0; i < 40; i++) {
-    const cx = Math.floor(Math.random() * SVG_W);
-    const dur = (1 + Math.random() * 2).toFixed(2);
-    const delay = (Math.random() * 3).toFixed(2);
-    out += `<circle cx="${cx}" cy="0" r="2" fill="${ON}" filter="url(#glow)" style="animation:drop ${dur}s ${delay}s infinite linear"/>`;
-  }
-  return out;
-}
-
-function buildPerSlideCSS(n, totalDur) {
-  let css = `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}`;
+function buildSlideCSS(n, totalDur) {
+  let css = `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}`;
+  if (n <= 1) return css;
   for (let i = 0; i < n; i++) {
-    const slotStart = i / n;
-    const slotEnd = (i + 1) / n;
-    const p0 = (slotStart * 100).toFixed(2);
-    const p1 = (slotEnd * 100).toFixed(2);
-    const pFadeIn = (slotStart * 100 + (FADE_SEC / totalDur) * 100).toFixed(2);
-    const pFadeOut = (slotEnd * 100 - (FADE_SEC / totalDur) * 100).toFixed(2);
-    if (i === 0) {
-      css += `@keyframes s0{0%{opacity:1;filter:blur(0)}${pFadeOut}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
-    } else {
-      css += `@keyframes s${i}{0%,${p0}%{opacity:0;filter:blur(8px)}${pFadeIn}%{opacity:1;filter:blur(0)}${pFadeOut}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
-    }
+    const p0 = ((i / n) * 100).toFixed(2);
+    const p1 = (((i + 1) / n) * 100).toFixed(2);
+    const pFI = ((i / n) * 100 + (FADE_SEC / totalDur) * 100).toFixed(2);
+    const pFO = (((i + 1) / n) * 100 - (FADE_SEC / totalDur) * 100).toFixed(2);
+    if (i === 0)
+      css += `@keyframes s0{0%{opacity:1;filter:blur(0)}${pFO}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
+    else
+      css += `@keyframes s${i}{0%,${p0}%{opacity:0;filter:blur(8px)}${pFI}%{opacity:1;filter:blur(0)}${pFO}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
   }
   return css;
+}
+
+function buildRain() {
+  const drops = [];
+  for (let i = 0; i < 55; i++) {
+    const cx = PX + Math.floor(Math.random() * PW);
+    const dur = (1 + Math.random() * 2).toFixed(2);
+    const delay = (Math.random() * 3).toFixed(2);
+    drops.push(
+      `<circle cx="${cx}" cy="${PY}" r="1.5" fill="#00ff00" filter="url(#glow)" opacity="0.6" style="animation:drop ${dur}s ${delay}s infinite linear"/>`,
+    );
+  }
+  return drops.join("");
 }
 
 exports.handler = async (event) => {
@@ -159,42 +157,67 @@ exports.handler = async (event) => {
       return { statusCode: 404, body: "No repositories found" };
 
     const n = repos.length;
-    const totalDur = n * 5;
-    const css =
-      n > 1
-        ? buildPerSlideCSS(n, totalDur)
-        : `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.8}100%{transform:translateY(${SVG_H}px);opacity:0}}`;
+    const totalDur = n * 10;
+    const innerPerimeter = (PW + PH) * 2;
+    const slideCss = buildSlideCSS(n, totalDur);
+    const boxCss = `@keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }`;
+    const allCss = slideCss + boxCss;
+
+    const TEXT_Y = PY + PH / 2 - 45;
+    const STARS_Y = TEXT_Y + 75;
 
     const slides = repos
       .map((repo, i) => {
         const name = repo.name;
+        const strW = name.length * (CW + GAP * 3);
+        const needsScroll = strW > PW - 32;
         const stars = `★ ${repo.stargazers_count || 0}`;
         const anim =
           n > 1 ? `style="animation:s${i} ${totalDur}s infinite linear"` : "";
-        const counter =
-          n > 1
-            ? `<text x="${SVG_W - 16}" y="${SVG_H - 16}" fill="#3a0000" font-size="14" font-family="monospace" text-anchor="end">${i + 1}/${n}</text>`
-            : "";
-        return `<g ${anim} filter="url(#glow)">${getDotMatrix(name, 140, SVG_W)}${getDotMatrix(stars, 260, SVG_W)}${counter}</g>`;
+
+        let nameSvg;
+        if (needsScroll) {
+          const scrollDur = Math.max(3, strW / 40).toFixed(1);
+          nameSvg = `<g><animateTransform attributeName="transform" type="translate" from="${PX + 16 + strW},0" to="${PX - strW - 20},0" dur="${scrollDur}s" repeatCount="indefinite"/>${dotMatrix(name, TEXT_Y, PW, PX, 0)}</g>`;
+        } else {
+          nameSvg = dotMatrix(name, TEXT_Y, PW, PX);
+        }
+
+        return `<g clip-path="url(#innerclip)" ${anim}>${nameSvg}${dotMatrix(stars, STARS_Y, PW, PX)}</g>`;
       })
       .join("");
 
-    const svg = `<svg width="${SVG_W}" height="${SVG_H}" viewBox="0 0 ${SVG_W} ${SVG_H}" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a0a0a"/><stop offset="100%" stop-color="#1a0000"/></linearGradient>
-<linearGradient id="borderGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0000" stop-opacity="0.6"/><stop offset="50%" stop-color="#330000" stop-opacity="0.3"/><stop offset="100%" stop-color="#ff0000" stop-opacity="0.6"/></linearGradient>
-<pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#050100"/><circle cx="4" cy="4" r="2" fill="#110000"/></pattern>
-<filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<clipPath id="board-clip"><rect width="${SVG_W}" height="${SVG_H}" rx="16"/></clipPath>
-</defs>
-<style>${css}</style>
-<rect width="${SVG_W}" height="${SVG_H}" fill="url(#bgGrad)" rx="16"/>
-<rect width="${SVG_W}" height="${SVG_H}" fill="url(#dots)" rx="16" opacity="0.6"/>
-<rect width="${SVG_W}" height="${SVG_H}" fill="none" rx="16" stroke="url(#borderGrad)" stroke-width="3"/>
-<rect x="1.5" y="1.5" width="${SVG_W - 3}" height="${SVG_H - 3}" fill="none" rx="15" stroke="#ff000033" stroke-width="1"/>
-<g clip-path="url(#board-clip)">${getRain()}</g>
-<g clip-path="url(#board-clip)">${slides}</g>
-</svg>`;
+    const corners = [
+      [PX + 3, PY + 3],
+      [PX + PW - 3, PY + 3],
+      [PX + 3, PY + PH - 3],
+      [PX + PW - 3, PY + PH - 3],
+    ]
+      .map(
+        ([cx, cy]) =>
+          `<circle cx="${cx}" cy="${cy}" r="6" fill="${ON}" filter="url(#redglow)" opacity="0.95"/>`,
+      )
+      .join("");
+
+    const svg = `<svg width="${BW}" height="${BH}" viewBox="0 0 ${BW} ${BH}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="bgd" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#040000"/><circle cx="4" cy="4" r="1.2" fill="#0b0000"/></pattern>
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="redglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="infglow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <clipPath id="innerclip"><rect x="${PX}" y="${PY}" width="${PW}" height="${PH}"/></clipPath>
+      </defs>
+      <style>${allCss}</style>
+      <rect width="${BW}" height="${BH}" fill="#060000" rx="12"/>
+      <rect width="${BW}" height="${BH}" fill="url(#bgd)" rx="12"/>
+      ${buildRain()}
+      <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="#0a0000" stroke="#330000" stroke-width="2"/>
+      <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="none" stroke="${ON}" stroke-width="4" stroke-dasharray="250 ${innerPerimeter - 250}" filter="url(#redglow)" style="animation: chase 3s linear infinite;"/>
+      <g clip-path="url(#innerclip)">
+      ${slides}
+      </g>
+      ${corners}
+    </svg>`;
 
     return {
       statusCode: 200,

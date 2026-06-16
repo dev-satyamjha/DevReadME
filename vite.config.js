@@ -69,31 +69,65 @@ const MATRIX_FONT = {
   "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
 };
 
-const DOT_SIZE = 6;
-const DOT_GAP = 2;
-const CHAR_WIDTH = 5 * (DOT_SIZE + DOT_GAP);
+const DOT = 6;
+const GAP = 2;
+const CW = 5 * (DOT + GAP);
+const ON = "#ff2200";
+const BW = 950;
+const BH = 520;
+const PW = 700;
+const PH = 380;
+const PX = (BW - PW) / 2;
+const PY = (BH - PH) / 2;
+const FADE_SEC = 1.5;
 
-function renderMatrixString(str, y, totalW, onColor) {
-  const strW = str.length * (CHAR_WIDTH + DOT_GAP * 3);
-  const startX = Math.max(0, (totalW - strW) / 2);
-  let svg = "";
-
+function dotMatrix(str, y, pw, px, offsetX = null) {
+  const strW = str.length * (CW + GAP * 3);
+  const startX = offsetX !== null ? offsetX : px + (pw - strW) / 2;
+  const dots = [];
   for (let i = 0; i < str.length; i++) {
-    const ch = str[i];
-    const matrix = MATRIX_FONT[ch] || MATRIX_FONT[" "];
-    const charX = startX + i * (CHAR_WIDTH + DOT_GAP * 3);
-
-    matrix.forEach((row, rowIdx) => {
-      for (let colIdx = 0; colIdx < 5; colIdx++) {
-        if ((row & (0x80 >> colIdx)) !== 0) {
-          const cx = charX + colIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          const cy = y + rowIdx * (DOT_SIZE + DOT_GAP) + DOT_SIZE / 2;
-          svg += `<circle cx="${cx}" cy="${cy}" r="${DOT_SIZE / 2}" fill="${onColor}" filter="url(#glow)" />`;
+    const matrix = MATRIX_FONT[str[i]] || MATRIX_FONT[" "];
+    const charX = startX + i * (CW + GAP * 3);
+    matrix.forEach((row, ri) => {
+      for (let ci = 0; ci < 5; ci++) {
+        if ((row & (0x80 >> ci)) !== 0) {
+          dots.push(
+            `<circle cx="${charX + ci * (DOT + GAP) + DOT / 2}" cy="${y + ri * (DOT + GAP) + DOT / 2}" r="${DOT / 2}" fill="${ON}" filter="url(#glow)"/>`,
+          );
         }
       }
     });
   }
-  return svg;
+  return dots.join("");
+}
+
+function buildSlideCSS(n, totalDur) {
+  let css = `@keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}`;
+  if (n <= 1) return css;
+  for (let i = 0; i < n; i++) {
+    const p0 = ((i / n) * 100).toFixed(2);
+    const p1 = (((i + 1) / n) * 100).toFixed(2);
+    const pFI = ((i / n) * 100 + (FADE_SEC / totalDur) * 100).toFixed(2);
+    const pFO = (((i + 1) / n) * 100 - (FADE_SEC / totalDur) * 100).toFixed(2);
+    if (i === 0)
+      css += `@keyframes s0{0%{opacity:1;filter:blur(0)}${pFO}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
+    else
+      css += `@keyframes s${i}{0%,${p0}%{opacity:0;filter:blur(8px)}${pFI}%{opacity:1;filter:blur(0)}${pFO}%{opacity:1;filter:blur(0)}${p1}%,100%{opacity:0;filter:blur(8px)}}`;
+  }
+  return css;
+}
+
+function buildRain() {
+  const drops = [];
+  for (let i = 0; i < 55; i++) {
+    const cx = PX + Math.floor(Math.random() * PW);
+    const dur = (1 + Math.random() * 2).toFixed(2);
+    const delay = (Math.random() * 3).toFixed(2);
+    drops.push(
+      `<circle cx="${cx}" cy="${PY}" r="1.5" fill="#00ff00" filter="url(#glow)" opacity="0.6" style="animation:drop ${dur}s ${delay}s infinite linear"/>`,
+    );
+  }
+  return drops.join("");
 }
 
 const apiMock = () => ({
@@ -101,136 +135,113 @@ const apiMock = () => ({
   configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
       if (
-        req.url.startsWith("/.netlify/functions/seven-segment") ||
-        req.url.startsWith("/api/seven-segment")
+        req.url.startsWith("/.netlify/functions/displayboard") ||
+        req.url.startsWith("/api/displayboard")
       ) {
-        const url = new URL(req.url, `http://${req.headers.host}`);
-        const user = url.searchParams.get("user");
-        const reposParam = url.searchParams.get("repos");
-
-        if (!user || !reposParam) {
-          res.statusCode = 400;
-          return res.end("Missing parameters");
-        }
-
-        const repoList = reposParam
-          .split(",")
-          .map((r) => r.trim())
-          .filter(Boolean);
-
         try {
-          const fetchPromises = repoList.map((repo) =>
-            fetch(
-              `https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}`,
-            )
-              .then((response) => (response.ok ? response.json() : null))
-              .catch(() => null),
+          const url = new URL(
+            req.url,
+            `http://${req.headers.host || "localhost"}`,
+          );
+          const user = url.searchParams.get("user");
+          const reposParam = url.searchParams.get("repos");
+
+          if (!user || !reposParam) {
+            res.writeHead(400);
+            return res.end("Missing parameters");
+          }
+
+          const repoList = reposParam
+            .split(",")
+            .map((r) => r.trim())
+            .filter(Boolean);
+          const results = await Promise.all(
+            repoList.map((repo) =>
+              fetch(
+                `https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}`,
+              )
+                .then((r) => (r.ok ? r.json() : null))
+                .catch(() => null),
+            ),
           );
 
-          const results = await Promise.all(fetchPromises);
-          const validRepos = results.filter((data) => data !== null);
-
-          if (validRepos.length === 0) {
-            res.setHeader("Content-Type", "image/svg+xml");
-            res.statusCode = 404;
+          const validRepos = results.filter(Boolean);
+          if (!validRepos.length) {
+            res.writeHead(404);
             return res.end(
-              `<svg width="650" height="440" xmlns="http://www.w3.org/2000/svg"><rect width="650" height="440" fill="#050100" rx="16"/></svg>`,
+              `<svg width="${BW}" height="${BH}" xmlns="http://www.w3.org/2000/svg"><rect width="${BW}" height="${BH}" fill="#060000" rx="16"/></svg>`,
             );
           }
 
-          const repoCount = validRepos.length;
-          const cycleDuration = repoCount * 5;
-          let cssAnimations = "";
-          let framesSvg = "";
+          const n = validRepos.length;
+          const totalDur = n * 10;
+          const innerPerimeter = (PW + PH) * 2;
+          const slideCss = buildSlideCSS(n, totalDur);
+          const boxCss = `@keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }`;
+          const allCss = slideCss + boxCss;
 
-          if (repoCount > 1) {
-            validRepos.forEach((repo, i) => {
-              const startPct = (i / repoCount) * 100;
-              const fadeDur = (1.5 / cycleDuration) * 100;
-              const endPct = ((i + 1) / repoCount) * 100;
+          const TEXT_Y = PY + PH / 2 - 45;
+          const STARS_Y = TEXT_Y + 75;
 
-              cssAnimations += `
-                @keyframes blurFade${i} {
-                  0%, ${Math.max(0, startPct - 0.01)}% { opacity: 0; filter: blur(10px); }
-                  ${startPct + fadeDur}%, ${endPct - fadeDur}% { opacity: 1; filter: blur(0px); }
-                  ${endPct}%, 100% { opacity: 0; filter: blur(10px); }
-                }
-                .repo-frame-${i} {
-                  animation: blurFade${i} ${cycleDuration}s infinite linear;
-                  opacity: 0;
-                }
-              `;
-            });
-          }
+          const slides = validRepos
+            .map((repo, i) => {
+              const name = repo.name;
+              const strW = name.length * (CW + GAP * 3);
+              const needsScroll = strW > PW - 32;
+              const stars = `★ ${repo.stargazers_count || 0}`;
+              const anim =
+                n > 1
+                  ? `style="animation:s${i} ${totalDur}s infinite linear"`
+                  : "";
 
-          let rainAnimations = `
-            @keyframes drop {
-              0% { transform: translateY(-20px); opacity: 0; }
-              10% { opacity: 1; }
-              80% { opacity: 0.8; }
-              100% { transform: translateY(440px); opacity: 0; }
-            }
-          `;
-          let rainElements = '<g class="rain-container">';
-
-          for (let i = 0; i < 40; i++) {
-            const x = Math.floor(Math.random() * 650);
-            const dur = 1 + Math.random() * 2;
-            const delay = Math.random() * 3;
-
-            rainAnimations += `
-              .drop-${i} {
-                animation: drop ${dur}s ${delay}s infinite linear;
+              let nameSvg;
+              if (needsScroll) {
+                const scrollDur = Math.max(3, strW / 40).toFixed(1);
+                nameSvg = `<g><animateTransform attributeName="transform" type="translate" from="${PX + 16 + strW},0" to="${PX - strW - 20},0" dur="${scrollDur}s" repeatCount="indefinite"/>${dotMatrix(name, TEXT_Y, PW, PX, 0)}</g>`;
+              } else {
+                nameSvg = dotMatrix(name, TEXT_Y, PW, PX);
               }
-            `;
-            rainElements += `<circle cx="${x}" cy="0" r="2" fill="#ff0000" class="drop-${i}" filter="url(#glow)" />`;
-          }
-          rainElements += "</g>";
-          cssAnimations += rainAnimations;
+              return `<g clip-path="url(#innerclip)" ${anim}>${nameSvg}${dotMatrix(stars, STARS_Y, PW, PX)}</g>`;
+            })
+            .join("");
 
-          validRepos.forEach((repo, i) => {
-            const stars = repo.stargazers_count || 0;
-            const formattedStars = `★ ${stars}`;
-            const name = repo.name.substring(0, 12);
-            const frameClass = repoCount > 1 ? `repo-frame-${i}` : "";
+          const corners = [
+            [PX + 3, PY + 3],
+            [PX + PW - 3, PY + 3],
+            [PX + 3, PY + PH - 3],
+            [PX + PW - 3, PY + PH - 3],
+          ]
+            .map(
+              ([cx, cy]) =>
+                `<circle cx="${cx}" cy="${cy}" r="6" fill="${ON}" filter="url(#redglow)" opacity="0.95"/>`,
+            )
+            .join("");
 
-            framesSvg += `
-              <g class="${frameClass}" filter="url(#glow)">
-                ${renderMatrixString(name, 140, 650, "#ff0000")}
-                ${renderMatrixString(formattedStars, 260, 650, "#ff0000")}
-              </g>
-            `;
-          });
-
-          const finalSvg = `
-            <svg width="650" height="440" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 440">
-              <defs>
-                <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse">
-                  <rect width="8" height="8" fill="#050100"/>
-                  <circle cx="4" cy="4" r="2" fill="#110000"/>
-                </pattern>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-              <style>${cssAnimations}</style>
-              <rect width="650" height="440" fill="url(#dots)" rx="16"/>
-              <rect width="650" height="440" fill="none" rx="16" stroke="#110000" stroke-width="12"/>
-              ${rainElements}
-              ${framesSvg}
-            </svg>
-          `;
+          const finalSvg = `<svg width="${BW}" height="${BH}" viewBox="0 0 ${BW} ${BH}" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="bgd" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#040000"/><circle cx="4" cy="4" r="1.2" fill="#0b0000"/></pattern>
+              <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <filter id="redglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <clipPath id="innerclip"><rect x="${PX}" y="${PY}" width="${PW}" height="${PH}"/></clipPath>
+            </defs>
+            <style>${allCss}</style>
+            <rect width="${BW}" height="${BH}" fill="#060000" rx="12"/>
+            <rect width="${BW}" height="${BH}" fill="url(#bgd)" rx="12"/>
+            ${buildRain()}
+            <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="#0a0000" stroke="#330000" stroke-width="2"/>
+            <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="none" stroke="${ON}" stroke-width="4" stroke-dasharray="250 ${innerPerimeter - 250}" filter="url(#redglow)" style="animation: chase 3s linear infinite;"/>
+            <g clip-path="url(#innerclip)">
+            ${slides}
+            </g>
+            ${corners}
+          </svg>`;
 
           res.setHeader("Content-Type", "image/svg+xml");
           res.setHeader("Cache-Control", "public, max-age=14400");
-          res.statusCode = 200;
+          res.writeHead(200);
           return res.end(finalSvg);
         } catch {
-          res.statusCode = 500;
+          res.writeHead(500);
           return res.end("Server Error");
         }
       }
