@@ -66,7 +66,7 @@ const MATRIX_FONT = {
   9: [0x70, 0x88, 0x88, 0x88, 0x78, 0x08, 0x70],
   "-": [0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00],
   " ": [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-  "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
+  "★": [0x20, 0x70, 0xf8, 0x50, 0x88, 0x00, 0x00],
 };
 
 const DOT = 6;
@@ -130,6 +130,28 @@ function buildRain() {
   return drops.join("");
 }
 
+function buildSideStrips() {
+  const cols = 5;
+  const spacing = 16;
+  const rows = Math.floor(BH / spacing);
+  const strips = [];
+  for (let r = 0; r <= rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const delay = (r * 0.05).toFixed(2);
+      const y = r * spacing;
+      const xL = 20 + c * spacing;
+      const xR = BW - 20 - (cols - 1) * spacing + c * spacing;
+      strips.push(
+        `<circle cx="${xL}" cy="${y}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
+      );
+      strips.push(
+        `<circle cx="${xR}" cy="${y}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
+      );
+    }
+  }
+  return strips.join("");
+}
+
 const apiMock = () => ({
   name: "api-mock",
   configureServer(server) {
@@ -178,7 +200,8 @@ const apiMock = () => ({
           const innerPerimeter = (PW + PH) * 2;
           const slideCss = buildSlideCSS(n, totalDur);
           const boxCss = `@keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }`;
-          const allCss = slideCss + boxCss;
+          const stripCss = `@keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }`;
+          const allCss = slideCss + boxCss + stripCss;
 
           const TEXT_Y = PY + PH / 2 - 45;
           const STARS_Y = TEXT_Y + 75;
@@ -227,10 +250,14 @@ const apiMock = () => ({
             <style>${allCss}</style>
             <rect width="${BW}" height="${BH}" fill="#060000" rx="12"/>
             <rect width="${BW}" height="${BH}" fill="url(#bgd)" rx="12"/>
-            ${buildRain()}
+
+            ${buildSideStrips()}
+
             <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="#0a0000" stroke="#330000" stroke-width="2"/>
             <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="none" stroke="${ON}" stroke-width="4" stroke-dasharray="250 ${innerPerimeter - 250}" filter="url(#redglow)" style="animation: chase 3s linear infinite;"/>
+
             <g clip-path="url(#innerclip)">
+            ${buildRain()}
             ${slides}
             </g>
             ${corners}

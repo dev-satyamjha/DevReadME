@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import CursorBubbles from "./CursorBubbles";
 
 const STATE_PREFIX = "";
 
@@ -372,7 +373,7 @@ const MATRIX_FONT = {
   9: [0x70, 0x88, 0x88, 0x88, 0x78, 0x08, 0x70],
   "-": [0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00],
   " ": [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-  "★": [0x20, 0x70, 0xf8, 0x70, 0xa8, 0x00, 0x00],
+  "★": [0x20, 0x70, 0xf8, 0x50, 0x88, 0x00, 0x00],
 };
 
 const DOT = 6;
@@ -414,7 +415,7 @@ function buildDots(str, y, pw, px, offsetX = null) {
 }
 
 function DisplayBoard({ projects }) {
-  const validProjects = projects.filter((p) => p.trim() !== "");
+  const validProjects = projects.filter((p) => p && String(p).trim() !== "");
   const [currentIdx, setCurrentIdx] = useState(0);
   const [scrollX, setScrollX] = useState(0);
   const timerRef = useRef(null);
@@ -432,6 +433,31 @@ function DisplayBoard({ projects }) {
       })),
     [],
   );
+
+  const sideStrips = useMemo(() => {
+    const cols = 5;
+    const spacing = 16;
+    const rows = Math.floor(BH / spacing);
+    const dots = [];
+    for (let r = 0; r <= rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const delay = (r * 0.05).toFixed(2);
+        dots.push({
+          id: `L-${r}-${c}`,
+          cx: 20 + c * spacing,
+          cy: r * spacing,
+          delay,
+        });
+        dots.push({
+          id: `R-${r}-${c}`,
+          cx: BW - 20 - (cols - 1) * spacing + c * spacing,
+          cy: r * spacing,
+          delay,
+        });
+      }
+    }
+    return dots;
+  }, []);
 
   const currentName = validProjects[currentIdx] || "";
   const nameW = currentName.length * (CW + GAP * 3);
@@ -516,11 +542,25 @@ function DisplayBoard({ projects }) {
             @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}
             @keyframes blurSlide{0%{opacity:0;filter:blur(6px)}15%{opacity:1;filter:blur(0)}80%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(6px)}}
             @keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }
+            @keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }
           `}</style>
         </defs>
         <rect width={BW} height={BH} fill="url(#bgdots)" />
 
-        {/* Cave of Maya inner border chase */}
+        {sideStrips.map((d) => (
+          <circle
+            key={d.id}
+            cx={d.cx}
+            cy={d.cy}
+            r="2"
+            fill={ON}
+            opacity="0.05"
+            style={{
+              animation: `stripCascade 2.5s ${d.delay}s infinite linear`,
+            }}
+          />
+        ))}
+
         <rect
           x={PX}
           y={PY}
@@ -544,7 +584,6 @@ function DisplayBoard({ projects }) {
         />
 
         <g clipPath="url(#innerclip)">
-          {/* Green Matrix Rain */}
           {rainDrops.map((d) => (
             <circle
               key={d.id}
@@ -741,20 +780,39 @@ const DEFAULT_STATE = {
 function loadInitialState() {
   try {
     const saved = localStorage.getItem("devreadme-state");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (!parsed.dimensions?.showLeetcodeContest) {
-        localStorage.removeItem("devreadme-state");
-        return DEFAULT_STATE;
-      }
-      return {
-        ...DEFAULT_STATE,
-        ...parsed,
-        snakeCustom: parsed.snakeCustom || DEFAULT_SNAKE,
-      };
-    }
-  } catch {}
-  return DEFAULT_STATE;
+    if (!saved) return DEFAULT_STATE;
+    const parsed = JSON.parse(saved);
+    if (!parsed || typeof parsed !== "object") return DEFAULT_STATE;
+
+    return {
+      ...DEFAULT_STATE,
+      ...parsed,
+      snakeCustom: { ...DEFAULT_SNAKE, ...(parsed.snakeCustom || {}) },
+      animations: { ...DEFAULT_STATE.animations, ...(parsed.animations || {}) },
+      dimensions: Object.keys(DEFAULT_STATE.dimensions).reduce((acc, key) => {
+        acc[key] = {
+          ...DEFAULT_STATE.dimensions[key],
+          ...(parsed.dimensions?.[key] || {}),
+        };
+        return acc;
+      }, {}),
+      customLinks: Array.isArray(parsed.customLinks)
+        ? parsed.customLinks
+        : DEFAULT_STATE.customLinks,
+      customCategories: Array.isArray(parsed.customCategories)
+        ? parsed.customCategories
+        : DEFAULT_STATE.customCategories,
+      projects: Array.isArray(parsed.projects)
+        ? parsed.projects
+        : DEFAULT_STATE.projects,
+      sectionOrder: Array.isArray(parsed.sectionOrder)
+        ? parsed.sectionOrder
+        : DEFAULT_STATE.sectionOrder,
+    };
+  } catch (err) {
+    console.error("Hydration Blocked:", err);
+    return DEFAULT_STATE;
+  }
 }
 
 const S = {
@@ -1179,10 +1237,10 @@ export default function App() {
 
   const getTopHeader = () => {
     const safeDate = formData.joinedDate
-      ? formData.joinedDate.trim().replace(/ /g, "%20")
+      ? String(formData.joinedDate).trim().replace(/ /g, "%20")
       : "";
     const targetUrl = formData.github
-      ? `https://github.com/${formData.github}`
+      ? `https://github.com/${String(formData.github).trim()}`
       : "#";
     const joinedBadge = formData.joinedDate
       ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
@@ -1196,7 +1254,7 @@ export default function App() {
     includeState = false,
   ) => {
     const apiThemes = getApiThemes();
-    const user = formData.github || "torvalds";
+    const user = formData.github ? String(formData.github).trim() : "torvalds";
     const buildImg = (key, src, alt) => {
       const dim = formData.dimensions[key];
       if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
@@ -1230,12 +1288,14 @@ export default function App() {
         case "board":
           if (
             formData.displayBoard &&
-            formData.projects.filter((p) => p.trim()).length > 0
+            formData.projects.filter((p) => p && String(p).trim()).length > 0
           ) {
             const base = isPreview
               ? window.location.origin
               : "https://YOUR-ACTUAL-SITE.netlify.app";
-            const validProj = formData.projects.filter((p) => p.trim());
+            const validProj = formData.projects.filter(
+              (p) => p && String(p).trim(),
+            );
             const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
             s += `<div align="center">\n\n### Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
           }
@@ -1513,7 +1573,9 @@ jobs:
           git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
 
   const PreviewContent = () => {
-    const validProjects = formData.projects.filter((p) => p.trim());
+    const validProjects = formData.projects.filter(
+      (p) => p && String(p).trim() !== "",
+    );
     const showBoard = formData.displayBoard && validProjects.length > 0;
     const boardIndex = formData.sectionOrder.indexOf("board");
     const beforeBoard =
@@ -1612,6 +1674,7 @@ jobs:
 
   return (
     <div className="app-container">
+      <CursorBubbles />
       <header
         className="header"
         style={{
