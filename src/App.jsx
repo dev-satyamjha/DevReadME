@@ -21,8 +21,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
 
-const STATE_PREFIX = "<!--DEVREADME_STATE:";
-const STATE_SUFFIX = ":DEVREADME_STATE-->";
+const STATE_PREFIX = "";
 
 const THEMES = [
   { id: "elegant-black", name: "Elegant Black", color: "#000000" },
@@ -149,6 +148,14 @@ const SKILLS_CATEGORIES = {
     "Zig",
     "Nim",
     "Ren'Py",
+    "Crystal",
+    "Solidity",
+    "OCaml",
+    "Erlang",
+    "Fortran",
+    "MATLAB",
+    "Groovy",
+    "WebAssembly",
   ],
   Frontend: [
     "React",
@@ -173,6 +180,20 @@ const SKILLS_CATEGORIES = {
     "Vite",
     "Astro",
     "Gatsby",
+    "Remix",
+    "Qwik",
+    "Storybook",
+    "Sass",
+    "Styled Components",
+    "Jest",
+    "Vitest",
+    "Cypress",
+    "Playwright",
+    "ESLint",
+    "Prettier",
+    "Turbopack",
+    "Rollup.js",
+    "esbuild",
   ],
   Backend: [
     "Node.js",
@@ -195,6 +216,16 @@ const SKILLS_CATEGORIES = {
     "Gin",
     "Fiber",
     "Actix",
+    "Bun",
+    "Deno",
+    "Symfony",
+    "Phoenix",
+    "tRPC",
+    "RabbitMQ",
+    "Apache Kafka",
+    "Strapi",
+    "Hasura",
+    "Supabase Edge Functions",
   ],
   Database: [
     "PostgreSQL",
@@ -212,6 +243,12 @@ const SKILLS_CATEGORIES = {
     "Mongoose",
     "MariaDB",
     "CouchDB",
+    "PlanetScale",
+    "CockroachDB",
+    "InfluxDB",
+    "Elasticsearch",
+    "ClickHouse",
+    "Drizzle",
   ],
   DevOps_Cloud: [
     "AWS",
@@ -235,6 +272,21 @@ const SKILLS_CATEGORIES = {
     "Cloudflare",
     "DigitalOcean",
     "InfinityFree",
+    "Podman",
+    "Helm",
+    "Prometheus",
+    "Grafana",
+    "ArgoCD",
+    "Pulumi",
+    "Vagrant",
+    "Render",
+    "Fly.io",
+    "Railway",
+    "Ubuntu",
+    "Debian",
+    "Arch Linux",
+    "Fedora",
+    "Proxmox",
   ],
   Mobile_Desktop: [
     "React Native",
@@ -247,6 +299,11 @@ const SKILLS_CATEGORIES = {
     "Xamarin",
     "Ionic",
     ".NET MAUI",
+    "Expo",
+    "Jetpack Compose",
+    "SwiftUI",
+    "Capacitor",
+    "Cordova",
   ],
   AI_Data: [
     "TensorFlow",
@@ -261,6 +318,19 @@ const SKILLS_CATEGORIES = {
     "Matplotlib",
     "LangChain",
     "OpenAI",
+    "Anthropic",
+    "Ollama",
+    "ONNX",
+    "Plotly",
+    "Apache Spark",
+    "Polars",
+    "Gradio",
+    "Streamlit",
+    "Weights & Biases",
+    "Anaconda",
+    "RStudio",
+    "Apache Airflow",
+    "dbt",
   ],
   Design_Tools: [
     "Figma",
@@ -275,6 +345,31 @@ const SKILLS_CATEGORIES = {
     "Sketch",
     "After Effects",
     "Premiere Pro",
+    "Framer",
+    "Adobe Lightroom",
+    "Adobe InDesign",
+    "DaVinci Resolve",
+    "Affinity Designer",
+    "Spline",
+  ],
+  Productivity_Collab: [
+    "Git",
+    "GitHub",
+    "GitLab",
+    "Bitbucket",
+    "Notion",
+    "Slack",
+    "Jira",
+    "Trello",
+    "Confluence",
+    "Linear",
+    "Postman",
+    "Insomnia",
+    "Obsidian",
+    "Zoom",
+    "Google Meet",
+    "Asana",
+    "ClickUp",
   ],
   Games_Platforms: [
     "Steam",
@@ -289,6 +384,8 @@ const SKILLS_CATEGORIES = {
     "Epic Games",
     "GOG",
     "Itch.io",
+    "Roblox Studio",
+    "PlayCanvas",
   ],
   Extra: [
     "Athletics",
@@ -306,6 +403,10 @@ const SKILLS_CATEGORIES = {
     "Swimming",
     "Running",
     "Yoga",
+    "Spotify",
+    "YouTube",
+    "Reddit",
+    "Letterboxd",
   ],
 };
 
@@ -421,22 +522,21 @@ function DisplayBoard({ projects }) {
   const [scrollX, setScrollX] = useState(0);
   const timerRef = useRef(null);
   const scrollRef = useRef(null);
-
   const innerPerimeter = (PW + PH) * 2;
 
   const rainDrops = useMemo(
     () =>
-      Array.from({ length: 55 }).map((_, i) => ({
+      Array.from({ length: 110 }).map((_, i) => ({
         id: i,
         cx: PX + Math.floor(Math.random() * PW),
-        dur: (1 + Math.random() * 2).toFixed(2),
+        dur: (1.2 + Math.random() * 2).toFixed(2),
         delay: (Math.random() * 3).toFixed(2),
       })),
     [],
   );
 
   const fullMatrix = useMemo(() => {
-    const spacing = 18;
+    const spacing = 22;
     const cols = Math.floor(BW / spacing);
     const rows = Math.floor(BH / spacing);
     const offsetX = (BW - cols * spacing) / 2;
@@ -444,7 +544,7 @@ function DisplayBoard({ projects }) {
     const dots = [];
     for (let r = 0; r <= rows; r++) {
       for (let c = 0; c <= cols; c++) {
-        const delay = (r * 0.05).toFixed(2);
+        const delay = ((r * 0.09 + c * 0.05) % 3).toFixed(2);
         dots.push({
           id: `M-${r}-${c}`,
           cx: offsetX + c * spacing,
@@ -518,14 +618,6 @@ function DisplayBoard({ projects }) {
             <rect width="8" height="8" fill="#040000" />
             <circle cx="4" cy="4" r="1.2" fill="#0b0000" />
           </pattern>
-          <pattern
-            id="matrixdots"
-            width="18"
-            height="18"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="9" cy="9" r="2" fill={ON} />
-          </pattern>
           <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge>
@@ -544,12 +636,13 @@ function DisplayBoard({ projects }) {
             <rect x={PX} y={PY} width={PW} height={PH} />
           </clipPath>
           <style>{`
-                      @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}
-                      @keyframes blurSlide{0%{opacity:0;filter:blur(6px)}15%{opacity:1;filter:blur(0)}80%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(6px)}}
-                      @keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }
-                      @keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }
-                    `}</style>
+            @keyframes drop{0%{transform:translateY(-20px);opacity:0}10%{opacity:1}80%{opacity:.6}100%{transform:translateY(${PH}px);opacity:0}}
+            @keyframes blurSlide{0%{opacity:0;filter:blur(6px)}15%{opacity:1;filter:blur(0)}80%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(6px)}}
+            @keyframes chase{100%{stroke-dashoffset:-${innerPerimeter};}}
+            @keyframes dotFade{0%,100%{opacity:0.03}50%{opacity:0.22}}
+          `}</style>
         </defs>
+
         <rect width={BW} height={BH} fill="url(#bgdots)" />
 
         {fullMatrix.map((d) => (
@@ -557,12 +650,9 @@ function DisplayBoard({ projects }) {
             key={d.id}
             cx={d.cx}
             cy={d.cy}
-            r="2"
+            r="1.8"
             fill={ON}
-            opacity="0.05"
-            style={{
-              animation: `stripCascade 2.5s ${d.delay}s infinite linear`,
-            }}
+            style={{ animation: `dotFade 3s ${d.delay}s infinite ease-in-out` }}
           />
         ))}
 
@@ -596,7 +686,7 @@ function DisplayBoard({ projects }) {
               cy={PY}
               r="1.5"
               fill="#00ff00"
-              opacity="0.6"
+              opacity="0.5"
               filter="url(#glow)"
               style={{
                 animation: `drop ${d.dur}s ${d.delay}s infinite linear`,
@@ -625,7 +715,6 @@ function DisplayBoard({ projects }) {
             )}
           </g>
         </g>
-
         {[
           [PX + 3, PY + 3],
           [PX + PW - 3, PY + 3],
@@ -647,16 +736,16 @@ function DisplayBoard({ projects }) {
   );
 }
 
-const SnakePreview = ({ sc }) => {
+const SnakePreview = ({ snakeConfig }) => {
   const L = [
-    sc.darkL0 || "#000",
-    sc.darkL1 || "#000",
-    sc.darkL2 || "#000",
-    sc.darkL3 || "#000",
-    sc.darkL4 || "#000",
+    snakeConfig.darkL0 || "#000",
+    snakeConfig.darkL1 || "#000",
+    snakeConfig.darkL2 || "#000",
+    snakeConfig.darkL3 || "#000",
+    snakeConfig.darkL4 || "#000",
   ];
-  const scColor = sc.snakeColor || "#fff";
-  const bg = sc.bgColor || "#000";
+  const scColor = snakeConfig.snakeColor || "#fff";
+  const bg = snakeConfig.bgColor || "#000";
   return (
     <div
       style={{
@@ -743,7 +832,7 @@ const DEFAULT_STATE = {
     githubProfileSummary: true,
     topLangsCommit: true,
     topLangsRepo: true,
-    pinball: false,
+    pinball: true,
     snake: true,
     showLeetcodeHeatmap: true,
     showLeetcodeContest: true,
@@ -814,8 +903,7 @@ function loadInitialState() {
         ? parsed.sectionOrder
         : DEFAULT_STATE.sectionOrder,
     };
-  } catch (err) {
-    console.error("Hydration Blocked:", err);
+  } catch {
     return DEFAULT_STATE;
   }
 }
@@ -951,6 +1039,446 @@ const S = {
     textTransform: "uppercase",
     letterSpacing: "0.05em",
   },
+};
+
+const getApiThemes = (theme) => {
+  switch (theme) {
+    case "elegant-black":
+      return {
+        stats:
+          "bg_color=000000&title_color=ffffff&text_color=8b949e&icon_color=ff0000&border_color=30363d",
+        streak:
+          "background=000000&border=30363d&stroke=30363d&ring=ff0000&fire=ff0000&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=8b949e&sideLabels=8b949e&dates=8b949e",
+        activity:
+          "bg_color=000000&color=8b949e&line=ff0000&point=ffffff&hide_border=true",
+      };
+    case "glassmorphic":
+      return {
+        stats:
+          "bg_color=0f172a&title_color=38bdf8&text_color=94a3b8&icon_color=38bdf8&border_color=1e293b",
+        streak:
+          "background=0f172a&border=1e293b&stroke=1e293b&ring=38bdf8&fire=38bdf8&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=94a3b8&sideLabels=94a3b8&dates=94a3b8",
+        activity:
+          "bg_color=0f172a&color=94a3b8&line=38bdf8&point=ffffff&hide_border=true",
+      };
+    case "green-white":
+      return {
+        stats:
+          "bg_color=0a1f0a&title_color=4ade80&text_color=bbf7d0&icon_color=4ade80&border_color=166534",
+        streak:
+          "background=0a1f0a&border=166534&stroke=166534&ring=4ade80&fire=4ade80&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=bbf7d0&sideLabels=bbf7d0&dates=bbf7d0",
+        activity:
+          "bg_color=0a1f0a&color=bbf7d0&line=4ade80&point=ffffff&hide_border=true",
+      };
+    case "black-white":
+      return {
+        stats:
+          "bg_color=000000&title_color=ffffff&text_color=aaaaaa&icon_color=ffffff&border_color=333333",
+        streak:
+          "background=000000&border=333333&stroke=333333&ring=ffffff&fire=cccccc&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=aaaaaa&sideLabels=aaaaaa&dates=aaaaaa",
+        activity:
+          "bg_color=000000&color=aaaaaa&line=ffffff&point=ffffff&hide_border=true",
+      };
+    case "slate-minimal":
+      return {
+        stats:
+          "bg_color=0f172a&title_color=94a3b8&text_color=64748b&icon_color=94a3b8&border_color=1e293b",
+        streak:
+          "background=0f172a&border=1e293b&stroke=1e293b&ring=94a3b8&fire=94a3b8&currStreakNum=e2e8f0&sideNums=e2e8f0&currStreakLabel=64748b&sideLabels=64748b&dates=64748b",
+        activity:
+          "bg_color=0f172a&color=64748b&line=94a3b8&point=e2e8f0&hide_border=true",
+      };
+    case "neon-red":
+      return {
+        stats:
+          "bg_color=0d0000&title_color=ff003c&text_color=ff6666&icon_color=ff003c&border_color=3a0000",
+        streak:
+          "background=0d0000&border=3a0000&stroke=3a0000&ring=ff003c&fire=ff003c&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=ff6666&sideLabels=ff6666&dates=ff6666",
+        activity:
+          "bg_color=0d0000&color=ff6666&line=ff003c&point=ffffff&hide_border=true",
+      };
+    case "colorful":
+      return {
+        stats: "theme=radical",
+        streak: "theme=radical",
+        activity: "theme=radical&hide_border=true",
+      };
+    case "vibe-coded":
+      return {
+        stats: "theme=synthwave",
+        streak: "theme=synthwave",
+        activity: "theme=synthwave&hide_border=true",
+      };
+    case "game-orange":
+      return {
+        stats: "theme=gruvbox",
+        streak: "theme=gruvbox",
+        activity: "theme=gruvbox&hide_border=true",
+      };
+    default:
+      return {
+        stats: "theme=dark",
+        streak: "theme=dark",
+        activity: "theme=dark&hide_border=true",
+      };
+  }
+};
+
+const getTopHeader = (formData) => {
+  const safeDate = formData.joinedDate
+    ? String(formData.joinedDate).trim().replace(/ /g, "%20")
+    : "";
+  const targetUrl = formData.github
+    ? `https://github.com/${String(formData.github).trim()}`
+    : "#";
+  const joinedBadge = formData.joinedDate
+    ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
+    : "";
+  return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3 align="center">${formData.subtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
+};
+
+const generateMarkdown = (
+  isPreview = false,
+  currentOrder,
+  includeState = false,
+  formData,
+  theme,
+) => {
+  try {
+    const apiThemes = getApiThemes(theme);
+    const user = formData.github ? String(formData.github).trim() : "torvalds";
+    const buildImg = (key, src, alt) => {
+      const dim = formData.dimensions[key];
+      if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
+      const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
+      const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
+      let attrs = "";
+      if (dim.w?.trim()) attrs += `width="${dim.w}" `;
+      if (dim.h?.trim()) attrs += `height="${dim.h}" `;
+      if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
+      return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
+    };
+    let md = getTopHeader(formData);
+    const analyticsGroup = [
+      "stats",
+      "summary",
+      "pinball",
+      "topLangs",
+      "snake",
+      "leetcode",
+      "visitors",
+    ];
+    let analyticsRendered = false;
+
+    const renderSection = (section) => {
+      let s = "";
+      switch (section) {
+        case "visitors":
+          if (formData.animations.visitors)
+            s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
+          break;
+        case "board":
+          if (
+            formData.displayBoard &&
+            formData.projects.filter((p) => p && String(p).trim()).length > 0
+          ) {
+            const base = isPreview
+              ? window.location.origin
+              : "https://dev-readme.netlify.app";
+            const validProj = formData.projects.filter(
+              (p) => p && String(p).trim(),
+            );
+            const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
+            s += `<div align="center">\n\n### Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
+          }
+          break;
+        case "about":
+          if (formData.about) s += `## About Me\n${formData.about}\n\n`;
+          break;
+        case "skills":
+          if (formData.skills.length > 0) {
+            s += `## Core Tech Stack\n\n`;
+            Object.entries(SKILLS_CATEGORIES).forEach(
+              ([category, categorySkills]) => {
+                const selected = categorySkills.filter((sk) =>
+                  formData.skills.includes(sk),
+                );
+                if (selected.length > 0) {
+                  s += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
+                  selected.forEach((skill) => {
+                    const safe = skill
+                      .replace(/ /g, "%20")
+                      .replace(/\+/g, "%2B")
+                      .replace(/#/g, "%23");
+                    s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
+                  });
+                  s += `</p>\n\n`;
+                }
+              },
+            );
+          }
+          break;
+        case "customSkills":
+          formData.customCategories.forEach((cat) => {
+            if (cat.skills.length > 0) {
+              s += `### ${cat.title}\n<p align="center">\n`;
+              cat.skills.forEach((skillObj) => {
+                if (skillObj.icon.startsWith("http"))
+                  s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
+                else {
+                  const safe = skillObj.name
+                    .replace(/ /g, "%20")
+                    .replace(/\+/g, "%2B")
+                    .replace(/#/g, "%23");
+                  s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
+                }
+              });
+              s += `</p>\n\n`;
+            }
+          });
+          break;
+        case "funFact":
+          if (formData.funFact)
+            s += `<h3 align="center"><i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+          break;
+        case "socials": {
+          const hasSocials =
+            formData.github ||
+            formData.email ||
+            formData.twitter ||
+            formData.linkedin ||
+            formData.leetcode ||
+            formData.codestats ||
+            formData.instagram ||
+            formData.facebook ||
+            formData.snapchat ||
+            formData.portfolio ||
+            formData.customLinks.length > 0;
+          if (hasSocials) {
+            s += `## Socials\n<p align="center">\n`;
+            if (formData.github)
+              s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
+            if (formData.email)
+              s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
+            if (formData.linkedin)
+              s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
+            if (formData.twitter)
+              s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
+            if (formData.leetcode)
+              s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
+            if (formData.codestats)
+              s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
+            if (formData.instagram)
+              s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
+            if (formData.facebook)
+              s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
+            if (formData.snapchat)
+              s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
+            if (formData.portfolio)
+              s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
+            formData.customLinks.forEach((link) => {
+              if (link.icon.startsWith("http"))
+                s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
+              else
+                s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
+            });
+            s += `</p>\n\n`;
+          }
+          break;
+        }
+        case "stats":
+          if (formData.animations.streak || formData.animations.stats) {
+            s += `<p align="center">\n`;
+            if (formData.animations.streak)
+              s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
+            if (formData.animations.stats)
+              s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
+            s += `</p>\n\n`;
+          }
+          break;
+        case "summary":
+          if (formData.animations.githubProfileSummary) {
+            const themeName = apiThemes.stats.includes("theme=")
+              ? apiThemes.stats.replace("theme=", "")
+              : "dark";
+            s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
+          }
+          break;
+        case "pinball":
+          if (formData.animations.pinball)
+            s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
+          break;
+        case "topLangs":
+          if (
+            formData.animations.topLangsCommit ||
+            formData.animations.topLangsRepo
+          ) {
+            s += `<p align="center">\n`;
+            if (formData.animations.topLangsCommit)
+              s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
+            if (formData.animations.topLangsRepo)
+              s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
+            s += `</p>\n\n`;
+          }
+          break;
+        case "snake":
+          if (formData.animations.snake) {
+            const snakeSrc = isPreview
+              ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
+              : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
+            s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
+          }
+          break;
+        case "leetcode":
+          if (
+            (formData.leetcode &&
+              (formData.animations.showLeetcodeHeatmap ||
+                formData.animations.showLeetcodeContest)) ||
+            (formData.codeforces && formData.animations.codeforces)
+          )
+            s += `## Arena Stats\n\n`;
+          if (
+            formData.leetcode &&
+            (formData.animations.showLeetcodeHeatmap ||
+              formData.animations.showLeetcodeContest)
+          ) {
+            s += `<p align="center">\n`;
+            if (formData.animations.showLeetcodeHeatmap)
+              s += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
+            if (formData.animations.showLeetcodeContest)
+              s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
+            s += `</p>\n\n`;
+          }
+          if (formData.codeforces && formData.animations.codeforces)
+            s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
+          break;
+        default:
+          break;
+      }
+      return s;
+    };
+
+    currentOrder.forEach((section) => {
+      if (analyticsGroup.includes(section)) {
+        if (!analyticsRendered) {
+          analyticsRendered = true;
+          let buf = "";
+          currentOrder
+            .filter((s) => analyticsGroup.includes(s))
+            .forEach((as) => {
+              buf += renderSection(as);
+            });
+          if (buf.trim())
+            md += formData.statsDropdown
+              ? `<details>\n<summary><b>View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`
+              : `<div align="center">\n\n### View Stats\n\n</div>\n\n${buf}`;
+        }
+      } else md += renderSection(section);
+    });
+
+    if (includeState)
+      md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
+    return md;
+  } catch (err) {
+    return `ERROR GENERATING MARKDOWN:\n\n${err.message}\n${err.stack}`;
+  }
+};
+
+const Field = ({ name, label, placeholder, value, onChange }) => (
+  <div style={{ marginBottom: 12 }}>
+    <label style={S.label}>{label}</label>
+    <input
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={S.input}
+    />
+  </div>
+);
+
+const ColorField = ({ field, label, value, onChange }) => (
+  <div style={{ flex: 1, minWidth: 80 }}>
+    <span style={S.dimLabel}>{label}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(field, e.target.value)}
+        style={{
+          width: 28,
+          height: 28,
+          border: "none",
+          borderRadius: 4,
+          cursor: "pointer",
+          background: "none",
+          padding: 0,
+        }}
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(field, e.target.value)}
+        style={{
+          ...S.dimInput,
+          flex: 1,
+          fontFamily: "monospace",
+          fontSize: "0.68rem",
+        }}
+      />
+    </div>
+  </div>
+);
+
+const PreviewContent = ({ formData, theme }) => {
+  const validProjects = formData.projects.filter(
+    (p) => p && String(p).trim() !== "",
+  );
+  const showBoard = formData.displayBoard && validProjects.length > 0;
+  const boardIndex = formData.sectionOrder.indexOf("board");
+  const beforeBoard =
+    boardIndex > -1
+      ? formData.sectionOrder.slice(0, boardIndex)
+      : formData.sectionOrder;
+  const afterBoard =
+    boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
+  const topStr = useMemo(() => getTopHeader(formData), [formData]);
+  const mdBefore = useMemo(
+    () =>
+      topStr +
+      generateMarkdown(true, beforeBoard, false, formData, theme).replace(
+        topStr,
+        "",
+      ),
+    [topStr, beforeBoard, formData, theme],
+  );
+  const mdAfter = useMemo(
+    () =>
+      generateMarkdown(true, afterBoard, false, formData, theme).replace(
+        topStr,
+        "",
+      ),
+    [topStr, afterBoard, formData, theme],
+  );
+
+  return (
+    <div className="markdown-preview custom-scrollbar">
+      <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdBefore}</ReactMarkdown>
+      {showBoard && (
+        <div
+          style={{
+            transform: `scale(${parseFloat(formData.dimensions.displayBoard.scale) / 100})`,
+            transformOrigin: "top center",
+            width: formData.dimensions.displayBoard.w || "100%",
+            marginBottom: 16,
+          }}
+        >
+          <DisplayBoard projects={formData.projects} />
+        </div>
+      )}
+      <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdAfter}</ReactMarkdown>
+    </div>
+  );
 };
 
 export default function App() {
@@ -1146,371 +1674,22 @@ export default function App() {
           ...parsed,
           snakeCustom: parsed.snakeCustom || DEFAULT_SNAKE,
         });
-        alert("Session restored!");
         setImportText("");
-      } catch (err) {
-        alert(`Failed: ${err.message}`);
-      }
-    } else
-      alert(
-        "No valid session found. Paste the full text from Save Session tab.",
-      );
-  };
-
-  const getApiThemes = () => {
-    switch (theme) {
-      case "elegant-black":
-        return {
-          stats:
-            "bg_color=000000&title_color=ffffff&text_color=8b949e&icon_color=ff0000&border_color=30363d",
-          streak:
-            "background=000000&border=30363d&stroke=30363d&ring=ff0000&fire=ff0000&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=8b949e&sideLabels=8b949e&dates=8b949e",
-          activity:
-            "bg_color=000000&color=8b949e&line=ff0000&point=ffffff&hide_border=true",
-        };
-      case "glassmorphic":
-        return {
-          stats:
-            "bg_color=0f172a&title_color=38bdf8&text_color=94a3b8&icon_color=38bdf8&border_color=1e293b",
-          streak:
-            "background=0f172a&border=1e293b&stroke=1e293b&ring=38bdf8&fire=38bdf8&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=94a3b8&sideLabels=94a3b8&dates=94a3b8",
-          activity:
-            "bg_color=0f172a&color=94a3b8&line=38bdf8&point=ffffff&hide_border=true",
-        };
-      case "green-white":
-        return {
-          stats:
-            "bg_color=0a1f0a&title_color=4ade80&text_color=bbf7d0&icon_color=4ade80&border_color=166534",
-          streak:
-            "background=0a1f0a&border=166534&stroke=166534&ring=4ade80&fire=4ade80&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=bbf7d0&sideLabels=bbf7d0&dates=bbf7d0",
-          activity:
-            "bg_color=0a1f0a&color=bbf7d0&line=4ade80&point=ffffff&hide_border=true",
-        };
-      case "black-white":
-        return {
-          stats:
-            "bg_color=000000&title_color=ffffff&text_color=aaaaaa&icon_color=ffffff&border_color=333333",
-          streak:
-            "background=000000&border=333333&stroke=333333&ring=ffffff&fire=cccccc&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=aaaaaa&sideLabels=aaaaaa&dates=aaaaaa",
-          activity:
-            "bg_color=000000&color=aaaaaa&line=ffffff&point=ffffff&hide_border=true",
-        };
-      case "slate-minimal":
-        return {
-          stats:
-            "bg_color=0f172a&title_color=94a3b8&text_color=64748b&icon_color=94a3b8&border_color=1e293b",
-          streak:
-            "background=0f172a&border=1e293b&stroke=1e293b&ring=94a3b8&fire=94a3b8&currStreakNum=e2e8f0&sideNums=e2e8f0&currStreakLabel=64748b&sideLabels=64748b&dates=64748b",
-          activity:
-            "bg_color=0f172a&color=64748b&line=94a3b8&point=e2e8f0&hide_border=true",
-        };
-      case "neon-red":
-        return {
-          stats:
-            "bg_color=0d0000&title_color=ff003c&text_color=ff6666&icon_color=ff003c&border_color=3a0000",
-          streak:
-            "background=0d0000&border=3a0000&stroke=3a0000&ring=ff003c&fire=ff003c&currStreakNum=ffffff&sideNums=ffffff&currStreakLabel=ff6666&sideLabels=ff6666&dates=ff6666",
-          activity:
-            "bg_color=0d0000&color=ff6666&line=ff003c&point=ffffff&hide_border=true",
-        };
-      case "colorful":
-        return {
-          stats: "theme=radical",
-          streak: "theme=radical",
-          activity: "theme=radical&hide_border=true",
-        };
-      case "vibe-coded":
-        return {
-          stats: "theme=synthwave",
-          streak: "theme=synthwave",
-          activity: "theme=synthwave&hide_border=true",
-        };
-      case "game-orange":
-        return {
-          stats: "theme=gruvbox",
-          streak: "theme=gruvbox",
-          activity: "theme=gruvbox&hide_border=true",
-        };
-      default:
-        return {
-          stats: "theme=dark",
-          streak: "theme=dark",
-          activity: "theme=dark&hide_border=true",
-        };
-    }
-  };
-
-  const getTopHeader = () => {
-    const safeDate = formData.joinedDate
-      ? String(formData.joinedDate).trim().replace(/ /g, "%20")
-      : "";
-    const targetUrl = formData.github
-      ? `https://github.com/${String(formData.github).trim()}`
-      : "#";
-    const joinedBadge = formData.joinedDate
-      ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
-      : "";
-    return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3 align="center">${formData.subtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
-  };
-
-  const generateMarkdown = (
-    isPreview = false,
-    currentOrder = formData.sectionOrder,
-    includeState = false,
-  ) => {
-    try {
-      const apiThemes = getApiThemes();
-      const user = formData.github
-        ? String(formData.github).trim()
-        : "torvalds";
-      const buildImg = (key, src, alt) => {
-        const dim = formData.dimensions[key];
-        if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
-        const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
-        const xSpace = "&nbsp;".repeat(Number(dim.x) || 0);
-        let attrs = "";
-        if (dim.w?.trim()) attrs += `width="${dim.w}" `;
-        if (dim.h?.trim()) attrs += `height="${dim.h}" `;
-        if (!attrs && dim.scale?.trim()) attrs = `width="${dim.scale}" `;
-        return `${ySpace}${xSpace}<img src="${src}" alt="${alt}" ${attrs.trim()} />\n`;
-      };
-      let md = getTopHeader();
-      const analyticsGroup = [
-        "stats",
-        "summary",
-        "pinball",
-        "topLangs",
-        "snake",
-        "leetcode",
-        "visitors",
-      ];
-      let analyticsRendered = false;
-
-      const renderSection = (section) => {
-        let s = "";
-        switch (section) {
-          case "visitors":
-            if (formData.animations.visitors)
-              s += `<p align="center">\n  <img src="https://api.iconify.design/mdi:eye.svg?color=yellow" height="28" alt="Views Icon" align="center" />&nbsp;\n  <img src="https://komarev.com/ghpvc/?username=${user}&style=for-the-badge&label=VIEWS&color=orange&labelColor=red" alt="Profile views" align="center" />\n</p>\n\n`;
-            break;
-          case "board":
-            if (
-              formData.displayBoard &&
-              formData.projects.filter((p) => p && String(p).trim()).length > 0
-            ) {
-              const base = isPreview
-                ? window.location.origin
-                : "https://YOUR-ACTUAL-SITE.netlify.app";
-              const validProj = formData.projects.filter(
-                (p) => p && String(p).trim(),
-              );
-              const boardUrl = `${base}/.netlify/functions/displayboard?user=${user}&repos=${encodeURIComponent(validProj.join(","))}`;
-              s += `<div align="center">\n\n### Prominent Works\n\n${buildImg("displayBoard", boardUrl, "Projects Display Board")}\n\n</div>\n\n`;
-            }
-            break;
-          case "about":
-            if (formData.about) s += `## About Me\n${formData.about}\n\n`;
-            break;
-          case "skills":
-            if (formData.skills.length > 0) {
-              s += `## Core Tech Stack\n\n`;
-              Object.entries(SKILLS_CATEGORIES).forEach(
-                ([category, categorySkills]) => {
-                  const selected = categorySkills.filter((sk) =>
-                    formData.skills.includes(sk),
-                  );
-                  if (selected.length > 0) {
-                    s += `### ${category.replace(/_/g, " & ")}\n<p align="center">\n`;
-                    selected.forEach((skill) => {
-                      const safe = skill
-                        .replace(/ /g, "%20")
-                        .replace(/\+/g, "%2B")
-                        .replace(/#/g, "%23");
-                      s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skill.toLowerCase().replace(/ /g, "")}" alt="${skill}" />\n`;
-                    });
-                    s += `</p>\n\n`;
-                  }
-                },
-              );
-            }
-            break;
-          case "customSkills":
-            formData.customCategories.forEach((cat) => {
-              if (cat.skills.length > 0) {
-                s += `### ${cat.title}\n<p align="center">\n`;
-                cat.skills.forEach((skillObj) => {
-                  if (skillObj.icon.startsWith("http"))
-                    s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
-                  else {
-                    const safe = skillObj.name
-                      .replace(/ /g, "%20")
-                      .replace(/\+/g, "%2B")
-                      .replace(/#/g, "%23");
-                    s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
-                  }
-                });
-                s += `</p>\n\n`;
-              }
-            });
-            break;
-          case "funFact":
-            if (formData.funFact)
-              s += `<h3 align="center"><i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
-            break;
-          case "socials": {
-            const hasSocials =
-              formData.github ||
-              formData.email ||
-              formData.twitter ||
-              formData.linkedin ||
-              formData.leetcode ||
-              formData.codestats ||
-              formData.instagram ||
-              formData.facebook ||
-              formData.snapchat ||
-              formData.portfolio ||
-              formData.customLinks.length > 0;
-            if (hasSocials) {
-              s += `## Socials\n<p align="center">\n`;
-              if (formData.github)
-                s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
-              if (formData.email)
-                s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
-              if (formData.linkedin)
-                s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
-              if (formData.twitter)
-                s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
-              if (formData.leetcode)
-                s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
-              if (formData.codestats)
-                s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
-              if (formData.instagram)
-                s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
-              if (formData.facebook)
-                s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
-              if (formData.snapchat)
-                s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
-              if (formData.portfolio)
-                s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
-              formData.customLinks.forEach((link) => {
-                if (link.icon.startsWith("http"))
-                  s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
-                else
-                  s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
-              });
-              s += `</p>\n\n`;
-            }
-            break;
-          }
-          case "stats":
-            if (formData.animations.streak || formData.animations.stats) {
-              s += `<p align="center">\n`;
-              if (formData.animations.streak)
-                s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
-              if (formData.animations.stats)
-                s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
-              s += `</p>\n\n`;
-            }
-            break;
-          case "summary":
-            if (formData.animations.githubProfileSummary) {
-              const themeName = apiThemes.stats.includes("theme=")
-                ? apiThemes.stats.replace("theme=", "")
-                : "dark";
-              s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
-            }
-            break;
-          case "pinball":
-            if (formData.animations.pinball)
-              s += `<p align="center">\n  ${buildImg("pinball", `https://github-readme-activity-graph.vercel.app/graph?username=${user}&${apiThemes.activity}`, "Activity Graph")}</p>\n\n`;
-            break;
-          case "topLangs":
-            if (
-              formData.animations.topLangsCommit ||
-              formData.animations.topLangsRepo
-            ) {
-              s += `<p align="center">\n`;
-              if (formData.animations.topLangsCommit)
-                s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
-              if (formData.animations.topLangsRepo)
-                s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
-              s += `</p>\n\n`;
-            }
-            break;
-          case "snake":
-            if (formData.animations.snake) {
-              const snakeSrc = isPreview
-                ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
-                : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-              s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
-            }
-            break;
-          case "leetcode":
-            if (
-              (formData.leetcode &&
-                (formData.animations.showLeetcodeHeatmap ||
-                  formData.animations.showLeetcodeContest)) ||
-              (formData.codeforces && formData.animations.codeforces)
-            )
-              s += `## Arena Stats\n\n`;
-            if (
-              formData.leetcode &&
-              (formData.animations.showLeetcodeHeatmap ||
-                formData.animations.showLeetcodeContest)
-            ) {
-              s += `<p align="center">\n`;
-              if (formData.animations.showLeetcodeHeatmap)
-                s += `  ${buildImg("showLeetcodeHeatmap", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=heatmap`, "LeetCode Heatmap")}`;
-              if (formData.animations.showLeetcodeContest)
-                s += `  ${buildImg("showLeetcodeContest", `https://leetcard.jacoblin.cool/${formData.leetcode}?theme=dark&font=Inter&ext=contest`, "LeetCode Contest")}`;
-              s += `</p>\n\n`;
-            }
-            if (formData.codeforces && formData.animations.codeforces)
-              s += `<p align="center">\n  ${buildImg("codeforces", `https://codeforces-readme-stats.vercel.app/api/card?username=${formData.codeforces}&theme=tokyonight`, "Codeforces Stats")}</p>\n\n`;
-            break;
-          default:
-            break;
-        }
-        return s;
-      };
-
-      currentOrder.forEach((section) => {
-        if (analyticsGroup.includes(section)) {
-          if (!analyticsRendered) {
-            analyticsRendered = true;
-            let buf = "";
-            currentOrder
-              .filter((s) => analyticsGroup.includes(s))
-              .forEach((as) => {
-                buf += renderSection(as);
-              });
-            if (buf.trim())
-              md += formData.statsDropdown
-                ? `<details>\n<summary><b>View Stats</b></summary>\n<br>\n\n${buf}</details>\n\n`
-                : `<div align="center">\n\n### View Stats\n\n</div>\n\n${buf}`;
-          }
-        } else md += renderSection(section);
-      });
-
-      if (includeState)
-        md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
-      return md;
-    } catch (err) {
-      return `ERROR GENERATING MARKDOWN:\n\n${err.message}\n${err.stack}`;
+      } catch (err) {}
     }
   };
 
   const generateSessionBlob = () => {
     try {
       return `${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}`;
-    } catch (err) {
-      return `ERROR GENERATING SESSION: ${err.message}`;
+    } catch {
+      return "";
     }
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
-      generateMarkdown(false, formData.sectionOrder, true),
+      generateMarkdown(false, formData.sectionOrder, true, formData, theme),
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -1528,121 +1707,30 @@ export default function App() {
     setTimeout(() => setCopiedYml(false), 2000);
   };
 
-  const sc = formData.snakeCustom || DEFAULT_SNAKE;
+  const snakeConfig = formData.snakeCustom || DEFAULT_SNAKE;
   const safeHex = (val, def) => (val || def).replace("#", "");
   const lightDotsEncoded = [
-    sc.commitL0,
-    sc.commitL1,
-    sc.commitL2,
-    sc.commitL3,
-    sc.commitL4,
+    snakeConfig.commitL0,
+    snakeConfig.commitL1,
+    snakeConfig.commitL2,
+    snakeConfig.commitL3,
+    snakeConfig.commitL4,
   ]
     .map((c) => `%23${safeHex(c, "#fff")}`)
     .join(",");
   const darkDotsEncoded = [
-    sc.darkL0,
-    sc.darkL1,
-    sc.darkL2,
-    sc.darkL3,
-    sc.darkL4,
+    snakeConfig.darkL0,
+    snakeConfig.darkL1,
+    snakeConfig.darkL2,
+    snakeConfig.darkL3,
+    snakeConfig.darkL4,
   ]
     .map((c) => `%23${safeHex(c, "#fff")}`)
     .join(",");
-  const snakeHex = safeHex(sc.snakeColor, "#fff");
-  const bgHex = safeHex(sc.bgColor, "#000");
+  const snakeHex = safeHex(snakeConfig.snakeColor, "#fff");
+  const bgHex = safeHex(snakeConfig.bgColor, "#000");
 
-  const snakeYml = `name: Generate Snake
-
-on:
-  schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  generate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Generate snake
-        uses: Platane/snk@v3
-        with:
-          github_user_name: \${{ github.repository_owner }}
-          outputs: |
-            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${snakeHex}&color_dots=${lightDotsEncoded}&color_background=%23${bgHex}
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${snakeHex}&color_dots=${darkDotsEncoded}&color_background=%23${bgHex}
-        env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-      - name: Push snake to output branch
-        run: |
-          sudo chown -R $USER:$USER dist
-          cd dist
-          git init
-          git checkout -b output
-          git add .
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: update dev snake animation"
-          git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
-
-  const PreviewContent = () => {
-    const validProjects = formData.projects.filter(
-      (p) => p && String(p).trim() !== "",
-    );
-    const showBoard = formData.displayBoard && validProjects.length > 0;
-    const boardIndex = formData.sectionOrder.indexOf("board");
-    const beforeBoard =
-      boardIndex > -1
-        ? formData.sectionOrder.slice(0, boardIndex)
-        : formData.sectionOrder;
-    const afterBoard =
-      boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
-    const topStr = useMemo(() => getTopHeader(), [formData]);
-    const mdBefore = useMemo(
-      () =>
-        topStr + generateMarkdown(true, beforeBoard, false).replace(topStr, ""),
-      [topStr, beforeBoard, formData],
-    );
-    const mdAfter = useMemo(
-      () => generateMarkdown(true, afterBoard, false).replace(topStr, ""),
-      [topStr, afterBoard, formData],
-    );
-
-    return (
-      <div className="markdown-preview custom-scrollbar">
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdBefore}</ReactMarkdown>
-        {showBoard && (
-          <div
-            style={{
-              transform: `scale(${parseFloat(formData.dimensions.displayBoard.scale) / 100})`,
-              transformOrigin: "top center",
-              width: formData.dimensions.displayBoard.w || "100%",
-              marginBottom: 16,
-            }}
-          >
-            <DisplayBoard projects={formData.projects} />
-          </div>
-        )}
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdAfter}</ReactMarkdown>
-      </div>
-    );
-  };
-
-  const Field = ({ name, label, placeholder }) => (
-    <div style={{ marginBottom: 12 }}>
-      <label style={S.label}>{label}</label>
-      <input
-        name={name}
-        value={formData[name]}
-        onChange={handleInputChange}
-        placeholder={placeholder}
-        style={S.input}
-      />
-    </div>
-  );
+  const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n      - name: Generate snake\n        uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${snakeHex}&color_dots=${lightDotsEncoded}&color_background=%23${bgHex}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${snakeHex}&color_dots=${darkDotsEncoded}&color_background=%23${bgHex}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n      - name: Push snake to output branch\n        run: |\n          sudo chown -R $USER:$USER dist\n          cd dist\n          git init\n          git checkout -b output\n          git add .\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git commit -m "chore: update dev snake animation"\n          git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
 
   const animKeys = [
     { key: "visitors", label: "Profile Visitors Badge" },
@@ -1658,39 +1746,6 @@ jobs:
     { key: "codeforces", label: "Codeforces Stats" },
   ];
 
-  const ColorField = ({ field, label }) => (
-    <div style={{ flex: 1, minWidth: 80 }}>
-      <span style={S.dimLabel}>{label}</span>
-      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-        <input
-          type="color"
-          value={sc[field]}
-          onChange={(e) => setSnakeField(field, e.target.value)}
-          style={{
-            width: 28,
-            height: 28,
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-            background: "none",
-            padding: 0,
-          }}
-        />
-        <input
-          type="text"
-          value={sc[field]}
-          onChange={(e) => setSnakeField(field, e.target.value)}
-          style={{
-            ...S.dimInput,
-            flex: 1,
-            fontFamily: "monospace",
-            fontSize: "0.68rem",
-          }}
-        />
-      </div>
-    </div>
-  );
-
   return (
     <div className="app-container">
       <CursorBubbles />
@@ -1705,8 +1760,22 @@ jobs:
           className="logo-area"
           style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
-          <Sparkles className="logo-icon" size={18} />
-          <h1 style={{ fontSize: "1rem", letterSpacing: "0.05em", margin: 0 }}>
+          <img
+            src="/logo.png"
+            alt="DevReadME Logo"
+            width={20}
+            height={20}
+            style={{ display: "block" }}
+          />
+          <h1
+            style={{
+              fontSize: "1rem",
+              letterSpacing: "0.05em",
+              margin: 0,
+              fontWeight: 700,
+              color: "var(--accent-color)",
+            }}
+          >
             DevReadME
           </h1>
         </div>
@@ -1862,17 +1931,25 @@ jobs:
         >
           <div
             className="sidebar-scrollable"
-            style={{ padding: "12px", flex: 1 }}
+            style={{ padding: "12px", flex: 1, overflowY: "auto" }}
           >
             <div style={S.card}>
               <div style={S.sectionHead}>
                 <Globe size={13} /> Basic Info
               </div>
-              <Field name="name" label="Full Name" placeholder="John Doe" />
+              <Field
+                name="name"
+                label="Full Name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
               <Field
                 name="subtitle"
                 label="Subtitle"
                 placeholder="Full Stack Developer"
+                value={formData.subtitle}
+                onChange={handleInputChange}
               />
               <div style={{ marginBottom: 12 }}>
                 <label style={S.label}>About Me</label>
@@ -1889,6 +1966,8 @@ jobs:
                 name="funFact"
                 label="Fun Fact"
                 placeholder="I can solve a Rubik's cube..."
+                value={formData.funFact}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -2028,7 +2107,12 @@ jobs:
                   placeholder: "https://yoursite.com",
                 },
               ].map((f) => (
-                <Field key={f.name} {...f} />
+                <Field
+                  key={f.name}
+                  {...f}
+                  value={formData[f.name]}
+                  onChange={handleInputChange}
+                />
               ))}
               <div
                 style={{
@@ -2592,7 +2676,9 @@ jobs:
             className="preview-container card"
             style={{ borderRadius: 0, border: "none", borderTop: "none" }}
           >
-            {activeTab === "preview" && <PreviewContent />}
+            {activeTab === "preview" && (
+              <PreviewContent formData={formData} theme={theme} />
+            )}
 
             {activeTab === "code" && (
               <div
@@ -2624,8 +2710,8 @@ jobs:
                   </div>
                   {[
                     {
-                      n: 1,
-                      text: (
+                      stepNumber: 1,
+                      stepText: (
                         <>
                           Go to{" "}
                           <strong>
@@ -2636,8 +2722,8 @@ jobs:
                       ),
                     },
                     {
-                      n: 2,
-                      text: (
+                      stepNumber: 2,
+                      stepText: (
                         <>
                           Edit <code style={S.chip}>README.md</code>, select
                           all, delete, paste the copied markdown.
@@ -2645,18 +2731,18 @@ jobs:
                       ),
                     },
                     {
-                      n: 3,
-                      text: (
+                      stepNumber: 3,
+                      stepText: (
                         <>
                           Click <strong>Commit changes</strong>. Your profile
                           goes live instantly.
                         </>
                       ),
                     },
-                  ].map(({ n, text }) => (
-                    <div key={n} style={S.stepRow}>
-                      <div style={S.stepNum}>{n}</div>
-                      <div style={S.stepText}>{text}</div>
+                  ].map(({ stepNumber, stepText }) => (
+                    <div key={stepNumber} style={S.stepRow}>
+                      <div style={S.stepNum}>{stepNumber}</div>
+                      <div style={S.stepText}>{stepText}</div>
                     </div>
                   ))}
                 </div>
@@ -2669,7 +2755,13 @@ jobs:
                     padding: "16px",
                   }}
                 >
-                  {generateMarkdown(false, formData.sectionOrder, false)}
+                  {generateMarkdown(
+                    false,
+                    formData.sectionOrder,
+                    false,
+                    formData,
+                    theme,
+                  )}
                 </pre>
               </div>
             )}
@@ -2744,21 +2836,24 @@ jobs:
                   </div>
                   {[
                     {
-                      n: 1,
-                      text: "Go to Save Session tab and copy your blob, or open where you stored it.",
+                      stepNumber: 1,
+                      stepText:
+                        "Go to Save Session tab and copy your blob, or open where you stored it.",
                     },
                     {
-                      n: 2,
-                      text: "Paste the full text below. It starts with the state marker and ends with the closing tag.",
+                      stepNumber: 2,
+                      stepText:
+                        "Paste the full text below. It starts with the state marker and ends with the closing tag.",
                     },
                     {
-                      n: 3,
-                      text: "Click Restore. All your settings load instantly.",
+                      stepNumber: 3,
+                      stepText:
+                        "Click Restore. All your settings load instantly.",
                     },
-                  ].map(({ n, text }) => (
-                    <div key={n} style={S.stepRow}>
-                      <div style={S.stepNum}>{n}</div>
-                      <div style={S.stepText}>{text}</div>
+                  ].map(({ stepNumber, stepText }) => (
+                    <div key={stepNumber} style={S.stepRow}>
+                      <div style={S.stepNum}>{stepNumber}</div>
+                      <div style={S.stepText}>{stepText}</div>
                     </div>
                   ))}
                 </div>
@@ -2814,8 +2909,8 @@ jobs:
                   </div>
                   {[
                     {
-                      n: 1,
-                      text: (
+                      stepNumber: 1,
+                      stepText: (
                         <>
                           Go to your profile repo:{" "}
                           <code style={S.chip}>
@@ -2825,8 +2920,8 @@ jobs:
                       ),
                     },
                     {
-                      n: 2,
-                      text: (
+                      stepNumber: 2,
+                      stepText: (
                         <>
                           Add file, type:{" "}
                           <code style={S.chip}>
@@ -2836,8 +2931,8 @@ jobs:
                       ),
                     },
                     {
-                      n: 3,
-                      text: (
+                      stepNumber: 3,
+                      stepText: (
                         <>
                           Customize colors below, copy YML, paste into the file,
                           commit.
@@ -2845,8 +2940,8 @@ jobs:
                       ),
                     },
                     {
-                      n: 4,
-                      text: (
+                      stepNumber: 4,
+                      stepText: (
                         <>
                           <strong>
                             Settings &gt; Actions &gt; General &gt; Workflow
@@ -2856,8 +2951,8 @@ jobs:
                       ),
                     },
                     {
-                      n: 5,
-                      text: (
+                      stepNumber: 5,
+                      stepText: (
                         <>
                           <strong>
                             Actions &gt; Generate Snake &gt; Run workflow
@@ -2868,13 +2963,14 @@ jobs:
                       ),
                     },
                     {
-                      n: 6,
-                      text: "Runs daily via cron. No fake commits, only writes to the output branch.",
+                      stepNumber: 6,
+                      stepText:
+                        "Runs daily via cron. No fake commits, only writes to the output branch.",
                     },
-                  ].map(({ n, text }) => (
-                    <div key={n} style={S.stepRow}>
-                      <div style={S.stepNum}>{n}</div>
-                      <div style={S.stepText}>{text}</div>
+                  ].map(({ stepNumber, stepText }) => (
+                    <div key={stepNumber} style={S.stepRow}>
+                      <div style={S.stepNum}>{stepNumber}</div>
+                      <div style={S.stepText}>{stepText}</div>
                     </div>
                   ))}
                 </div>
@@ -2891,7 +2987,7 @@ jobs:
                 >
                   Live Preview
                 </div>
-                <SnakePreview sc={sc} />
+                <SnakePreview snakeConfig={snakeConfig} />
 
                 <div
                   style={{
@@ -2913,7 +3009,7 @@ jobs:
                     marginBottom: 16,
                   }}
                 >
-                  {PRESET_SCHEMES.map((sc2, i) => (
+                  {PRESET_SCHEMES.map((preset, i) => (
                     <button
                       key={i}
                       onClick={() => {
@@ -2921,37 +3017,37 @@ jobs:
                         setFormData((p) => ({
                           ...p,
                           snakeCustom: {
-                            snakeColor: `#${sc2.snake}`,
-                            bgColor: `#${sc2.bg}`,
-                            commitL0: sc2.light.split(",")[0],
-                            commitL1: sc2.light.split(",")[1],
-                            commitL2: sc2.light.split(",")[2],
-                            commitL3: sc2.light.split(",")[3],
-                            commitL4: sc2.light.split(",")[4],
-                            darkL0: sc2.dark.split(",")[0],
-                            darkL1: sc2.dark.split(",")[1],
-                            darkL2: sc2.dark.split(",")[2],
-                            darkL3: sc2.dark.split(",")[3],
-                            darkL4: sc2.dark.split(",")[4],
+                            snakeColor: `#${preset.snake}`,
+                            bgColor: `#${preset.bg}`,
+                            commitL0: preset.light.split(",")[0],
+                            commitL1: preset.light.split(",")[1],
+                            commitL2: preset.light.split(",")[2],
+                            commitL3: preset.light.split(",")[3],
+                            commitL4: preset.light.split(",")[4],
+                            darkL0: preset.dark.split(",")[0],
+                            darkL1: preset.dark.split(",")[1],
+                            darkL2: preset.dark.split(",")[2],
+                            darkL3: preset.dark.split(",")[3],
+                            darkL4: preset.dark.split(",")[4],
                           },
                         }));
                       }}
                       style={{
                         padding: "4px 10px",
                         borderRadius: 5,
-                        border: `2px solid ${selectedPreset === i ? `#${sc2.snake}` : "var(--border-color)"}`,
+                        border: `2px solid ${selectedPreset === i ? `#${preset.snake}` : "var(--border-color)"}`,
                         background:
                           selectedPreset === i
-                            ? `#${sc2.snake}22`
+                            ? `#${preset.snake}22`
                             : "transparent",
-                        color: `#${sc2.snake}`,
+                        color: `#${preset.snake}`,
                         fontWeight: 700,
                         cursor: "pointer",
                         fontSize: "0.75rem",
                         transition: "all 0.12s",
                       }}
                     >
-                      {sc2.label}
+                      {preset.label}
                     </button>
                   ))}
                 </div>
@@ -2977,8 +3073,18 @@ jobs:
                   }}
                 >
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    <ColorField field="snakeColor" label="Snake Skin" />
-                    <ColorField field="bgColor" label="Background" />
+                    <ColorField
+                      field="snakeColor"
+                      label="Snake Skin"
+                      value={snakeConfig.snakeColor}
+                      onChange={setSnakeField}
+                    />
+                    <ColorField
+                      field="bgColor"
+                      label="Background"
+                      value={snakeConfig.bgColor}
+                      onChange={setSnakeField}
+                    />
                   </div>
                   <div
                     style={{
@@ -2999,7 +3105,13 @@ jobs:
                       "commitL3",
                       "commitL4",
                     ].map((f, i) => (
-                      <ColorField key={f} field={f} label={`L${i}`} />
+                      <ColorField
+                        key={f}
+                        field={f}
+                        label={`L${i}`}
+                        value={snakeConfig[f]}
+                        onChange={setSnakeField}
+                      />
                     ))}
                   </div>
                   <div
@@ -3016,7 +3128,13 @@ jobs:
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {["darkL0", "darkL1", "darkL2", "darkL3", "darkL4"].map(
                       (f, i) => (
-                        <ColorField key={f} field={f} label={`D${i}`} />
+                        <ColorField
+                          key={f}
+                          field={f}
+                          label={`D${i}`}
+                          value={snakeConfig[f]}
+                          onChange={setSnakeField}
+                        />
                       ),
                     )}
                   </div>
