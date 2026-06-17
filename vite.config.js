@@ -119,7 +119,7 @@ function buildSlideCSS(n, totalDur) {
 
 function buildRain() {
   const drops = [];
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 110; i++) {
     const cx = PX + Math.floor(Math.random() * PW);
     const dur = (1 + Math.random() * 2).toFixed(2);
     const delay = (Math.random() * 3).toFixed(2);
@@ -131,23 +131,23 @@ function buildRain() {
 }
 
 function buildFullMatrix() {
-  const spacing = 18;
+  const spacing = 22;
   const cols = Math.floor(BW / spacing);
   const rows = Math.floor(BH / spacing);
   const offsetX = (BW - cols * spacing) / 2;
   const offsetY = (BH - rows * spacing) / 2;
-  const strips = [];
+  const dots = [];
   for (let r = 0; r <= rows; r++) {
     for (let c = 0; c <= cols; c++) {
-      const delay = (r * 0.05).toFixed(2);
+      const delay = ((r * 0.09 + c * 0.05) % 3).toFixed(2);
       const cx = offsetX + c * spacing;
       const cy = offsetY + r * spacing;
-      strips.push(
-        `<circle cx="${cx}" cy="${cy}" r="2" fill="${ON}" opacity="0.05" style="animation: stripCascade 2.5s ${delay}s infinite linear"/>`,
+      dots.push(
+        `<circle cx="${cx}" cy="${cy}" r="1.8" fill="${ON}" style="animation:dotFade 3s ${delay}s infinite ease-in-out"/>`,
       );
     }
   }
-  return strips.join("");
+  return dots.join("");
 }
 
 const apiMock = () => ({
@@ -198,7 +198,7 @@ const apiMock = () => ({
           const innerPerimeter = (PW + PH) * 2;
           const slideCss = buildSlideCSS(n, totalDur);
           const boxCss = `@keyframes chase { 100% { stroke-dashoffset: -${innerPerimeter}; } }`;
-          const stripCss = `@keyframes stripCascade { 0%, 100% { opacity: 0.05; } 20% { opacity: 1; filter: drop-shadow(0 0 5px ${ON}); } 50% { opacity: 0.05; } }`;
+          const stripCss = `@keyframes dotFade { 0%, 100% { opacity: 0.03; } 50% { opacity: 0.22; } }`;
           const allCss = slideCss + boxCss + stripCss;
 
           const TEXT_Y = PY + PH / 2 - 45;
@@ -248,12 +248,9 @@ const apiMock = () => ({
             <style>${allCss}</style>
             <rect width="${BW}" height="${BH}" fill="#060000" rx="12"/>
             <rect width="${BW}" height="${BH}" fill="url(#bgd)" rx="12"/>
-
             ${buildFullMatrix()}
-
             <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="#0a0000" stroke="#330000" stroke-width="2"/>
             <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" fill="none" stroke="${ON}" stroke-width="4" stroke-dasharray="250 ${innerPerimeter - 250}" filter="url(#redglow)" style="animation: chase 3s linear infinite;"/>
-
             <g clip-path="url(#innerclip)">
             ${buildRain()}
             ${slides}

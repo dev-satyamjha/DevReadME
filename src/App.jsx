@@ -1774,6 +1774,8 @@ export default function App() {
               margin: 0,
               fontWeight: 700,
               color: "var(--accent-color)",
+              background: "none",
+              WebkitTextFillColor: "initial",
             }}
           >
             DevReadME
