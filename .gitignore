@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+Deployments
+.bun
+# Local Netlify folder
+.netlify

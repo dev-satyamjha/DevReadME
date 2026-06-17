@@ -1,145 +1,194 @@
-# DevReadME — GitHub Profile README Generator
+# 🚀 DevReadME
 
-The most advanced GitHub Profile README generator with animated snakes, meteor streaks, custom themes, and 100+ skills.
+**The most visually expressive GitHub profile README generator out there.**
 
-## 🚀 Quick Start (Local)
+Most README generators give you a form and spit out some badges. DevReadME gives you a live preview, a cinematic display board, animated snake customization, themed UI, and a session save system, all in one place, no account needed.
 
-```bash
-bun install
-bun dev
-```
-
-## 🌐 How to Make Your Website Live
-
-You can easily deploy **DevReadME** to **Netlify** (simplest) or **GitHub Pages**.
-
-### Option A: Deploying to Netlify (Recommended)
-Netlify has native support for `bun` and requires zero configuration changes.
-
-#### Method 1: Git-based deployment (Continuous Deployment)
-1. Push your code to a GitHub repository (see [Option B step 3](#step-3--push-everything-to-github)).
-2. Log in to [Netlify](https://www.netlify.com/).
-3. Click **Add new site** → **Import an existing project** → select **GitHub**.
-4. Authorize and choose your `DevReadME` repository.
-5. Netlify will automatically detect Vite. Configure the build settings as:
-   - **Build command**: `bun run build`
-   - **Publish directory**: `dist`
-6. Click **Deploy DevReadME**. Your site will build and be live on a custom `*.netlify.app` URL!
-
-#### Method 2: Manual drag-and-drop
-1. Build the project locally:
-   ```bash
-   bun run build
-   ```
-2. Drag and drop the generated `dist/` folder directly onto the [Netlify Drop](https://app.netlify.com/drop) area.
+<p align="center">
+  <a href="https://dev-readme.netlify.app"><strong>✨ Try it live →</strong></a>
+</p>
 
 ---
 
-### Option B: Deploying to GitHub Pages
+## 🤔 Why DevReadME is Different
 
-#### Step 1 — Set the base URL in `vite.config.js`
-Open `vite.config.js` and add the `base` option matching your repo name:
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+There are plenty of README generators. Most of them feel like filling out a tax form. DevReadME was built to feel like a creative tool.
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/DevReadME/'   // ← Change this to your GitHub repo name
-})
-```
+- ⚡ Everything updates in real time as you type
+- 👀 You see exactly what your profile will look like before you copy anything
+- 🔗 The generated markdown uses real GitHub-compatible widgets and APIs
+- 🐍 You can customize your contribution snake animation down to individual commit level colors
+- 💾 Your work saves automatically in your browser, and you can export and restore sessions across devices
+- 🎨 Nine hand-crafted themes change the entire editor feel, not just the output
 
-#### Step 2 — Build the production bundle
-```bash
-bun run build
-```
-This creates a `dist/` folder with your static site.
+---
 
-#### Step 3 — Push everything to GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit - DevReadME"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/DevReadME.git
-git push -u origin main
-```
+## ✨ Features
 
-#### Step 4 — Enable GitHub Pages
-1. Go to your repo on GitHub → **Settings** → **Pages**
-2. Under **Source**, select **GitHub Actions**
-3. Create a file `.github/workflows/deploy.yml` with:
-```yaml
-name: Deploy to GitHub Pages
+### 🖥️ Live Preview
+See your README render in real time as you fill in your details. No refresh, no guessing.
 
-on:
-  push:
-    branches: [main]
+### 📟 Display Board
+A retro LED-style animated board that cycles through your pinned project names with matrix rain effects, glowing borders, and scrolling text. It renders as a dynamic SVG served from a Netlify function.
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+### 🐍 Contribution Snake with Full Color Control
+Customize your GitHub contribution snake with a color picker for the snake, the background, and all five commit density levels for both light and dark mode. Choose from presets like Gold Rush, Cyber Pink, or Ocean Blue, or build your own palette. The Snake YML tab generates the exact GitHub Actions workflow you need.
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
+### 📊 Stats and Widgets
+Toggle GitHub stats, streak stats, activity graph, profile metrics, top languages, LeetCode heatmap, LeetCode contest stats, and Codeforces stats. Each widget has independent scale, width, height, and offset controls.
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bun run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+### 🛠️ Skills Database
+Over 200 skills across Languages, Frontend, Backend, Database, DevOps, Mobile, AI/Data, Design Tools, Editors and OS, Productivity, Games, and more.
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-          uses: actions/deploy-pages@v4
-```
-4. Push the workflow file:
-```bash
-git add .github/workflows/deploy.yml
-git commit -m "Add GitHub Pages deploy workflow"
-git push
-```
-5. Your site will be live at: `https://YOUR_USERNAME.github.io/DevReadME/`
+### ➕ Custom Skill Categories
+Create your own skill sections with custom names and icons for things the built-in list does not cover.
+
+### 🔀 Section Ordering
+Reorder sections to control the exact layout of your README output.
+
+### 🎨 Nine Themes
+
+| Theme | Feel |
+|---|---|
+| 🖤 Elegant Black | Red accent on pure black |
+| 🔷 Glassmorphic | Sky blue on dark slate |
+| 🌈 Colorful | Radical pink and purple |
+| 🌊 Vibe Coded | Synthwave purple |
+| 🟠 Game Orange | Gruvbox warm orange |
+| 💚 Green + White | Green on deep green |
+| ⬜ Black + White | Pure monochrome |
+| 🩶 Slate Minimal | Muted and clean slate |
+| 🔴 Neon Red | Neon red on near-black |
+
+### 💾 Save and Restore Sessions
+Your progress auto-saves in your browser. To back it up or move to another machine, copy the session blob from the Save Session tab and paste it into the Restore tab anywhere. No login, no cloud, no account.
+
+---
+
+## 📸 Screenshots
+
+| | | |
+|---|---|---|
+| **🖤 Editor with Elegant Black theme** | **🐍 Snake YML with color presets** | **📟 Display Board preview** |
+| ![Editor](public/Editor.png) | ![Snake](public/Snake.jpg) | ![Board](public/DisplayBoard.jpg) |
+
+🌐 Live site: [dev-readme.netlify.app](https://dev-readme.netlify.app)
+
+---
+
+## 📖 How to Use
+
+1. 🌐 Open [dev-readme.netlify.app](https://dev-readme.netlify.app)
+2. ✏️ Fill in your name, subtitle, about section, and GitHub username in the sidebar
+3. 🛠️ Select your skills or create custom categories
+4. 📊 Toggle the widgets you want under Metrics and Animations
+5. 📟 Add your repo names to the Display Board if you want the animated board
+6. 🎨 Pick a theme from the header
+7. 📋 Switch to the Markdown tab and click Copy MD
+8. 🚀 Go to `github.com/your-username/your-username`, open `README.md`, select all, paste, and commit
+
+### 🐍 Setting Up the Contribution Snake
+
+1. Go to the Snake YML tab in the editor
+2. Pick a color preset or customize your own
+3. Click Copy YML
+4. In your profile repo create `.github/workflows/snake.yml` and paste the content
+5. Go to Settings > Actions > General > Workflow permissions and enable Read and write
+6. Go to Actions > Generate Snake > Run workflow
+7. It creates an `output` branch with your SVG files and runs daily after that
+
+---
 
 ## 📁 Project Structure
 
 ```
 DevReadME/
-├── index.html            # Entry HTML
-├── vite.config.js        # Vite config (set base here for deploy)
-├── package.json          # Dependencies
-├── src/
-│   ├── main.jsx          # React entry point
-│   ├── App.jsx           # Main app logic & markdown generation
-│   ├── CursorBubbles.jsx # Double-click bubble canvas effect
-│   └── index.css         # All styles & theme definitions
-├── dist/                 # Built output (generated by `bun run build`)
-└── .github/
-    └── workflows/
-        └── deploy.yml    # GitHub Pages CI/CD
+├── 📄 index.html
+├── 📄 vite.config.js
+├── 📄 package.json
+├── 📄 bun.lock
+├── 📄 eslint.config.js
+├── 📁 public/
+│   ├── 🖼️ favicon.png
+│   └── 🖼️ logo.png
+├── 📁 netlify/
+│   └── 📁 functions/
+│       └── 📄 displayboard.js
+└── 📁 src/
+    ├── 📄 main.jsx
+    ├── 📄 App.jsx
+    ├── 📄 App.css
+    ├── 📄 index.css
+    ├── 📄 CursorBubbles.jsx
+    ├── 📁 assets/
+    ├── 📁 components/
+    └── 📁 utils/
 ```
 
-## 🎨 Features
+---
 
-- 5 premium themes (Elegant Black, Glassmorphic, Colorful, Vibe Coded, Game Orange)
-- 100+ skills across 10 categories + custom skill categories with custom titles
-- Animated Display Board with dinosaur day/night loop + top 5 project cards
-- Contribution Snake with separate skin & food color pickers
-- Meteor Streak Stats, LeetCode Heatmap, Codeforces, Code::Stats XP graph
-- Custom social links (add any URL)
-- Double-click bubble burst effect
-- One-click copy of generated Markdown
+## 🏃 Running Locally
+
+You need [Bun](https://bun.sh) and [Node.js](https://nodejs.org) installed.
+
+**📦 Clone and install**
+
+```bash
+git clone https://github.com/dev-satyamjha/DevReadME.git
+cd DevReadME
+bun install
+```
+
+**🚀 Start the dev server**
+
+```bash
+bun run dev
+```
+
+The display board API mock runs automatically via the Vite plugin so the board preview works locally without Netlify.
+
+**⚡ Run with Netlify functions locally**
+
+```bash
+bun add -g netlify-cli
+bunx netlify dev
+```
+
+This runs the actual `displayboard.js` serverless function the same way Netlify does in production.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome. If you want to add skills, fix a bug, improve a theme, or suggest a feature, here is how to do it.
+
+**💡 Areas where help is appreciated**
+
+- 🛠️ Adding more skills to the database
+- 🎨 New theme ideas
+- 📱 Mobile layout improvements
+- 🔌 More widget integrations
+
+---
+
+## 🧰 Tech Stack
+
+| Layer | Tech |
+|---|---|
+| ⚛️ Frontend | React + Vite |
+| 🎨 Styling | Custom CSS with theme variables |
+| 🎞️ Animations | Hand-built SVG animations |
+| ☁️ Serverless | Netlify Functions |
+| 🐍 Snake workflow | GitHub Actions |
+| 📦 Package manager | Bun |
+| 🚀 Deployment | Netlify |
+
+---
+
+## ⭐ Giving a Star
+
+If DevReadME saved you time or you just like what it does, a star on the repo helps other developers find it and means a lot.
+
+---
+
+<p align="center">Made with ❤️ by <a href="https://github.com/dev-satyamjha">Satyam Jha</a></p>

@@ -21,7 +21,8 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
 
-const STATE_PREFIX = "";
+const STATE_PREFIX = "<!--DEVREADME_STATE:";
+const STATE_SUFFIX = ":DEVREADME_STATE-->";
 
 const THEMES = [
   { id: "elegant-black", name: "Elegant Black", color: "#000000" },
@@ -351,6 +352,36 @@ const SKILLS_CATEGORIES = {
     "DaVinci Resolve",
     "Affinity Designer",
     "Spline",
+  ],
+  Editors_OS: [
+    "VS Code",
+    "Antigravity",
+    "Vim",
+    "Neovim",
+    "Nano",
+    "Sublime Text",
+    "Zed",
+    "Notepad++",
+    "IntelliJ IDEA",
+    "PyCharm",
+    "WebStorm",
+    "CLion",
+    "Emacs",
+    "Windows",
+    "macOS",
+    "Ubuntu",
+    "Debian",
+    "Arch Linux",
+    "Fedora",
+    "Kali Linux",
+    "NixOS",
+    "Hyprland",
+    "KDE Plasma",
+    "GNOME",
+    "i3",
+    "Sway",
+    "Proxmox",
+    "WSL",
   ],
   Productivity_Collab: [
     "Git",
@@ -1239,7 +1270,7 @@ const generateMarkdown = (
           break;
         case "funFact":
           if (formData.funFact)
-            s += `<h3 align="center"><i>Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+            s += `<h3 align="center"><i>🌟 Fun Fact: ${formData.funFact}</i></h3>\n\n`;
           break;
         case "socials": {
           const hasSocials =
@@ -1375,9 +1406,6 @@ const generateMarkdown = (
         }
       } else md += renderSection(section);
     });
-
-    if (includeState)
-      md += `\n\n${STATE_PREFIX}${btoa(encodeURIComponent(JSON.stringify(formData)))}${STATE_SUFFIX}\n`;
     return md;
   } catch (err) {
     return `ERROR GENERATING MARKDOWN:\n\n${err.message}\n${err.stack}`;
@@ -1689,7 +1717,7 @@ export default function App() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
-      generateMarkdown(false, formData.sectionOrder, true, formData, theme),
+      generateMarkdown(false, formData.sectionOrder, false, formData, theme),
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
