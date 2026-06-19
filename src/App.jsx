@@ -1270,7 +1270,7 @@ const generateMarkdown = (
           break;
         case "funFact":
           if (formData.funFact)
-            s += `<h3 align="center"><i>🌟 Fun Fact: ${formData.funFact}</i></h3>\n\n`;
+            s += `<div align="center">\n\n### 🌟 Fun Fact: *${formData.funFact}*\n\n</div>\n\n`;
           break;
         case "socials": {
           const hasSocials =
