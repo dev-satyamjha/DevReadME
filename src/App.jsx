@@ -20,6 +20,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
+import { MATRIX_FONT, DOT, GAP, CW, ON, BW, BH, PW, PH, PX, PY } from "./utils/matrixUtils";
 
 const STATE_PREFIX = "<!--DEVREADME_STATE:";
 const STATE_SUFFIX = ":DEVREADME_STATE-->";
@@ -118,407 +119,44 @@ const PRESET_SCHEMES = [
 
 const SKILLS_CATEGORIES = {
   Languages: [
-    "JavaScript",
-    "TypeScript",
-    "Python",
-    "Java",
-    "C++",
-    "C#",
-    "C",
-    "Go",
-    "Rust",
-    "Ruby",
-    "PHP",
-    "Swift",
-    "Kotlin",
-    "Dart",
-    "R",
-    "Scala",
-    "Elixir",
-    "Haskell",
-    "Clojure",
-    "Julia",
-    "Assembly",
-    "SQL",
-    "HTML5",
-    "CSS3",
-    "Bash",
-    "PowerShell",
-    "Perl",
-    "Lua",
-    "Zig",
-    "Nim",
-    "Ren'Py",
-    "Crystal",
-    "Solidity",
-    "OCaml",
-    "Erlang",
-    "Fortran",
-    "MATLAB",
-    "Groovy",
-    "WebAssembly",
+    "JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "C", "Go", "Rust", "Ruby", "PHP", "Swift", "Kotlin", "Dart", "R", "Scala", "Elixir", "Haskell", "Clojure", "Julia", "Assembly", "SQL", "HTML5", "CSS3", "Bash", "PowerShell", "Perl", "Lua", "Zig", "Nim", "Ren'Py", "Crystal", "Solidity", "OCaml", "Erlang", "Fortran", "MATLAB", "Groovy", "WebAssembly", "F#", "Objective-C", "Vala", "V", "Apex", "ColdFusion", "Hack", "Prolog", "Lisp", "Scheme", "Racket", "Delphi", "Ada", "COBOL", "VBScript", "ActionScript", "Smalltalk", "Tcl", "Verilog", "VHDL", "SystemVerilog"
   ],
   Frontend: [
-    "React",
-    "Next.js",
-    "Vue.js",
-    "Nuxt.js",
-    "Angular",
-    "Svelte",
-    "Solid",
-    "Ember",
-    "TailwindCSS",
-    "Bootstrap",
-    "Material UI",
-    "Chakra UI",
-    "Redux",
-    "Zustand",
-    "Framer Motion",
-    "Three.js",
-    "WebGL",
-    "Babel",
-    "Webpack",
-    "Vite",
-    "Astro",
-    "Gatsby",
-    "Remix",
-    "Qwik",
-    "Storybook",
-    "Sass",
-    "Styled Components",
-    "Jest",
-    "Vitest",
-    "Cypress",
-    "Playwright",
-    "ESLint",
-    "Prettier",
-    "Turbopack",
-    "Rollup.js",
-    "esbuild",
+    "React", "Next.js", "Vue.js", "Nuxt.js", "Angular", "Svelte", "Solid", "Ember", "TailwindCSS", "Bootstrap", "Material UI", "Chakra UI", "Redux", "Zustand", "Framer Motion", "Three.js", "WebGL", "Babel", "Webpack", "Vite", "Astro", "Gatsby", "Remix", "Qwik", "Storybook", "Sass", "Styled Components", "Jest", "Vitest", "Cypress", "Playwright", "ESLint", "Prettier", "Turbopack", "Rollup.js", "esbuild", "Alpine.js", "Lit", "Preact", "Bulma", "Ant Design", "Mantine", "Vuetify", "Quasar", "RxJS", "Gulp", "Grunt", "Pug", "Less", "Stylus", "JQuery", "HTMX", "GSAP", "Babylon.js", "Testing Library", "Mocha", "Chai", "Jasmine", "Karma", "Puppeteer", "Selenium"
   ],
   Backend: [
-    "Node.js",
-    "Express",
-    "NestJS",
-    "Django",
-    "Flask",
-    "FastAPI",
-    "Spring Boot",
-    "Laravel",
-    "ASP.NET",
-    "Ruby on Rails",
-    "Koa",
-    "Hapi",
-    "Meteor",
-    "GraphQL",
-    "Apollo",
-    "gRPC",
-    "Socket.io",
-    "Gin",
-    "Fiber",
-    "Actix",
-    "Bun",
-    "Deno",
-    "Symfony",
-    "Phoenix",
-    "tRPC",
-    "RabbitMQ",
-    "Apache Kafka",
-    "Strapi",
-    "Hasura",
-    "Supabase Edge Functions",
+    "Node.js", "Express", "NestJS", "Django", "Flask", "FastAPI", "Spring Boot", "Laravel", "ASP.NET", "Ruby on Rails", "Koa", "Hapi", "Meteor", "GraphQL", "Apollo", "gRPC", "Socket.io", "Gin", "Fiber", "Actix", "Bun", "Deno", "Symfony", "Phoenix", "tRPC", "RabbitMQ", "Apache Kafka", "Strapi", "Hasura", "Supabase Edge Functions", "AdonisJS", "Sails.js", "LoopBack", "CakePHP", "CodeIgniter", "Yii", "Lumen", "Tornado", "Bottle", "CherryPy", "Pyramid", "Ktor", "Play Framework", "Echo", "Beego", "Revel", "Rocket", "Iron", "Kemal", "Celery", "ActiveMQ", "ZeroMQ", "NATS", "MQTT", "Memcached", "TypeORM", "Sequelize", "SQLAlchemy", "Hibernate", "Entity Framework", "Knex.js", "Waterline", "Bookshelf.js"
   ],
   Database: [
-    "PostgreSQL",
-    "MySQL",
-    "MongoDB",
-    "Redis",
-    "SQLite",
-    "Oracle",
-    "Cassandra",
-    "Neo4j",
-    "DynamoDB",
-    "Firebase",
-    "Supabase",
-    "Prisma",
-    "Mongoose",
-    "MariaDB",
-    "CouchDB",
-    "PlanetScale",
-    "CockroachDB",
-    "InfluxDB",
-    "Elasticsearch",
-    "ClickHouse",
-    "Drizzle",
+    "PostgreSQL", "MySQL", "MongoDB", "Redis", "SQLite", "Oracle", "Cassandra", "Neo4j", "DynamoDB", "Firebase", "Supabase", "Prisma", "Mongoose", "MariaDB", "CouchDB", "PlanetScale", "CockroachDB", "InfluxDB", "Elasticsearch", "ClickHouse", "Drizzle", "Couchbase", "Realm", "ArangoDB", "RethinkDB", "OrientDB", "RavenDB", "TimeScaleDB", "RocksDB", "LevelDB", "HBase", "Solr", "Splunk", "Milvus", "Pinecone", "Weaviate", "Qdrant", "Chroma", "FaunaDB", "HarperDB", "ScyllaDB", "Snowflake", "BigQuery", "Redshift", "Teradata", "Firebird", "Db2"
   ],
   DevOps_Cloud: [
-    "AWS",
-    "Google Cloud",
-    "Azure",
-    "Docker",
-    "Kubernetes",
-    "Terraform",
-    "Jenkins",
-    "GitHub Actions",
-    "GitLab CI",
-    "CircleCI",
-    "TravisCI",
-    "Ansible",
-    "Linux",
-    "Nginx",
-    "Apache",
-    "Vercel",
-    "Netlify",
-    "Heroku",
-    "Cloudflare",
-    "DigitalOcean",
-    "InfinityFree",
-    "Podman",
-    "Helm",
-    "Prometheus",
-    "Grafana",
-    "ArgoCD",
-    "Pulumi",
-    "Vagrant",
-    "Render",
-    "Fly.io",
-    "Railway",
-    "Ubuntu",
-    "Debian",
-    "Arch Linux",
-    "Fedora",
-    "Proxmox",
+    "AWS", "Google Cloud", "Azure", "Docker", "Kubernetes", "Terraform", "Jenkins", "GitHub Actions", "GitLab CI", "CircleCI", "TravisCI", "Ansible", "Linux", "Nginx", "Apache", "Vercel", "Netlify", "Heroku", "Cloudflare", "DigitalOcean", "InfinityFree", "Podman", "Helm", "Prometheus", "Grafana", "ArgoCD", "Pulumi", "Vagrant", "Render", "Fly.io", "Railway", "Ubuntu", "Debian", "Arch Linux", "Fedora", "Proxmox", "OpenShift", "Rancher", "Istio", "Linkerd", "Consul", "Vault", "Packer", "Puppet", "Chef", "SaltStack", "Datadog", "New Relic", "Dynatrace", "AppDynamics", "Sentry", "Logstash", "Kibana", "Fluentd", "Spinnaker", "Bitrise", "AppVeyor", "Bamboo", "TeamCity", "Linode", "Vultr", "UpCloud", "OVH", "Hetzner"
   ],
   Mobile_Desktop: [
-    "React Native",
-    "Flutter",
-    "Electron",
-    "Tauri",
-    "Unity",
-    "Unreal Engine",
-    "Godot",
-    "Xamarin",
-    "Ionic",
-    ".NET MAUI",
-    "Expo",
-    "Jetpack Compose",
-    "SwiftUI",
-    "Capacitor",
-    "Cordova",
+    "React Native", "Flutter", "Electron", "Tauri", "Unity", "Unreal Engine", "Godot", "Xamarin", "Ionic", ".NET MAUI", "Expo", "Jetpack Compose", "SwiftUI", "Capacitor", "Cordova", "NativeScript", "Qt", "GTK", "wxWidgets", "Tkinter", "PyQt", "Kivy", "JavaFX", "Swing", "WinForms", "WPF", "UWP", "WinUI", "Appcelerator", "PhoneGap", "Sencha Touch", "Corona", "Cocos2d", "Defold", "Construct 3", "GameMaker", "LibGDX", "MonoGame", "Phaser", "CryEngine", "Lumberyard"
   ],
   AI_Data: [
-    "TensorFlow",
-    "PyTorch",
-    "Pandas",
-    "NumPy",
-    "Scikit-learn",
-    "OpenCV",
-    "Jupyter",
-    "Keras",
-    "Hugging Face",
-    "Matplotlib",
-    "LangChain",
-    "OpenAI",
-    "Anthropic",
-    "Ollama",
-    "ONNX",
-    "Plotly",
-    "Apache Spark",
-    "Polars",
-    "Gradio",
-    "Streamlit",
-    "Weights & Biases",
-    "Anaconda",
-    "RStudio",
-    "Apache Airflow",
-    "dbt",
+    "TensorFlow", "PyTorch", "Pandas", "NumPy", "Scikit-learn", "OpenCV", "Jupyter", "Keras", "Hugging Face", "Matplotlib", "LangChain", "OpenAI", "Anthropic", "Ollama", "ONNX", "Plotly", "Apache Spark", "Polars", "Gradio", "Streamlit", "Weights & Biases", "Anaconda", "RStudio", "Apache Airflow", "dbt", "LlamaIndex", "ChromaDB", "Pinecone", "Milvus", "Weaviate", "Qdrant", "FAISS", "Transformers", "Diffusers", "Detectron2", "YOLO", "Spacy", "NLTK", "Gensim", "Fastai", "XGBoost", "LightGBM", "CatBoost", "Prophet", "Statsmodels", "Seaborn", "Bokeh", "Dash", "Tableau", "Power BI", "Looker", "Metabase", "Superset", "Hadoop", "Hive", "Pig", "Presto", "Trino", "Flink", "Kafka Streams"
   ],
   Design_Tools: [
-    "Figma",
-    "Adobe Photoshop",
-    "Adobe Illustrator",
-    "Adobe XD",
-    "Krita",
-    "GIMP",
-    "Inkscape",
-    "Blender",
-    "Canva",
-    "Sketch",
-    "After Effects",
-    "Premiere Pro",
-    "Framer",
-    "Adobe Lightroom",
-    "Adobe InDesign",
-    "DaVinci Resolve",
-    "Affinity Designer",
-    "Spline",
+    "Figma", "Adobe Photoshop", "Adobe Illustrator", "Adobe XD", "Krita", "GIMP", "Inkscape", "Blender", "Canva", "Sketch", "After Effects", "Premiere Pro", "Framer", "Adobe Lightroom", "Adobe InDesign", "DaVinci Resolve", "Affinity Designer", "Spline", "CorelDRAW", "PaintTool SAI", "Clip Studio Paint", "Maya", "3ds Max", "ZBrush", "Cinema 4D", "Houdini", "Marvelous Designer", "Substance Painter", "Miro", "Whimsical", "Balsamiq", "Zeplin", "InVision", "Marvel", "ProtoPie", "Principle", "Origami Studio", "Lottie", "Rive", "Webflow"
   ],
   Editors_OS: [
-    "VS Code",
-    "Antigravity",
-    "Vim",
-    "Neovim",
-    "Nano",
-    "Sublime Text",
-    "Zed",
-    "Notepad++",
-    "IntelliJ IDEA",
-    "PyCharm",
-    "WebStorm",
-    "CLion",
-    "Emacs",
-    "Windows",
-    "macOS",
-    "Ubuntu",
-    "Debian",
-    "Arch Linux",
-    "Fedora",
-    "Kali Linux",
-    "NixOS",
-    "Hyprland",
-    "KDE Plasma",
-    "GNOME",
-    "i3",
-    "Sway",
-    "Proxmox",
-    "WSL",
+    "VS Code", "Antigravity", "Vim", "Neovim", "Nano", "Sublime Text", "Zed", "Notepad++", "IntelliJ IDEA", "PyCharm", "WebStorm", "CLion", "Emacs", "Windows", "macOS", "Ubuntu", "Debian", "Arch Linux", "Fedora", "Kali Linux", "NixOS", "Hyprland", "KDE Plasma", "GNOME", "i3", "Sway", "Proxmox", "WSL", "Eclipse", "NetBeans", "Visual Studio", "Xcode", "Android Studio", "Fleet", "Cursor", "Rider", "PhpStorm", "RubyMine", "DataGrip", "GoLand", "Atom", "Brackets", "Helix", "Kakoune", "Micro", "Geany", "Pop!_OS", "Linux Mint", "Manjaro", "CentOS", "RHEL", "openSUSE", "Alpine Linux", "Raspberry Pi OS", "FreeBSD", "OpenBSD"
   ],
   Productivity_Collab: [
-    "Git",
-    "GitHub",
-    "GitLab",
-    "Bitbucket",
-    "Notion",
-    "Slack",
-    "Jira",
-    "Trello",
-    "Confluence",
-    "Linear",
-    "Postman",
-    "Insomnia",
-    "Obsidian",
-    "Zoom",
-    "Google Meet",
-    "Asana",
-    "ClickUp",
+    "Git", "GitHub", "GitLab", "Bitbucket", "Notion", "Slack", "Jira", "Trello", "Confluence", "Linear", "Postman", "Insomnia", "Obsidian", "Zoom", "Google Meet", "Asana", "ClickUp", "Microsoft Teams", "Discord", "Monday.com", "Basecamp", "Wrike", "Smartsheet", "Airtable", "Coda", "Evernote", "Roam Research", "Logseq", "Bear", "Ulysses", "Miro", "Mural", "Lucidchart", "Draw.io", "Figma FigJam", "Swagger", "Stoplight", "Hoppscotch", "SoapUI", "Katalon", "BrowserStack", "Sauce Labs", "Vagrant", "Packer"
   ],
   Games_Platforms: [
-    "Steam",
-    "PlayStation",
-    "Xbox",
-    "Nintendo Switch",
-    "Nintendo 3DS",
-    "Oculus",
-    "VR",
-    "Discord",
-    "Twitch",
-    "Epic Games",
-    "GOG",
-    "Itch.io",
-    "Roblox Studio",
-    "PlayCanvas",
+    "Steam", "PlayStation", "Xbox", "Nintendo Switch", "Nintendo 3DS", "Oculus", "VR", "Discord", "Twitch", "Epic Games", "GOG", "Itch.io", "Roblox Studio", "PlayCanvas", "Origin", "Uplay", "Battle.net", "GeForce Now", "Stadia", "Luna", "Xbox Game Pass", "PS Now", "Viveport", "SideQuest", "ModDB", "Nexus Mods", "CurseForge", "Game Jolt", "Kongregate", "Newgrounds", "Armorgames", "Miniclip"
   ],
   Extra: [
-    "Athletics",
-    "Boxing",
-    "Chess",
-    "Gaming",
-    "Photography",
-    "Writing",
-    "Music",
-    "Guitar",
-    "Piano",
-    "Video Editing",
-    "3D Modeling",
-    "Cycling",
-    "Swimming",
-    "Running",
-    "Yoga",
-    "Spotify",
-    "YouTube",
-    "Reddit",
-    "Letterboxd",
+    "Athletics", "Boxing", "Chess", "Gaming", "Photography", "Writing", "Music", "Guitar", "Piano", "Video Editing", "3D Modeling", "Cycling", "Swimming", "Running", "Yoga", "Spotify", "YouTube", "Reddit", "Letterboxd", "Cooking", "Baking", "Gardening", "Reading", "Traveling", "Hiking", "Camping", "Fishing", "Woodworking", "Metalworking", "Electronics", "Robotics", "3D Printing", "Drawing", "Painting", "Sculpting", "Calligraphy", "Origami", "Knitting", "Sewing", "Dancing", "Singing", "Acting", "Stand-up Comedy", "Magic", "Juggling", "Skateboarding", "Surfing", "Snowboarding", "Skiing", "Martial Arts", "Weightlifting", "CrossFit", "Powerlifting", "Bodybuilding", "Calisthenics", "Gymnastics", "Parkour", "Climbing", "Bouldering", "Scuba Diving", "Skydiving", "Paragliding"
   ],
 };
 
-const MATRIX_FONT = {
-  A: [0x70, 0x88, 0x88, 0xf8, 0x88, 0x88, 0x88],
-  B: [0xf0, 0x48, 0x48, 0x70, 0x48, 0x48, 0xf0],
-  C: [0x70, 0x88, 0x80, 0x80, 0x80, 0x88, 0x70],
-  D: [0xe0, 0x50, 0x48, 0x48, 0x48, 0x50, 0xe0],
-  E: [0xf8, 0x80, 0x80, 0xf0, 0x80, 0x80, 0xf8],
-  F: [0xf8, 0x80, 0x80, 0xf0, 0x80, 0x80, 0x80],
-  G: [0x70, 0x88, 0x80, 0xb8, 0x88, 0x88, 0x70],
-  H: [0x88, 0x88, 0x88, 0xf8, 0x88, 0x88, 0x88],
-  I: [0x70, 0x20, 0x20, 0x20, 0x20, 0x20, 0x70],
-  J: [0x38, 0x10, 0x10, 0x10, 0x10, 0x90, 0x60],
-  K: [0x88, 0x90, 0xa0, 0xc0, 0xa0, 0x90, 0x88],
-  L: [0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xf8],
-  M: [0x88, 0xd8, 0xa8, 0x88, 0x88, 0x88, 0x88],
-  N: [0x88, 0x88, 0xc8, 0xa8, 0x98, 0x88, 0x88],
-  O: [0x70, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70],
-  P: [0xf0, 0x88, 0x88, 0xf0, 0x80, 0x80, 0x80],
-  Q: [0x70, 0x88, 0x88, 0x88, 0xa8, 0x90, 0x68],
-  R: [0xf0, 0x88, 0x88, 0xf0, 0xa0, 0x90, 0x88],
-  S: [0x70, 0x88, 0x80, 0x70, 0x08, 0x88, 0x70],
-  T: [0xf8, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20],
-  U: [0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70],
-  V: [0x88, 0x88, 0x88, 0x88, 0x88, 0x50, 0x20],
-  W: [0x88, 0x88, 0x88, 0x88, 0xa8, 0xd8, 0x88],
-  X: [0x88, 0x88, 0x50, 0x20, 0x50, 0x88, 0x88],
-  Y: [0x88, 0x88, 0x50, 0x20, 0x20, 0x20, 0x20],
-  Z: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x80, 0xf8],
-  a: [0x00, 0x00, 0x70, 0x88, 0xf8, 0x88, 0x88],
-  b: [0x80, 0x80, 0xf0, 0x88, 0x88, 0x88, 0xf0],
-  c: [0x00, 0x00, 0x70, 0x80, 0x80, 0x80, 0x70],
-  d: [0x08, 0x08, 0x78, 0x88, 0x88, 0x88, 0x78],
-  e: [0x00, 0x00, 0x70, 0x88, 0xf8, 0x80, 0x70],
-  f: [0x30, 0x40, 0xe0, 0x40, 0x40, 0x40, 0x40],
-  g: [0x00, 0x78, 0x88, 0x88, 0x78, 0x08, 0x70],
-  h: [0x80, 0x80, 0xf0, 0x88, 0x88, 0x88, 0x88],
-  i: [0x20, 0x00, 0x60, 0x20, 0x20, 0x20, 0x70],
-  j: [0x10, 0x00, 0x10, 0x10, 0x10, 0x90, 0x60],
-  k: [0x80, 0x80, 0x90, 0xa0, 0xc0, 0xa0, 0x90],
-  l: [0x60, 0x20, 0x20, 0x20, 0x20, 0x20, 0x70],
-  m: [0x00, 0x00, 0xd0, 0xa8, 0xa8, 0x88, 0x88],
-  n: [0x00, 0x00, 0xb0, 0xc8, 0x88, 0x88, 0x88],
-  o: [0x00, 0x00, 0x70, 0x88, 0x88, 0x88, 0x70],
-  p: [0x00, 0x00, 0xf0, 0x88, 0xf0, 0x80, 0x80],
-  q: [0x00, 0x00, 0x78, 0x88, 0x78, 0x08, 0x08],
-  r: [0x00, 0x00, 0xb0, 0xc8, 0x80, 0x80, 0x80],
-  s: [0x00, 0x00, 0x70, 0x80, 0x70, 0x08, 0x70],
-  t: [0x40, 0x40, 0xe0, 0x40, 0x40, 0x40, 0x30],
-  u: [0x00, 0x00, 0x88, 0x88, 0x88, 0x98, 0x68],
-  v: [0x00, 0x00, 0x88, 0x88, 0x88, 0x50, 0x20],
-  w: [0x00, 0x00, 0x88, 0x88, 0xa8, 0xa8, 0x50],
-  x: [0x00, 0x00, 0x88, 0x50, 0x20, 0x50, 0x88],
-  y: [0x00, 0x00, 0x88, 0x88, 0x78, 0x08, 0x70],
-  z: [0x00, 0x00, 0xf8, 0x10, 0x20, 0x40, 0xf8],
-  0: [0x70, 0x88, 0x98, 0xa8, 0xc8, 0x88, 0x70],
-  1: [0x20, 0x60, 0x20, 0x20, 0x20, 0x20, 0x70],
-  2: [0x70, 0x88, 0x08, 0x30, 0x40, 0x80, 0xf8],
-  3: [0x70, 0x88, 0x08, 0x30, 0x08, 0x88, 0x70],
-  4: [0x10, 0x30, 0x50, 0x90, 0xf8, 0x10, 0x10],
-  5: [0xf8, 0x80, 0xf0, 0x08, 0x08, 0x88, 0x70],
-  6: [0x70, 0x80, 0xf0, 0x88, 0x88, 0x88, 0x70],
-  7: [0xf8, 0x08, 0x10, 0x20, 0x40, 0x40, 0x40],
-  8: [0x70, 0x88, 0x88, 0x70, 0x88, 0x88, 0x70],
-  9: [0x70, 0x88, 0x88, 0x88, 0x78, 0x08, 0x70],
-  "-": [0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00],
-  " ": [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-  "★": [0x20, 0x70, 0xf8, 0x50, 0x88, 0x00, 0x00],
-};
 
-const DOT = 6;
-const GAP = 2;
-const CW = 5 * (DOT + GAP);
-const ON = "#ff2200";
-const BW = 950;
-const BH = 520;
-const PW = 700;
-const PH = 380;
-const PX = (BW - PW) / 2;
-const PY = (BH - PH) / 2;
 
 function buildDots(str, y, pw, px, offsetX = null) {
   const strW = str.length * (CW + GAP * 3);
@@ -547,10 +185,14 @@ function buildDots(str, y, pw, px, offsetX = null) {
   return dots;
 }
 
-function DisplayBoard({ projects }) {
-  const validProjects = projects.filter((p) => p && String(p).trim() !== "");
+function DisplayBoard({ projects, github }) {
+  const validProjects = useMemo(
+    () => projects.filter((p) => p && String(p).trim() !== ""),
+    [projects],
+  );
   const [currentIdx, setCurrentIdx] = useState(0);
   const [scrollX, setScrollX] = useState(0);
+  const [starCounts, setStarCounts] = useState({});
   const timerRef = useRef(null);
   const scrollRef = useRef(null);
   const innerPerimeter = (PW + PH) * 2;
@@ -615,10 +257,33 @@ function DisplayBoard({ projects }) {
     return () => clearInterval(scrollRef.current);
   }, [currentIdx, needsScroll, nameW]);
 
+  useEffect(() => {
+    const trimmedUser = String(github || "").trim();
+    if (!trimmedUser || !validProjects.length) return;
+    validProjects.forEach((repo) => {
+      const trimmedRepo = String(repo).trim();
+      fetch(
+        `https://api.github.com/repos/${encodeURIComponent(trimmedUser)}/${encodeURIComponent(trimmedRepo)}`,
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data && typeof data.stargazers_count === "number") {
+            setStarCounts((prev) => ({
+              ...prev,
+              [trimmedRepo]: data.stargazers_count,
+            }));
+          }
+        })
+        .catch(() => {});
+    });
+  }, [github, validProjects]);
+
   if (!validProjects.length) return null;
 
   const TEXT_Y = PY + PH / 2 - 45;
   const STARS_Y = TEXT_Y + 75;
+  const starCount =
+    starCounts[currentName] !== undefined ? starCounts[currentName] : "?";
 
   return (
     <div
@@ -738,12 +403,7 @@ function DisplayBoard({ projects }) {
             ) : (
               buildDots(currentName, TEXT_Y, PW, PX)
             )}
-            {buildDots(
-              `★ ${validProjects[currentIdx] ? "2" : "0"}`,
-              STARS_Y,
-              PW,
-              PX,
-            )}
+            {buildDots(`★ ${starCount}`, STARS_Y, PW, PX)}
           </g>
         </g>
         {[
@@ -837,7 +497,7 @@ const DEFAULT_STATE = {
   subtitle: "Full Stack Developer | Open Source Enthusiast",
   about:
     "I am a passionate software engineer building scalable web applications.",
-  github: "dev-satyamjha",
+  github: "",
   joinedDate: "Sept 2021",
   email: "",
   twitter: "",
@@ -849,6 +509,17 @@ const DEFAULT_STATE = {
   facebook: "",
   snapchat: "",
   portfolio: "",
+  discord: "",
+  producthunt: "",
+  youtube: "",
+  twitch: "",
+  medium: "",
+  stackoverflow: "",
+  dribbble: "",
+  behance: "",
+  kaggle: "",
+  devto: "",
+  mastodon: "",
   customLinks: [],
   skills: ["JavaScript", "React", "Node.js", "Python"],
   customCategories: [],
@@ -1155,6 +826,22 @@ const getApiThemes = (theme) => {
   }
 };
 
+const escapeHtml = (str) =>
+  String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+const isSafeUrl = (url) => {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 const getTopHeader = (formData) => {
   const safeDate = formData.joinedDate
     ? String(formData.joinedDate).trim().replace(/ /g, "%20")
@@ -1165,7 +852,9 @@ const getTopHeader = (formData) => {
   const joinedBadge = formData.joinedDate
     ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
     : "";
-  return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${formData.name || "Anonymous Developer"}</h1>\n  <h3 align="center">${formData.subtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
+  const safeName = escapeHtml(formData.name) || "Anonymous Developer";
+  const safeSubtitle = escapeHtml(formData.subtitle);
+  return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${safeName}</h1>\n  <h3 align="center">${safeSubtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
 };
 
 const generateMarkdown = (
@@ -1224,7 +913,8 @@ const generateMarkdown = (
           }
           break;
         case "about":
-          if (formData.about) s += `## About Me\n${formData.about}\n\n`;
+          if (formData.about)
+            s += `## About Me\n${escapeHtml(formData.about)}\n\n`;
           break;
         case "skills":
           if (formData.skills.length > 0) {
@@ -1252,16 +942,16 @@ const generateMarkdown = (
         case "customSkills":
           formData.customCategories.forEach((cat) => {
             if (cat.skills.length > 0) {
-              s += `### ${cat.title}\n<p align="center">\n`;
+              s += `### ${escapeHtml(cat.title)}\n<p align="center">\n`;
               cat.skills.forEach((skillObj) => {
-                if (skillObj.icon.startsWith("http"))
-                  s += `  <img src="${skillObj.icon}" height="28" alt="${skillObj.name}" title="${skillObj.name}" style="margin: 0 4px;" />\n`;
-                else {
+                if (skillObj.icon.startsWith("http") && isSafeUrl(skillObj.icon))
+                  s += `  <img src="${skillObj.icon}" height="28" alt="${escapeHtml(skillObj.name)}" title="${escapeHtml(skillObj.name)}" style="margin: 0 4px;" />\n`;
+                else if (!skillObj.icon.startsWith("http")) {
                   const safe = skillObj.name
                     .replace(/ /g, "%20")
                     .replace(/\+/g, "%2B")
                     .replace(/#/g, "%23");
-                  s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${skillObj.name}" />\n`;
+                  s += `  <img src="https://img.shields.io/badge/${safe}-151515?style=for-the-badge&logo=${skillObj.icon.toLowerCase().replace(/ /g, "")}" alt="${escapeHtml(skillObj.name)}" />\n`;
                 }
               });
               s += `</p>\n\n`;
@@ -1270,7 +960,7 @@ const generateMarkdown = (
           break;
         case "funFact":
           if (formData.funFact)
-            s += `<div align="center">\n\n### 🌟 Fun Fact: *${formData.funFact}*\n\n</div>\n\n`;
+            s += `<div align="center">\n\n### 🌟 Fun Fact: *${escapeHtml(formData.funFact)}*\n\n</div>\n\n`;
           break;
         case "socials": {
           const hasSocials =
@@ -1283,6 +973,17 @@ const generateMarkdown = (
             formData.instagram ||
             formData.facebook ||
             formData.snapchat ||
+            formData.discord ||
+            formData.producthunt ||
+            formData.youtube ||
+            formData.twitch ||
+            formData.medium ||
+            formData.stackoverflow ||
+            formData.dribbble ||
+            formData.behance ||
+            formData.kaggle ||
+            formData.devto ||
+            formData.mastodon ||
             formData.portfolio ||
             formData.customLinks.length > 0;
           if (hasSocials) {
@@ -1291,27 +992,118 @@ const generateMarkdown = (
               s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
             if (formData.email)
               s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
-            if (formData.linkedin)
-              s += `  <a href="${formData.linkedin.startsWith("http") ? formData.linkedin : `https://linkedin.com/in/${formData.linkedin}`}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
-            if (formData.twitter)
-              s += `  <a href="${formData.twitter.startsWith("http") ? formData.twitter : `https://x.com/${formData.twitter}`}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
+            if (formData.linkedin) {
+              const lnUrl = formData.linkedin.startsWith("http")
+                ? (isSafeUrl(formData.linkedin) ? formData.linkedin : "#")
+                : `https://linkedin.com/in/${formData.linkedin}`;
+              s += `  <a href="${lnUrl}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.twitter) {
+              const twUrl = formData.twitter.startsWith("http")
+                ? (isSafeUrl(formData.twitter) ? formData.twitter : "#")
+                : `https://x.com/${formData.twitter}`;
+              s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
+            }
             if (formData.leetcode)
               s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
             if (formData.codestats)
               s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
-            if (formData.instagram)
-              s += `  <a href="${formData.instagram.startsWith("http") ? formData.instagram : `https://instagram.com/${formData.instagram}`}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
-            if (formData.facebook)
-              s += `  <a href="${formData.facebook.startsWith("http") ? formData.facebook : `https://facebook.com/${formData.facebook}`}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
-            if (formData.snapchat)
-              s += `  <a href="${formData.snapchat.startsWith("http") ? formData.snapchat : `https://snapchat.com/add/${formData.snapchat}`}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
-            if (formData.portfolio)
-              s += `  <a href="${formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
+            if (formData.instagram) {
+              const igUrl = formData.instagram.startsWith("http")
+                ? (isSafeUrl(formData.instagram) ? formData.instagram : "#")
+                : `https://instagram.com/${formData.instagram}`;
+              s += `  <a href="${igUrl}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.facebook) {
+              const fbUrl = formData.facebook.startsWith("http")
+                ? (isSafeUrl(formData.facebook) ? formData.facebook : "#")
+                : `https://facebook.com/${formData.facebook}`;
+              s += `  <a href="${fbUrl}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.snapchat) {
+              const scUrl = formData.snapchat.startsWith("http")
+                ? (isSafeUrl(formData.snapchat) ? formData.snapchat : "#")
+                : `https://snapchat.com/add/${formData.snapchat}`;
+              s += `  <a href="${scUrl}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.discord) {
+              const dcUrl = formData.discord.startsWith("http")
+                ? (isSafeUrl(formData.discord) ? formData.discord : "#")
+                : `https://discord.com/users/${formData.discord}`;
+              s += `  <a href="${dcUrl}"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.producthunt) {
+              const phUrl = formData.producthunt.startsWith("http")
+                ? (isSafeUrl(formData.producthunt) ? formData.producthunt : "#")
+                : `https://www.producthunt.com/@${formData.producthunt}`;
+              s += `  <a href="${phUrl}"><img src="https://img.shields.io/badge/Product_Hunt-DA552F?style=for-the-badge&logo=product-hunt&logoColor=white" alt="Product Hunt" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.youtube) {
+              const ytUrl = formData.youtube.startsWith("http")
+                ? (isSafeUrl(formData.youtube) ? formData.youtube : "#")
+                : `https://youtube.com/@${formData.youtube}`;
+              s += `  <a href="${ytUrl}"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.twitch) {
+              const twUrl = formData.twitch.startsWith("http")
+                ? (isSafeUrl(formData.twitch) ? formData.twitch : "#")
+                : `https://twitch.tv/${formData.twitch}`;
+              s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.medium) {
+              const mdUrl = formData.medium.startsWith("http")
+                ? (isSafeUrl(formData.medium) ? formData.medium : "#")
+                : `https://medium.com/@${formData.medium}`;
+              s += `  <a href="${mdUrl}"><img src="https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white" alt="Medium" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.stackoverflow) {
+              const soUrl = formData.stackoverflow.startsWith("http")
+                ? (isSafeUrl(formData.stackoverflow) ? formData.stackoverflow : "#")
+                : `https://stackoverflow.com/users/${formData.stackoverflow}`;
+              s += `  <a href="${soUrl}"><img src="https://img.shields.io/badge/Stack_Overflow-FE7A16?style=for-the-badge&logo=stackoverflow&logoColor=white" alt="Stack Overflow" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.dribbble) {
+              const drUrl = formData.dribbble.startsWith("http")
+                ? (isSafeUrl(formData.dribbble) ? formData.dribbble : "#")
+                : `https://dribbble.com/${formData.dribbble}`;
+              s += `  <a href="${drUrl}"><img src="https://img.shields.io/badge/Dribbble-EA4C89?style=for-the-badge&logo=dribbble&logoColor=white" alt="Dribbble" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.behance) {
+              const beUrl = formData.behance.startsWith("http")
+                ? (isSafeUrl(formData.behance) ? formData.behance : "#")
+                : `https://www.behance.net/${formData.behance}`;
+              s += `  <a href="${beUrl}"><img src="https://img.shields.io/badge/Behance-1769FF?style=for-the-badge&logo=behance&logoColor=white" alt="Behance" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.kaggle) {
+              const kgUrl = formData.kaggle.startsWith("http")
+                ? (isSafeUrl(formData.kaggle) ? formData.kaggle : "#")
+                : `https://www.kaggle.com/${formData.kaggle}`;
+              s += `  <a href="${kgUrl}"><img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.devto) {
+              const dtUrl = formData.devto.startsWith("http")
+                ? (isSafeUrl(formData.devto) ? formData.devto : "#")
+                : `https://dev.to/${formData.devto}`;
+              s += `  <a href="${dtUrl}"><img src="https://img.shields.io/badge/DEV.TO-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white" alt="DEV.TO" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.mastodon) {
+              const msUrl = formData.mastodon.startsWith("http")
+                ? (isSafeUrl(formData.mastodon) ? formData.mastodon : "#")
+                : `https://mastodon.social/@${formData.mastodon}`;
+              s += `  <a href="${msUrl}"><img src="https://img.shields.io/badge/Mastodon-6364FF?style=for-the-badge&logo=mastodon&logoColor=white" alt="Mastodon" /></a>&nbsp;&nbsp;\n`;
+            }
+            if (formData.portfolio) {
+              const ptUrl = formData.portfolio.startsWith("http")
+                ? (isSafeUrl(formData.portfolio) ? formData.portfolio : "#")
+                : `https://${formData.portfolio}`;
+              s += `  <a href="${ptUrl}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
+            }
             formData.customLinks.forEach((link) => {
-              if (link.icon.startsWith("http"))
-                s += `  <a href="${link.url}"><img src="${link.icon}" height="28" alt="${link.label}" title="${link.label}" /></a>&nbsp;&nbsp;\n`;
-              else
-                s += `  <a href="${link.url}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${link.label}" /></a>&nbsp;&nbsp;\n`;
+              const safeUrl = isSafeUrl(link.url) ? link.url : "#";
+              if (link.icon.startsWith("http") && isSafeUrl(link.icon))
+                s += `  <a href="${safeUrl}"><img src="${link.icon}" height="28" alt="${escapeHtml(link.label)}" title="${escapeHtml(link.label)}" /></a>&nbsp;&nbsp;\n`;
+              else if (!link.icon.startsWith("http"))
+                s += `  <a href="${safeUrl}"><img src="https://img.shields.io/badge/${link.label.replace(/ /g, "%20")}-4285F4?style=for-the-badge&logo=${link.icon.toLowerCase().replace(/ /g, "")}&logoColor=white" alt="${escapeHtml(link.label)}" /></a>&nbsp;&nbsp;\n`;
             });
             s += `</p>\n\n`;
           }
@@ -1323,7 +1115,7 @@ const generateMarkdown = (
             if (formData.animations.streak)
               s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
             if (formData.animations.stats)
-              s += `  ${buildImg("stats", `https://github-readme-stats.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
+              s += `  ${buildImg("stats", `https://github-rs.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
             s += `</p>\n\n`;
           }
           break;
@@ -1346,9 +1138,9 @@ const generateMarkdown = (
           ) {
             s += `<p align="center">\n`;
             if (formData.animations.topLangsCommit)
-              s += `  ${buildImg("topLangsCommit", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
+              s += `  ${buildImg("topLangsCommit", `https://github-rs.vercel.app/api/top-langs/?username=${user}&layout=donut&custom_title=Top%20Languages%20by%20Commit&${apiThemes.stats}`, "Top Languages by Commit")}`;
             if (formData.animations.topLangsRepo)
-              s += `  ${buildImg("topLangsRepo", `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
+              s += `  ${buildImg("topLangsRepo", `https://github-rs.vercel.app/api/top-langs/?username=${user}&layout=donut-vertical&custom_title=Top%20Languages%20by%20Repo&${apiThemes.stats}`, "Top Languages by Repo")}`;
             s += `</p>\n\n`;
           }
           break;
@@ -1501,7 +1293,7 @@ const PreviewContent = ({ formData, theme }) => {
             marginBottom: 16,
           }}
         >
-          <DisplayBoard projects={formData.projects} />
+          <DisplayBoard projects={formData.projects} github={formData.github} />
         </div>
       )}
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{mdAfter}</ReactMarkdown>
@@ -1516,6 +1308,7 @@ export default function App() {
   const [copiedSession, setCopiedSession] = useState(false);
   const [copiedYml, setCopiedYml] = useState(false);
   const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [formData, setFormData] = useState(loadInitialState);
   const [newLinkLabel, setNewLinkLabel] = useState("");
@@ -1703,7 +1496,16 @@ export default function App() {
           snakeCustom: parsed.snakeCustom || DEFAULT_SNAKE,
         });
         setImportText("");
-      } catch (err) {}
+        setImportError("");
+      } catch {
+        setImportError(
+          "Invalid session blob. Please check the format and try again.",
+        );
+      }
+    } else {
+      setImportError(
+        "No valid session marker found. Paste the full blob from the Save Session tab.",
+      );
     }
   };
 
@@ -2135,6 +1937,61 @@ export default function App() {
                   name: "portfolio",
                   label: "Portfolio",
                   placeholder: "https://yoursite.com",
+                },
+                {
+                  name: "discord",
+                  label: "Discord",
+                  placeholder: "username or ID",
+                },
+                {
+                  name: "producthunt",
+                  label: "Product Hunt",
+                  placeholder: "username",
+                },
+                {
+                  name: "youtube",
+                  label: "YouTube",
+                  placeholder: "handle or channel URL",
+                },
+                {
+                  name: "twitch",
+                  label: "Twitch",
+                  placeholder: "username",
+                },
+                {
+                  name: "medium",
+                  label: "Medium",
+                  placeholder: "username",
+                },
+                {
+                  name: "stackoverflow",
+                  label: "Stack Overflow",
+                  placeholder: "user ID",
+                },
+                {
+                  name: "dribbble",
+                  label: "Dribbble",
+                  placeholder: "username",
+                },
+                {
+                  name: "behance",
+                  label: "Behance",
+                  placeholder: "username",
+                },
+                {
+                  name: "kaggle",
+                  label: "Kaggle",
+                  placeholder: "username",
+                },
+                {
+                  name: "devto",
+                  label: "DEV Community",
+                  placeholder: "username",
+                },
+                {
+                  name: "mastodon",
+                  label: "Mastodon",
+                  placeholder: "username",
                 },
               ].map((f) => (
                 <Field
@@ -2889,7 +2746,10 @@ export default function App() {
                 </div>
                 <textarea
                   value={importText}
-                  onChange={(e) => setImportText(e.target.value)}
+                  onChange={(e) => {
+                    setImportText(e.target.value);
+                    if (importError) setImportError("");
+                  }}
                   placeholder="Paste session blob here..."
                   style={{
                     width: "100%",
@@ -2897,7 +2757,7 @@ export default function App() {
                     padding: 12,
                     background: "var(--bg-secondary)",
                     color: "var(--text-primary)",
-                    border: "1px solid var(--border-color)",
+                    border: `1px solid ${importError ? "#ff4444" : "var(--border-color)"}`,
                     borderRadius: 6,
                     fontFamily: "monospace",
                     fontSize: "0.78rem",
@@ -2906,6 +2766,18 @@ export default function App() {
                     resize: "vertical",
                   }}
                 />
+                {importError && (
+                  <p
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "0.78rem",
+                      marginTop: 0,
+                      marginBottom: 10,
+                    }}
+                  >
+                    {importError}
+                  </p>
+                )}
                 <button
                   onClick={handleImportState}
                   style={{
