@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Star,
   GitFork,
+  Box,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -539,6 +540,7 @@ const DEFAULT_STATE = {
     showLeetcodeHeatmap: true,
     showLeetcodeContest: true,
     codeforces: true,
+    isometric3D: false,
   },
   dimensions: {
     displayBoard: { w: "", h: "", scale: "100%", x: 0, y: 0 },
@@ -553,6 +555,7 @@ const DEFAULT_STATE = {
     showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
     codeforces: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    isometric3D: { w: "", h: "", scale: "100%", x: 0, y: 0 },
   },
   sectionOrder: [
     "board",
@@ -885,6 +888,7 @@ const generateMarkdown = (
       "pinball",
       "topLangs",
       "snake",
+      "isometric3D",
       "leetcode",
       "visitors",
     ];
@@ -1152,6 +1156,12 @@ const generateMarkdown = (
             s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
           }
           break;
+        case "isometric3D":
+          if (formData.animations.isometric3D) {
+            const iso3dSrc = `https://raw.githubusercontent.com/${user}/${user}/main/profile-3d-contrib/profile-green-animate.svg`;
+            s += `## 3D Contribution Graph\n<p align="center">\n  ${buildImg("isometric3D", iso3dSrc, "3D Contribution Graph")}</p>\n\n`;
+          }
+          break;
         case "leetcode":
           if (
             (formData.leetcode &&
@@ -1307,6 +1317,7 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [copiedSession, setCopiedSession] = useState(false);
   const [copiedYml, setCopiedYml] = useState(false);
+  const [copiedIsometricYml, setCopiedIsometricYml] = useState(false);
   const [importText, setImportText] = useState("");
   const [importError, setImportError] = useState("");
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -1537,6 +1548,12 @@ export default function App() {
     setTimeout(() => setCopiedYml(false), 2000);
   };
 
+  const copyIsometricYml = () => {
+    navigator.clipboard.writeText(isometricYml);
+    setCopiedIsometricYml(true);
+    setTimeout(() => setCopiedIsometricYml(false), 2000);
+  };
+
   const snakeConfig = formData.snakeCustom || DEFAULT_SNAKE;
   const safeHex = (val, def) => (val || def).replace("#", "");
   const lightDotsEncoded = [
@@ -1562,6 +1579,8 @@ export default function App() {
 
   const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n      - name: Generate snake\n        uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${snakeHex}&color_dots=${lightDotsEncoded}&color_background=%23${bgHex}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${snakeHex}&color_dots=${darkDotsEncoded}&color_background=%23${bgHex}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n      - name: Push snake to output branch\n        run: |\n          sudo chown -R $USER:$USER dist\n          cd dist\n          git init\n          git checkout -b output\n          git add .\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git commit -m "chore: update dev snake animation"\n          git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
 
+  const isometricYml = `name: Generate 3D Contribution Graph\n\non:\n  schedule:\n    - cron: "0 18 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v4\n      - name: Generate 3D Contribution Graph\n        uses: yoshi389111/github-profile-3d-contrib@0.7.1\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n          USERNAME: \${{ github.repository_owner }}\n      - name: Commit and push changes\n        run: |\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git add -A\n          git commit -m "chore: update 3D contribution graph" || exit 0\n          git push`;
+
   const animKeys = [
     { key: "visitors", label: "Profile Visitors Badge" },
     { key: "stats", label: "GitHub Stats" },
@@ -1571,6 +1590,7 @@ export default function App() {
     { key: "topLangsRepo", label: "Top Langs by Repo" },
     { key: "pinball", label: "Activity Graph" },
     { key: "snake", label: "Contribution Snake" },
+    { key: "isometric3D", label: "3D Contribution Graph" },
     { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
     { key: "showLeetcodeContest", label: "LeetCode Contest" },
     { key: "codeforces", label: "Codeforces Stats" },
@@ -2495,6 +2515,11 @@ export default function App() {
                   icon: <Gamepad2 size={13} />,
                   label: "Snake YML",
                 },
+                {
+                  id: "isometricYml",
+                  icon: <Box size={13} />,
+                  label: "3D Graph YML",
+                },
               ].map(({ id, icon, label }) => (
                 <button
                   key={id}
@@ -3084,6 +3109,136 @@ export default function App() {
                   }}
                 >
                   {snakeYml}
+                </pre>
+              </div>
+            )}
+
+            {activeTab === "isometricYml" && (
+              <div
+                style={{ padding: 16, height: "100%", overflow: "auto" }}
+                className="custom-scrollbar"
+              >
+                <div style={S.card}>
+                  <div
+                    style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      color: "var(--text-primary)",
+                      marginBottom: 8,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    3D Contribution Graph Setup
+                  </div>
+                  {[
+                    {
+                      stepNumber: 1,
+                      stepText: (
+                        <>
+                          Go to your profile repo:{" "}
+                          <code style={S.chip}>github.com/username/username</code>
+                        </>
+                      ),
+                    },
+                    {
+                      stepNumber: 2,
+                      stepText: (
+                        <>
+                          Add file, type:{" "}
+                          <code style={S.chip}>.github/workflows/isometric3d.yml</code>
+                        </>
+                      ),
+                    },
+                    {
+                      stepNumber: 3,
+                      stepText: "Copy the YML below, paste into the file, commit.",
+                    },
+                    {
+                      stepNumber: 4,
+                      stepText: (
+                        <>
+                          Enable the{" "}
+                          <strong>isometric3D</strong> toggle in the Sections panel, then copy your README.
+                        </>
+                      ),
+                    },
+                  ].map(({ stepNumber, stepText }) => (
+                    <div
+                      key={stepNumber}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 10,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <span
+                        style={{
+                          background: "var(--accent-color)",
+                          color: "#fff",
+                          borderRadius: "50%",
+                          width: 20,
+                          height: 20,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.68rem",
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {stepNumber}
+                      </span>
+                      <span style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
+                        {stepText}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    margin: "14px 0 8px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  Generated YML
+                </div>
+                <button
+                  onClick={copyIsometricYml}
+                  style={{
+                    ...S.btn,
+                    background: "var(--accent-color)",
+                    color: "#fff",
+                    marginBottom: 12,
+                  }}
+                >
+                  {copiedIsometricYml ? <Check size={14} /> : <Copy size={14} />}{" "}
+                  {copiedIsometricYml ? "Copied!" : "Copy YML"}
+                </button>
+                <pre
+                  style={{
+                    background: "var(--bg-secondary)",
+                    color: "var(--text-primary)",
+                    padding: 14,
+                    borderRadius: 6,
+                    border: "1px solid var(--border-color)",
+                    fontFamily: "monospace",
+                    fontSize: "0.75rem",
+                    overflowX: "auto",
+                    overflowY: "auto",
+                    maxHeight: 380,
+                    whiteSpace: "pre",
+                    lineHeight: 1.7,
+                    marginBottom: 12,
+                  }}
+                >
+                  {isometricYml}
                 </pre>
               </div>
             )}
