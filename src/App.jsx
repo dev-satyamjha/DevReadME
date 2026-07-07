@@ -21,7 +21,19 @@ import {
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import CursorBubbles from "./CursorBubbles";
-import { MATRIX_FONT, DOT, GAP, CW, ON, BW, BH, PW, PH, PX, PY } from "./utils/matrixUtils";
+import {
+  MATRIX_FONT,
+  DOT,
+  GAP,
+  CW,
+  ON,
+  BW,
+  BH,
+  PW,
+  PH,
+  PX,
+  PY,
+} from "./utils/matrixUtils";
 
 const STATE_PREFIX = "<!--DEVREADME_STATE:";
 const STATE_SUFFIX = ":DEVREADME_STATE-->";
@@ -120,44 +132,660 @@ const PRESET_SCHEMES = [
 
 const SKILLS_CATEGORIES = {
   Languages: [
-    "JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "C", "Go", "Rust", "Ruby", "PHP", "Swift", "Kotlin", "Dart", "R", "Scala", "Elixir", "Haskell", "Clojure", "Julia", "Assembly", "SQL", "HTML5", "CSS3", "Bash", "PowerShell", "Perl", "Lua", "Zig", "Nim", "Ren'Py", "Crystal", "Solidity", "OCaml", "Erlang", "Fortran", "MATLAB", "Groovy", "WebAssembly", "F#", "Objective-C", "Vala", "V", "Apex", "ColdFusion", "Hack", "Prolog", "Lisp", "Scheme", "Racket", "Delphi", "Ada", "COBOL", "VBScript", "ActionScript", "Smalltalk", "Tcl", "Verilog", "VHDL", "SystemVerilog"
+    "JavaScript",
+    "TypeScript",
+    "Python",
+    "Java",
+    "C++",
+    "C#",
+    "C",
+    "Go",
+    "Rust",
+    "Ruby",
+    "PHP",
+    "Swift",
+    "Kotlin",
+    "Dart",
+    "R",
+    "Scala",
+    "Elixir",
+    "Haskell",
+    "Clojure",
+    "Julia",
+    "Assembly",
+    "SQL",
+    "HTML5",
+    "CSS3",
+    "Bash",
+    "PowerShell",
+    "Perl",
+    "Lua",
+    "Zig",
+    "Nim",
+    "Ren'Py",
+    "Crystal",
+    "Solidity",
+    "OCaml",
+    "Erlang",
+    "Fortran",
+    "MATLAB",
+    "Groovy",
+    "WebAssembly",
+    "F#",
+    "Objective-C",
+    "Vala",
+    "V",
+    "Apex",
+    "ColdFusion",
+    "Hack",
+    "Prolog",
+    "Lisp",
+    "Scheme",
+    "Racket",
+    "Delphi",
+    "Ada",
+    "COBOL",
+    "VBScript",
+    "ActionScript",
+    "Smalltalk",
+    "Tcl",
+    "Verilog",
+    "VHDL",
+    "SystemVerilog",
   ],
   Frontend: [
-    "React", "Next.js", "Vue.js", "Nuxt.js", "Angular", "Svelte", "Solid", "Ember", "TailwindCSS", "Bootstrap", "Material UI", "Chakra UI", "Redux", "Zustand", "Framer Motion", "Three.js", "WebGL", "Babel", "Webpack", "Vite", "Astro", "Gatsby", "Remix", "Qwik", "Storybook", "Sass", "Styled Components", "Jest", "Vitest", "Cypress", "Playwright", "ESLint", "Prettier", "Turbopack", "Rollup.js", "esbuild", "Alpine.js", "Lit", "Preact", "Bulma", "Ant Design", "Mantine", "Vuetify", "Quasar", "RxJS", "Gulp", "Grunt", "Pug", "Less", "Stylus", "JQuery", "HTMX", "GSAP", "Babylon.js", "Testing Library", "Mocha", "Chai", "Jasmine", "Karma", "Puppeteer", "Selenium"
+    "React",
+    "Next.js",
+    "Vue.js",
+    "Nuxt.js",
+    "Angular",
+    "Svelte",
+    "Solid",
+    "Ember",
+    "TailwindCSS",
+    "Bootstrap",
+    "Material UI",
+    "Chakra UI",
+    "Redux",
+    "Zustand",
+    "Framer Motion",
+    "Three.js",
+    "WebGL",
+    "Babel",
+    "Webpack",
+    "Vite",
+    "Astro",
+    "Gatsby",
+    "Remix",
+    "Qwik",
+    "Storybook",
+    "Sass",
+    "Styled Components",
+    "Jest",
+    "Vitest",
+    "Cypress",
+    "Playwright",
+    "ESLint",
+    "Prettier",
+    "Turbopack",
+    "Rollup.js",
+    "esbuild",
+    "Alpine.js",
+    "Lit",
+    "Preact",
+    "Bulma",
+    "Ant Design",
+    "Mantine",
+    "Vuetify",
+    "Quasar",
+    "RxJS",
+    "Gulp",
+    "Grunt",
+    "Pug",
+    "Less",
+    "Stylus",
+    "JQuery",
+    "HTMX",
+    "GSAP",
+    "Babylon.js",
+    "Testing Library",
+    "Mocha",
+    "Chai",
+    "Jasmine",
+    "Karma",
+    "Puppeteer",
+    "Selenium",
   ],
   Backend: [
-    "Node.js", "Express", "NestJS", "Django", "Flask", "FastAPI", "Spring Boot", "Laravel", "ASP.NET", "Ruby on Rails", "Koa", "Hapi", "Meteor", "GraphQL", "Apollo", "gRPC", "Socket.io", "Gin", "Fiber", "Actix", "Bun", "Deno", "Symfony", "Phoenix", "tRPC", "RabbitMQ", "Apache Kafka", "Strapi", "Hasura", "Supabase Edge Functions", "AdonisJS", "Sails.js", "LoopBack", "CakePHP", "CodeIgniter", "Yii", "Lumen", "Tornado", "Bottle", "CherryPy", "Pyramid", "Ktor", "Play Framework", "Echo", "Beego", "Revel", "Rocket", "Iron", "Kemal", "Celery", "ActiveMQ", "ZeroMQ", "NATS", "MQTT", "Memcached", "TypeORM", "Sequelize", "SQLAlchemy", "Hibernate", "Entity Framework", "Knex.js", "Waterline", "Bookshelf.js"
+    "Node.js",
+    "Express",
+    "NestJS",
+    "Django",
+    "Flask",
+    "FastAPI",
+    "Spring Boot",
+    "Laravel",
+    "ASP.NET",
+    "Ruby on Rails",
+    "Koa",
+    "Hapi",
+    "Meteor",
+    "GraphQL",
+    "Apollo",
+    "gRPC",
+    "Socket.io",
+    "Gin",
+    "Fiber",
+    "Actix",
+    "Bun",
+    "Deno",
+    "Symfony",
+    "Phoenix",
+    "tRPC",
+    "RabbitMQ",
+    "Apache Kafka",
+    "Strapi",
+    "Hasura",
+    "Supabase Edge Functions",
+    "AdonisJS",
+    "Sails.js",
+    "LoopBack",
+    "CakePHP",
+    "CodeIgniter",
+    "Yii",
+    "Lumen",
+    "Tornado",
+    "Bottle",
+    "CherryPy",
+    "Pyramid",
+    "Ktor",
+    "Play Framework",
+    "Echo",
+    "Beego",
+    "Revel",
+    "Rocket",
+    "Iron",
+    "Kemal",
+    "Celery",
+    "ActiveMQ",
+    "ZeroMQ",
+    "NATS",
+    "MQTT",
+    "Memcached",
+    "TypeORM",
+    "Sequelize",
+    "SQLAlchemy",
+    "Hibernate",
+    "Entity Framework",
+    "Knex.js",
+    "Waterline",
+    "Bookshelf.js",
   ],
   Database: [
-    "PostgreSQL", "MySQL", "MongoDB", "Redis", "SQLite", "Oracle", "Cassandra", "Neo4j", "DynamoDB", "Firebase", "Supabase", "Prisma", "Mongoose", "MariaDB", "CouchDB", "PlanetScale", "CockroachDB", "InfluxDB", "Elasticsearch", "ClickHouse", "Drizzle", "Couchbase", "Realm", "ArangoDB", "RethinkDB", "OrientDB", "RavenDB", "TimeScaleDB", "RocksDB", "LevelDB", "HBase", "Solr", "Splunk", "Milvus", "Pinecone", "Weaviate", "Qdrant", "Chroma", "FaunaDB", "HarperDB", "ScyllaDB", "Snowflake", "BigQuery", "Redshift", "Teradata", "Firebird", "Db2"
+    "PostgreSQL",
+    "MySQL",
+    "MongoDB",
+    "Redis",
+    "SQLite",
+    "Oracle",
+    "Cassandra",
+    "Neo4j",
+    "DynamoDB",
+    "Firebase",
+    "Supabase",
+    "Prisma",
+    "Mongoose",
+    "MariaDB",
+    "CouchDB",
+    "PlanetScale",
+    "CockroachDB",
+    "InfluxDB",
+    "Elasticsearch",
+    "ClickHouse",
+    "Drizzle",
+    "Couchbase",
+    "Realm",
+    "ArangoDB",
+    "RethinkDB",
+    "OrientDB",
+    "RavenDB",
+    "TimeScaleDB",
+    "RocksDB",
+    "LevelDB",
+    "HBase",
+    "Solr",
+    "Splunk",
+    "Milvus",
+    "Pinecone",
+    "Weaviate",
+    "Qdrant",
+    "Chroma",
+    "FaunaDB",
+    "HarperDB",
+    "ScyllaDB",
+    "Snowflake",
+    "BigQuery",
+    "Redshift",
+    "Teradata",
+    "Firebird",
+    "Db2",
   ],
   DevOps_Cloud: [
-    "AWS", "Google Cloud", "Azure", "Docker", "Kubernetes", "Terraform", "Jenkins", "GitHub Actions", "GitLab CI", "CircleCI", "TravisCI", "Ansible", "Linux", "Nginx", "Apache", "Vercel", "Netlify", "Heroku", "Cloudflare", "DigitalOcean", "InfinityFree", "Podman", "Helm", "Prometheus", "Grafana", "ArgoCD", "Pulumi", "Vagrant", "Render", "Fly.io", "Railway", "Ubuntu", "Debian", "Arch Linux", "Fedora", "Proxmox", "OpenShift", "Rancher", "Istio", "Linkerd", "Consul", "Vault", "Packer", "Puppet", "Chef", "SaltStack", "Datadog", "New Relic", "Dynatrace", "AppDynamics", "Sentry", "Logstash", "Kibana", "Fluentd", "Spinnaker", "Bitrise", "AppVeyor", "Bamboo", "TeamCity", "Linode", "Vultr", "UpCloud", "OVH", "Hetzner"
+    "AWS",
+    "Google Cloud",
+    "Azure",
+    "Docker",
+    "Kubernetes",
+    "Terraform",
+    "Jenkins",
+    "GitHub Actions",
+    "GitLab CI",
+    "CircleCI",
+    "TravisCI",
+    "Ansible",
+    "Linux",
+    "Nginx",
+    "Apache",
+    "Vercel",
+    "Netlify",
+    "Heroku",
+    "Cloudflare",
+    "DigitalOcean",
+    "InfinityFree",
+    "Podman",
+    "Helm",
+    "Prometheus",
+    "Grafana",
+    "ArgoCD",
+    "Pulumi",
+    "Vagrant",
+    "Render",
+    "Fly.io",
+    "Railway",
+    "Ubuntu",
+    "Debian",
+    "Arch Linux",
+    "Fedora",
+    "Proxmox",
+    "OpenShift",
+    "Rancher",
+    "Istio",
+    "Linkerd",
+    "Consul",
+    "Vault",
+    "Packer",
+    "Puppet",
+    "Chef",
+    "SaltStack",
+    "Datadog",
+    "New Relic",
+    "Dynatrace",
+    "AppDynamics",
+    "Sentry",
+    "Logstash",
+    "Kibana",
+    "Fluentd",
+    "Spinnaker",
+    "Bitrise",
+    "AppVeyor",
+    "Bamboo",
+    "TeamCity",
+    "Linode",
+    "Vultr",
+    "UpCloud",
+    "OVH",
+    "Hetzner",
   ],
   Mobile_Desktop: [
-    "React Native", "Flutter", "Electron", "Tauri", "Unity", "Unreal Engine", "Godot", "Xamarin", "Ionic", ".NET MAUI", "Expo", "Jetpack Compose", "SwiftUI", "Capacitor", "Cordova", "NativeScript", "Qt", "GTK", "wxWidgets", "Tkinter", "PyQt", "Kivy", "JavaFX", "Swing", "WinForms", "WPF", "UWP", "WinUI", "Appcelerator", "PhoneGap", "Sencha Touch", "Corona", "Cocos2d", "Defold", "Construct 3", "GameMaker", "LibGDX", "MonoGame", "Phaser", "CryEngine", "Lumberyard"
+    "React Native",
+    "Flutter",
+    "Electron",
+    "Tauri",
+    "Unity",
+    "Unreal Engine",
+    "Godot",
+    "Xamarin",
+    "Ionic",
+    ".NET MAUI",
+    "Expo",
+    "Jetpack Compose",
+    "SwiftUI",
+    "Capacitor",
+    "Cordova",
+    "NativeScript",
+    "Qt",
+    "GTK",
+    "wxWidgets",
+    "Tkinter",
+    "PyQt",
+    "Kivy",
+    "JavaFX",
+    "Swing",
+    "WinForms",
+    "WPF",
+    "UWP",
+    "WinUI",
+    "Appcelerator",
+    "PhoneGap",
+    "Sencha Touch",
+    "Corona",
+    "Cocos2d",
+    "Defold",
+    "Construct 3",
+    "GameMaker",
+    "LibGDX",
+    "MonoGame",
+    "Phaser",
+    "CryEngine",
+    "Lumberyard",
   ],
   AI_Data: [
-    "TensorFlow", "PyTorch", "Pandas", "NumPy", "Scikit-learn", "OpenCV", "Jupyter", "Keras", "Hugging Face", "Matplotlib", "LangChain", "OpenAI", "Anthropic", "Ollama", "ONNX", "Plotly", "Apache Spark", "Polars", "Gradio", "Streamlit", "Weights & Biases", "Anaconda", "RStudio", "Apache Airflow", "dbt", "LlamaIndex", "ChromaDB", "Pinecone", "Milvus", "Weaviate", "Qdrant", "FAISS", "Transformers", "Diffusers", "Detectron2", "YOLO", "Spacy", "NLTK", "Gensim", "Fastai", "XGBoost", "LightGBM", "CatBoost", "Prophet", "Statsmodels", "Seaborn", "Bokeh", "Dash", "Tableau", "Power BI", "Looker", "Metabase", "Superset", "Hadoop", "Hive", "Pig", "Presto", "Trino", "Flink", "Kafka Streams"
+    "TensorFlow",
+    "PyTorch",
+    "Pandas",
+    "NumPy",
+    "Scikit-learn",
+    "OpenCV",
+    "Jupyter",
+    "Keras",
+    "Hugging Face",
+    "Matplotlib",
+    "LangChain",
+    "OpenAI",
+    "Anthropic",
+    "Ollama",
+    "ONNX",
+    "Plotly",
+    "Apache Spark",
+    "Polars",
+    "Gradio",
+    "Streamlit",
+    "Weights & Biases",
+    "Anaconda",
+    "RStudio",
+    "Apache Airflow",
+    "dbt",
+    "LlamaIndex",
+    "ChromaDB",
+    "Pinecone",
+    "Milvus",
+    "Weaviate",
+    "Qdrant",
+    "FAISS",
+    "Transformers",
+    "Diffusers",
+    "Detectron2",
+    "YOLO",
+    "Spacy",
+    "NLTK",
+    "Gensim",
+    "Fastai",
+    "XGBoost",
+    "LightGBM",
+    "CatBoost",
+    "Prophet",
+    "Statsmodels",
+    "Seaborn",
+    "Bokeh",
+    "Dash",
+    "Tableau",
+    "Power BI",
+    "Looker",
+    "Metabase",
+    "Superset",
+    "Hadoop",
+    "Hive",
+    "Pig",
+    "Presto",
+    "Trino",
+    "Flink",
+    "Kafka Streams",
   ],
   Design_Tools: [
-    "Figma", "Adobe Photoshop", "Adobe Illustrator", "Adobe XD", "Krita", "GIMP", "Inkscape", "Blender", "Canva", "Sketch", "After Effects", "Premiere Pro", "Framer", "Adobe Lightroom", "Adobe InDesign", "DaVinci Resolve", "Affinity Designer", "Spline", "CorelDRAW", "PaintTool SAI", "Clip Studio Paint", "Maya", "3ds Max", "ZBrush", "Cinema 4D", "Houdini", "Marvelous Designer", "Substance Painter", "Miro", "Whimsical", "Balsamiq", "Zeplin", "InVision", "Marvel", "ProtoPie", "Principle", "Origami Studio", "Lottie", "Rive", "Webflow"
+    "Figma",
+    "Adobe Photoshop",
+    "Adobe Illustrator",
+    "Adobe XD",
+    "Krita",
+    "GIMP",
+    "Inkscape",
+    "Blender",
+    "Canva",
+    "Sketch",
+    "After Effects",
+    "Premiere Pro",
+    "Framer",
+    "Adobe Lightroom",
+    "Adobe InDesign",
+    "DaVinci Resolve",
+    "Affinity Designer",
+    "Spline",
+    "CorelDRAW",
+    "PaintTool SAI",
+    "Clip Studio Paint",
+    "Maya",
+    "3ds Max",
+    "ZBrush",
+    "Cinema 4D",
+    "Houdini",
+    "Marvelous Designer",
+    "Substance Painter",
+    "Miro",
+    "Whimsical",
+    "Balsamiq",
+    "Zeplin",
+    "InVision",
+    "Marvel",
+    "ProtoPie",
+    "Principle",
+    "Origami Studio",
+    "Lottie",
+    "Rive",
+    "Webflow",
   ],
   Editors_OS: [
-    "VS Code", "Antigravity", "Vim", "Neovim", "Nano", "Sublime Text", "Zed", "Notepad++", "IntelliJ IDEA", "PyCharm", "WebStorm", "CLion", "Emacs", "Windows", "macOS", "Ubuntu", "Debian", "Arch Linux", "Fedora", "Kali Linux", "NixOS", "Hyprland", "KDE Plasma", "GNOME", "i3", "Sway", "Proxmox", "WSL", "Eclipse", "NetBeans", "Visual Studio", "Xcode", "Android Studio", "Fleet", "Cursor", "Rider", "PhpStorm", "RubyMine", "DataGrip", "GoLand", "Atom", "Brackets", "Helix", "Kakoune", "Micro", "Geany", "Pop!_OS", "Linux Mint", "Manjaro", "CentOS", "RHEL", "openSUSE", "Alpine Linux", "Raspberry Pi OS", "FreeBSD", "OpenBSD"
+    "VS Code",
+    "Antigravity",
+    "Vim",
+    "Neovim",
+    "Nano",
+    "Sublime Text",
+    "Zed",
+    "Notepad++",
+    "IntelliJ IDEA",
+    "PyCharm",
+    "WebStorm",
+    "CLion",
+    "Emacs",
+    "Windows",
+    "macOS",
+    "Ubuntu",
+    "Debian",
+    "Arch Linux",
+    "Fedora",
+    "Kali Linux",
+    "NixOS",
+    "Hyprland",
+    "KDE Plasma",
+    "GNOME",
+    "i3",
+    "Sway",
+    "Proxmox",
+    "WSL",
+    "Eclipse",
+    "NetBeans",
+    "Visual Studio",
+    "Xcode",
+    "Android Studio",
+    "Fleet",
+    "Cursor",
+    "Rider",
+    "PhpStorm",
+    "RubyMine",
+    "DataGrip",
+    "GoLand",
+    "Atom",
+    "Brackets",
+    "Helix",
+    "Kakoune",
+    "Micro",
+    "Geany",
+    "Pop!_OS",
+    "Linux Mint",
+    "Manjaro",
+    "CentOS",
+    "RHEL",
+    "openSUSE",
+    "Alpine Linux",
+    "Raspberry Pi OS",
+    "FreeBSD",
+    "OpenBSD",
   ],
   Productivity_Collab: [
-    "Git", "GitHub", "GitLab", "Bitbucket", "Notion", "Slack", "Jira", "Trello", "Confluence", "Linear", "Postman", "Insomnia", "Obsidian", "Zoom", "Google Meet", "Asana", "ClickUp", "Microsoft Teams", "Discord", "Monday.com", "Basecamp", "Wrike", "Smartsheet", "Airtable", "Coda", "Evernote", "Roam Research", "Logseq", "Bear", "Ulysses", "Miro", "Mural", "Lucidchart", "Draw.io", "Figma FigJam", "Swagger", "Stoplight", "Hoppscotch", "SoapUI", "Katalon", "BrowserStack", "Sauce Labs", "Vagrant", "Packer"
+    "Git",
+    "GitHub",
+    "GitLab",
+    "Bitbucket",
+    "Notion",
+    "Slack",
+    "Jira",
+    "Trello",
+    "Confluence",
+    "Linear",
+    "Postman",
+    "Insomnia",
+    "Obsidian",
+    "Zoom",
+    "Google Meet",
+    "Asana",
+    "ClickUp",
+    "Microsoft Teams",
+    "Discord",
+    "Monday.com",
+    "Basecamp",
+    "Wrike",
+    "Smartsheet",
+    "Airtable",
+    "Coda",
+    "Evernote",
+    "Roam Research",
+    "Logseq",
+    "Bear",
+    "Ulysses",
+    "Miro",
+    "Mural",
+    "Lucidchart",
+    "Draw.io",
+    "Figma FigJam",
+    "Swagger",
+    "Stoplight",
+    "Hoppscotch",
+    "SoapUI",
+    "Katalon",
+    "BrowserStack",
+    "Sauce Labs",
+    "Vagrant",
+    "Packer",
   ],
   Games_Platforms: [
-    "Steam", "PlayStation", "Xbox", "Nintendo Switch", "Nintendo 3DS", "Oculus", "VR", "Discord", "Twitch", "Epic Games", "GOG", "Itch.io", "Roblox Studio", "PlayCanvas", "Origin", "Uplay", "Battle.net", "GeForce Now", "Stadia", "Luna", "Xbox Game Pass", "PS Now", "Viveport", "SideQuest", "ModDB", "Nexus Mods", "CurseForge", "Game Jolt", "Kongregate", "Newgrounds", "Armorgames", "Miniclip"
+    "Steam",
+    "PlayStation",
+    "Xbox",
+    "Nintendo Switch",
+    "Nintendo 3DS",
+    "Oculus",
+    "VR",
+    "Discord",
+    "Twitch",
+    "Epic Games",
+    "GOG",
+    "Itch.io",
+    "Roblox Studio",
+    "PlayCanvas",
+    "Origin",
+    "Uplay",
+    "Battle.net",
+    "GeForce Now",
+    "Stadia",
+    "Luna",
+    "Xbox Game Pass",
+    "PS Now",
+    "Viveport",
+    "SideQuest",
+    "ModDB",
+    "Nexus Mods",
+    "CurseForge",
+    "Game Jolt",
+    "Kongregate",
+    "Newgrounds",
+    "Armorgames",
+    "Miniclip",
   ],
   Extra: [
-    "Athletics", "Boxing", "Chess", "Gaming", "Photography", "Writing", "Music", "Guitar", "Piano", "Video Editing", "3D Modeling", "Cycling", "Swimming", "Running", "Yoga", "Spotify", "YouTube", "Reddit", "Letterboxd", "Cooking", "Baking", "Gardening", "Reading", "Traveling", "Hiking", "Camping", "Fishing", "Woodworking", "Metalworking", "Electronics", "Robotics", "3D Printing", "Drawing", "Painting", "Sculpting", "Calligraphy", "Origami", "Knitting", "Sewing", "Dancing", "Singing", "Acting", "Stand-up Comedy", "Magic", "Juggling", "Skateboarding", "Surfing", "Snowboarding", "Skiing", "Martial Arts", "Weightlifting", "CrossFit", "Powerlifting", "Bodybuilding", "Calisthenics", "Gymnastics", "Parkour", "Climbing", "Bouldering", "Scuba Diving", "Skydiving", "Paragliding"
+    "Athletics",
+    "Boxing",
+    "Chess",
+    "Gaming",
+    "Photography",
+    "Writing",
+    "Music",
+    "Guitar",
+    "Piano",
+    "Video Editing",
+    "3D Modeling",
+    "Cycling",
+    "Swimming",
+    "Running",
+    "Yoga",
+    "Spotify",
+    "YouTube",
+    "Reddit",
+    "Letterboxd",
+    "Cooking",
+    "Baking",
+    "Gardening",
+    "Reading",
+    "Traveling",
+    "Hiking",
+    "Camping",
+    "Fishing",
+    "Woodworking",
+    "Metalworking",
+    "Electronics",
+    "Robotics",
+    "3D Printing",
+    "Drawing",
+    "Painting",
+    "Sculpting",
+    "Calligraphy",
+    "Origami",
+    "Knitting",
+    "Sewing",
+    "Dancing",
+    "Singing",
+    "Acting",
+    "Stand-up Comedy",
+    "Magic",
+    "Juggling",
+    "Skateboarding",
+    "Surfing",
+    "Snowboarding",
+    "Skiing",
+    "Martial Arts",
+    "Weightlifting",
+    "CrossFit",
+    "Powerlifting",
+    "Bodybuilding",
+    "Calisthenics",
+    "Gymnastics",
+    "Parkour",
+    "Climbing",
+    "Bouldering",
+    "Scuba Diving",
+    "Skydiving",
+    "Paragliding",
   ],
 };
-
-
 
 function buildDots(str, y, pw, px, offsetX = null) {
   const strW = str.length * (CW + GAP * 3);
@@ -493,6 +1121,27 @@ const DEFAULT_SNAKE = {
   darkL4: "#ffffff",
 };
 
+const ISOMETRIC_3D_THEMES = [
+  { label: "Green Animate", value: "profile-green-animate", accent: "#39d353" },
+  { label: "Green", value: "profile-green", accent: "#30a14e" },
+  { label: "Night View", value: "profile-night-view", accent: "#58a6ff" },
+  { label: "Night Green", value: "profile-night-green", accent: "#56d364" },
+  { label: "Night Rainbow", value: "profile-night-rainbow", accent: "#a371f7" },
+  {
+    label: "Season Animate",
+    value: "profile-season-animate",
+    accent: "#f9826c",
+  },
+  { label: "Season", value: "profile-season", accent: "#e3b341" },
+  {
+    label: "South Season Animate",
+    value: "profile-south-season-animate",
+    accent: "#3fb950",
+  },
+  { label: "South Season", value: "profile-south-season", accent: "#f78166" },
+  { label: "Gitblock", value: "profile-gitblock", accent: "#d29922" },
+];
+
 const DEFAULT_STATE = {
   name: "John Doe",
   subtitle: "Full Stack Developer | Open Source Enthusiast",
@@ -537,25 +1186,27 @@ const DEFAULT_STATE = {
     topLangsRepo: true,
     pinball: true,
     snake: true,
+    lecoqLanguage: true,
     showLeetcodeHeatmap: true,
     showLeetcodeContest: true,
     codeforces: true,
-    isometric3D: false,
+    isometric3D: true,
   },
   dimensions: {
     displayBoard: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     stats: { w: "", h: "", scale: "46%", x: 0, y: 0 },
     streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-    githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
+    githubProfileSummary: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     topLangsRepo: { w: "", h: "", scale: "25%", x: 58, y: 0 },
     pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     visitors: { w: "", h: "", scale: "8%", x: 0, y: 0 },
+    isometric3D: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    lecoqLanguage: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
     codeforces: { w: "", h: "", scale: "100%", x: 0, y: 0 },
-    isometric3D: { w: "", h: "", scale: "100%", x: 0, y: 0 },
   },
   sectionOrder: [
     "board",
@@ -565,6 +1216,7 @@ const DEFAULT_STATE = {
     "funFact",
     "socials",
     "stats",
+    "isometric3D",
     "summary",
     "topLangs",
     "pinball",
@@ -574,6 +1226,18 @@ const DEFAULT_STATE = {
   ],
   snakeTitle: "Dev Snake",
   funFact: "I can solve a Rubik's cube in under a minute!",
+  isometric3dTheme: "profile-green-animate",
+  sectionTitles: {
+    board: "Prominent Works",
+    about: "About Me",
+    skills: "Core Tech Stack",
+    socials: "Socials",
+    stats: "View Stats",
+    snake: "Dev Snake",
+    isometric3D: "3D Contribution Graph",
+    leetcode: "Arena Stats",
+    funFact: "Fun Fact",
+  },
 };
 
 function loadInitialState() {
@@ -588,6 +1252,10 @@ function loadInitialState() {
       ...parsed,
       snakeCustom: { ...DEFAULT_SNAKE, ...(parsed.snakeCustom || {}) },
       animations: { ...DEFAULT_STATE.animations, ...(parsed.animations || {}) },
+      sectionTitles: {
+        ...DEFAULT_STATE.sectionTitles,
+        ...(parsed.sectionTitles || {}),
+      },
       dimensions: Object.keys(DEFAULT_STATE.dimensions).reduce((acc, key) => {
         acc[key] = {
           ...DEFAULT_STATE.dimensions[key],
@@ -605,7 +1273,22 @@ function loadInitialState() {
         ? parsed.projects
         : DEFAULT_STATE.projects,
       sectionOrder: Array.isArray(parsed.sectionOrder)
-        ? parsed.sectionOrder
+        ? (() => {
+            let order = parsed.sectionOrder;
+            if (!order.includes("isometric3D")) {
+              const summaryIndex = order.indexOf("summary");
+              if (summaryIndex !== -1) {
+                order = [
+                  ...order.slice(0, summaryIndex),
+                  "isometric3D",
+                  ...order.slice(summaryIndex),
+                ];
+              } else {
+                order = [...order, "isometric3D"];
+              }
+            }
+            return order;
+          })()
         : DEFAULT_STATE.sectionOrder,
     };
   } catch {
@@ -918,11 +1601,11 @@ const generateMarkdown = (
           break;
         case "about":
           if (formData.about)
-            s += `## About Me\n${escapeHtml(formData.about)}\n\n`;
+            s += `## ${formData.sectionTitles?.about || "About Me"}\n${escapeHtml(formData.about)}\n\n`;
           break;
         case "skills":
           if (formData.skills.length > 0) {
-            s += `## Core Tech Stack\n\n`;
+            s += `## ${formData.sectionTitles?.skills || "Core Tech Stack"}\n\n`;
             Object.entries(SKILLS_CATEGORIES).forEach(
               ([category, categorySkills]) => {
                 const selected = categorySkills.filter((sk) =>
@@ -948,7 +1631,10 @@ const generateMarkdown = (
             if (cat.skills.length > 0) {
               s += `### ${escapeHtml(cat.title)}\n<p align="center">\n`;
               cat.skills.forEach((skillObj) => {
-                if (skillObj.icon.startsWith("http") && isSafeUrl(skillObj.icon))
+                if (
+                  skillObj.icon.startsWith("http") &&
+                  isSafeUrl(skillObj.icon)
+                )
                   s += `  <img src="${skillObj.icon}" height="28" alt="${escapeHtml(skillObj.name)}" title="${escapeHtml(skillObj.name)}" style="margin: 0 4px;" />\n`;
                 else if (!skillObj.icon.startsWith("http")) {
                   const safe = skillObj.name
@@ -991,20 +1677,24 @@ const generateMarkdown = (
             formData.portfolio ||
             formData.customLinks.length > 0;
           if (hasSocials) {
-            s += `## Socials\n<p align="center">\n`;
+            s += `## ${formData.sectionTitles?.socials || "Socials"}\n<p align="center">\n`;
             if (formData.github)
               s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
             if (formData.email)
               s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
             if (formData.linkedin) {
               const lnUrl = formData.linkedin.startsWith("http")
-                ? (isSafeUrl(formData.linkedin) ? formData.linkedin : "#")
+                ? isSafeUrl(formData.linkedin)
+                  ? formData.linkedin
+                  : "#"
                 : `https://linkedin.com/in/${formData.linkedin}`;
               s += `  <a href="${lnUrl}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.twitter) {
               const twUrl = formData.twitter.startsWith("http")
-                ? (isSafeUrl(formData.twitter) ? formData.twitter : "#")
+                ? isSafeUrl(formData.twitter)
+                  ? formData.twitter
+                  : "#"
                 : `https://x.com/${formData.twitter}`;
               s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
             }
@@ -1014,91 +1704,121 @@ const generateMarkdown = (
               s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
             if (formData.instagram) {
               const igUrl = formData.instagram.startsWith("http")
-                ? (isSafeUrl(formData.instagram) ? formData.instagram : "#")
+                ? isSafeUrl(formData.instagram)
+                  ? formData.instagram
+                  : "#"
                 : `https://instagram.com/${formData.instagram}`;
               s += `  <a href="${igUrl}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.facebook) {
               const fbUrl = formData.facebook.startsWith("http")
-                ? (isSafeUrl(formData.facebook) ? formData.facebook : "#")
+                ? isSafeUrl(formData.facebook)
+                  ? formData.facebook
+                  : "#"
                 : `https://facebook.com/${formData.facebook}`;
               s += `  <a href="${fbUrl}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.snapchat) {
               const scUrl = formData.snapchat.startsWith("http")
-                ? (isSafeUrl(formData.snapchat) ? formData.snapchat : "#")
+                ? isSafeUrl(formData.snapchat)
+                  ? formData.snapchat
+                  : "#"
                 : `https://snapchat.com/add/${formData.snapchat}`;
               s += `  <a href="${scUrl}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.discord) {
               const dcUrl = formData.discord.startsWith("http")
-                ? (isSafeUrl(formData.discord) ? formData.discord : "#")
+                ? isSafeUrl(formData.discord)
+                  ? formData.discord
+                  : "#"
                 : `https://discord.com/users/${formData.discord}`;
               s += `  <a href="${dcUrl}"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.producthunt) {
               const phUrl = formData.producthunt.startsWith("http")
-                ? (isSafeUrl(formData.producthunt) ? formData.producthunt : "#")
+                ? isSafeUrl(formData.producthunt)
+                  ? formData.producthunt
+                  : "#"
                 : `https://www.producthunt.com/@${formData.producthunt}`;
               s += `  <a href="${phUrl}"><img src="https://img.shields.io/badge/Product_Hunt-DA552F?style=for-the-badge&logo=product-hunt&logoColor=white" alt="Product Hunt" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.youtube) {
               const ytUrl = formData.youtube.startsWith("http")
-                ? (isSafeUrl(formData.youtube) ? formData.youtube : "#")
+                ? isSafeUrl(formData.youtube)
+                  ? formData.youtube
+                  : "#"
                 : `https://youtube.com/@${formData.youtube}`;
               s += `  <a href="${ytUrl}"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.twitch) {
               const twUrl = formData.twitch.startsWith("http")
-                ? (isSafeUrl(formData.twitch) ? formData.twitch : "#")
+                ? isSafeUrl(formData.twitch)
+                  ? formData.twitch
+                  : "#"
                 : `https://twitch.tv/${formData.twitch}`;
               s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.medium) {
               const mdUrl = formData.medium.startsWith("http")
-                ? (isSafeUrl(formData.medium) ? formData.medium : "#")
+                ? isSafeUrl(formData.medium)
+                  ? formData.medium
+                  : "#"
                 : `https://medium.com/@${formData.medium}`;
               s += `  <a href="${mdUrl}"><img src="https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white" alt="Medium" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.stackoverflow) {
               const soUrl = formData.stackoverflow.startsWith("http")
-                ? (isSafeUrl(formData.stackoverflow) ? formData.stackoverflow : "#")
+                ? isSafeUrl(formData.stackoverflow)
+                  ? formData.stackoverflow
+                  : "#"
                 : `https://stackoverflow.com/users/${formData.stackoverflow}`;
               s += `  <a href="${soUrl}"><img src="https://img.shields.io/badge/Stack_Overflow-FE7A16?style=for-the-badge&logo=stackoverflow&logoColor=white" alt="Stack Overflow" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.dribbble) {
               const drUrl = formData.dribbble.startsWith("http")
-                ? (isSafeUrl(formData.dribbble) ? formData.dribbble : "#")
+                ? isSafeUrl(formData.dribbble)
+                  ? formData.dribbble
+                  : "#"
                 : `https://dribbble.com/${formData.dribbble}`;
               s += `  <a href="${drUrl}"><img src="https://img.shields.io/badge/Dribbble-EA4C89?style=for-the-badge&logo=dribbble&logoColor=white" alt="Dribbble" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.behance) {
               const beUrl = formData.behance.startsWith("http")
-                ? (isSafeUrl(formData.behance) ? formData.behance : "#")
+                ? isSafeUrl(formData.behance)
+                  ? formData.behance
+                  : "#"
                 : `https://www.behance.net/${formData.behance}`;
               s += `  <a href="${beUrl}"><img src="https://img.shields.io/badge/Behance-1769FF?style=for-the-badge&logo=behance&logoColor=white" alt="Behance" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.kaggle) {
               const kgUrl = formData.kaggle.startsWith("http")
-                ? (isSafeUrl(formData.kaggle) ? formData.kaggle : "#")
+                ? isSafeUrl(formData.kaggle)
+                  ? formData.kaggle
+                  : "#"
                 : `https://www.kaggle.com/${formData.kaggle}`;
               s += `  <a href="${kgUrl}"><img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.devto) {
               const dtUrl = formData.devto.startsWith("http")
-                ? (isSafeUrl(formData.devto) ? formData.devto : "#")
+                ? isSafeUrl(formData.devto)
+                  ? formData.devto
+                  : "#"
                 : `https://dev.to/${formData.devto}`;
               s += `  <a href="${dtUrl}"><img src="https://img.shields.io/badge/DEV.TO-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white" alt="DEV.TO" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.mastodon) {
               const msUrl = formData.mastodon.startsWith("http")
-                ? (isSafeUrl(formData.mastodon) ? formData.mastodon : "#")
+                ? isSafeUrl(formData.mastodon)
+                  ? formData.mastodon
+                  : "#"
                 : `https://mastodon.social/@${formData.mastodon}`;
               s += `  <a href="${msUrl}"><img src="https://img.shields.io/badge/Mastodon-6364FF?style=for-the-badge&logo=mastodon&logoColor=white" alt="Mastodon" /></a>&nbsp;&nbsp;\n`;
             }
             if (formData.portfolio) {
               const ptUrl = formData.portfolio.startsWith("http")
-                ? (isSafeUrl(formData.portfolio) ? formData.portfolio : "#")
+                ? isSafeUrl(formData.portfolio)
+                  ? formData.portfolio
+                  : "#"
                 : `https://${formData.portfolio}`;
               s += `  <a href="${ptUrl}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
             }
@@ -1117,7 +1837,7 @@ const generateMarkdown = (
           if (formData.animations.streak || formData.animations.stats) {
             s += `<p align="center">\n`;
             if (formData.animations.streak)
-              s += `  ${buildImg("streak", `https://streak-stats.demolab.com/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
+              s += `  ${buildImg("streak", `https://gr-streak.vercel.app/?user=${user}&${apiThemes.streak}`, "Streak Stats")}`;
             if (formData.animations.stats)
               s += `  ${buildImg("stats", `https://github-rs.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
             s += `</p>\n\n`;
@@ -1125,10 +1845,7 @@ const generateMarkdown = (
           break;
         case "summary":
           if (formData.animations.githubProfileSummary) {
-            const themeName = apiThemes.stats.includes("theme=")
-              ? apiThemes.stats.replace("theme=", "")
-              : "dark";
-            s += `<p align="center">\n  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}&base.header=false&base.activity=false&base.repositories=false&base.metadata=false&isocalendar=true&isocalendar.duration=half-year`, "GitHub Profile Metrics")}</p>\n\n`;
+            s += `<p align="center">\n  <img src="https://metrics.lecoq.io/${user}?base=0&plugin_isocalendar=yes&plugin_isocalendar_duration=half-year" alt="Isometric Commit Calendar" width="100%" />\n</p>\n\n`;
           }
           break;
         case "pinball":
@@ -1153,13 +1870,39 @@ const generateMarkdown = (
             const snakeSrc = isPreview
               ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
               : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-            s += `## ${formData.snakeTitle || "Dev Snake"}\n<p align="center">\n  ${buildImg("snake", snakeSrc, formData.snakeTitle || "Dev Snake")}</p>\n\n`;
+            const snakeHeading =
+              formData.sectionTitles?.snake ||
+              formData.snakeTitle ||
+              "Dev Snake";
+            s += `## ${snakeHeading}\n<p align="center">\n  ${buildImg("snake", snakeSrc, snakeHeading)}</p>\n\n`;
           }
           break;
         case "isometric3D":
-          if (formData.animations.isometric3D) {
-            const iso3dSrc = `https://raw.githubusercontent.com/${user}/${user}/main/profile-3d-contrib/profile-green-animate.svg`;
-            s += `## 3D Contribution Graph\n<p align="center">\n  ${buildImg("isometric3D", iso3dSrc, "3D Contribution Graph")}</p>\n\n`;
+          if (
+            formData.animations.isometric3D ||
+            formData.animations.githubProfileSummary
+          ) {
+            const isoHeading =
+              formData.sectionTitles?.isometric3D || "3D Contribution Graph";
+            s += `## ${isoHeading}\n<p align="center">\n`;
+
+            if (formData.animations.githubProfileSummary) {
+              const themeName = apiThemes.stats.includes("theme=")
+                ? apiThemes.stats.replace("theme=", "")
+                : "dark";
+              s += `  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}`, "Classic User Account")}\n`;
+            }
+
+            if (formData.animations.isometric3D) {
+              const isoTheme =
+                formData.isometric3dTheme || "profile-green-animate";
+              const isoSrc = isPreview
+                ? `https://raw.githubusercontent.com/yoshi389111/github-profile-3d-contrib/main/docs/demo/${isoTheme}.svg`
+                : `https://raw.githubusercontent.com/${user}/${user}/main/profile-3d-contrib/${isoTheme}.svg`;
+              s += `  ${buildImg("isometric3D", isoSrc, "3D Contribution Graph")}\n`;
+            }
+
+            s += `</p>\n\n`;
           }
           break;
         case "leetcode":
@@ -1169,7 +1912,7 @@ const generateMarkdown = (
                 formData.animations.showLeetcodeContest)) ||
             (formData.codeforces && formData.animations.codeforces)
           )
-            s += `## Arena Stats\n\n`;
+            s += `## ${formData.sectionTitles?.leetcode || "Arena Stats"}\n\n`;
           if (
             formData.leetcode &&
             (formData.animations.showLeetcodeHeatmap ||
@@ -1311,6 +2054,8 @@ const PreviewContent = ({ formData, theme }) => {
   );
 };
 
+let globalCounterCalled = false;
+
 export default function App() {
   const [theme, setTheme] = useState("elegant-black");
   const [activeTab, setActiveTab] = useState("preview");
@@ -1330,6 +2075,7 @@ export default function App() {
   const [newCustomSkill, setNewCustomSkill] = useState("");
   const [newCustomSkillIcon, setNewCustomSkillIcon] = useState("");
   const [githubStars, setGithubStars] = useState(0);
+  const [visitorCount, setVisitorCount] = useState("...");
 
   useEffect(() => {
     fetch("https://api.github.com/repos/dev-satyamjha/DevReadME")
@@ -1349,6 +2095,20 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    if (!globalCounterCalled) {
+      globalCounterCalled = true;
+      fetch("https://api.counterapi.dev/v1/dev-readme/dev-readme/up")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.count !== undefined) {
+            setVisitorCount(data.count);
+          }
+        })
+        .catch(() => setVisitorCount("Error"));
+    }
+  }, []);
+
   const set = (name, value) => setFormData((p) => ({ ...p, [name]: value }));
 
   const handleInputChange = (e) => {
@@ -1367,6 +2127,9 @@ export default function App() {
       ...p,
       snakeCustom: { ...(p.snakeCustom || DEFAULT_SNAKE), [field]: value },
     }));
+
+  const setIsometric3dTheme = (theme) =>
+    setFormData((p) => ({ ...p, isometric3dTheme: theme }));
 
   const toggleSkill = (skill) =>
     set(
@@ -1579,7 +2342,7 @@ export default function App() {
 
   const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n      - name: Generate snake\n        uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${snakeHex}&color_dots=${lightDotsEncoded}&color_background=%23${bgHex}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${snakeHex}&color_dots=${darkDotsEncoded}&color_background=%23${bgHex}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n      - name: Push snake to output branch\n        run: |\n          sudo chown -R $USER:$USER dist\n          cd dist\n          git init\n          git checkout -b output\n          git add .\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git commit -m "chore: update dev snake animation"\n          git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
 
-  const isometricYml = `name: Generate 3D Contribution Graph\n\non:\n  schedule:\n    - cron: "0 18 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v4\n      - name: Generate 3D Contribution Graph\n        uses: yoshi389111/github-profile-3d-contrib@0.7.1\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n          USERNAME: \${{ github.repository_owner }}\n      - name: Commit and push changes\n        run: |\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git add -A\n          git commit -m "chore: update 3D contribution graph" || exit 0\n          git push`;
+  const isometricYml = `name: GitHub-Profile-3D-Contrib\n\non:\n  schedule:\n    - cron: "0 18 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    name: generate-github-profile-3d-contrib\n    steps:\n      - uses: actions/checkout@v5\n      - uses: yoshi389111/github-profile-3d-contrib@latest\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n          USERNAME: \${{ github.repository_owner }}\n      - name: Commit & Push\n        run: |\n          git config user.name github-actions\n          git config user.email github-actions@github.com\n          git add -A .\n          if git commit -m "generated"; then\n            git push\n          fi`;
 
   const animKeys = [
     { key: "visitors", label: "Profile Visitors Badge" },
@@ -1591,6 +2354,7 @@ export default function App() {
     { key: "pinball", label: "Activity Graph" },
     { key: "snake", label: "Contribution Snake" },
     { key: "isometric3D", label: "3D Contribution Graph" },
+    { key: "lecoqLanguage", label: "Lecoq Language Chart" },
     { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
     { key: "showLeetcodeContest", label: "LeetCode Contest" },
     { key: "codeforces", label: "Codeforces Stats" },
@@ -2207,9 +2971,20 @@ export default function App() {
                 >
                   <label style={S.label}>Snake Section Title</label>
                   <input
-                    name="snakeTitle"
-                    value={formData.snakeTitle}
-                    onChange={handleInputChange}
+                    value={
+                      formData.sectionTitles?.snake ??
+                      formData.snakeTitle ??
+                      "Dev Snake"
+                    }
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        sectionTitles: {
+                          ...p.sectionTitles,
+                          snake: e.target.value,
+                        },
+                      }))
+                    }
                     placeholder="Dev Snake"
                     style={S.input}
                   />
@@ -2224,6 +2999,140 @@ export default function App() {
                   </p>
                 </div>
               )}
+              {formData.animations.isometric3D && (
+                <div
+                  style={{
+                    marginTop: 4,
+                    padding: "8px 10px",
+                    background: "rgba(0,0,0,0.15)",
+                    borderRadius: 6,
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  <label style={S.label}>3D Graph Section Title</label>
+                  <input
+                    value={
+                      formData.sectionTitles?.isometric3D ??
+                      "3D Contribution Graph"
+                    }
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        sectionTitles: {
+                          ...p.sectionTitles,
+                          isometric3D: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="3D Contribution Graph"
+                    style={S.input}
+                  />
+                </div>
+              )}
+              {formData.animations.visitors && (
+                <div
+                  style={{
+                    marginTop: 4,
+                    padding: "8px 10px",
+                    background: "rgba(0,0,0,0.15)",
+                    borderRadius: 6,
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  <label style={S.label}>About Me Section Title</label>
+                  <input
+                    value={formData.sectionTitles?.about ?? "About Me"}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        sectionTitles: {
+                          ...p.sectionTitles,
+                          about: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="About Me"
+                    style={S.input}
+                  />
+                </div>
+              )}
+              {formData.skills.length > 0 && (
+                <div
+                  style={{
+                    marginTop: 4,
+                    padding: "8px 10px",
+                    background: "rgba(0,0,0,0.15)",
+                    borderRadius: 6,
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  <label style={S.label}>Skills Section Title</label>
+                  <input
+                    value={formData.sectionTitles?.skills ?? "Core Tech Stack"}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        sectionTitles: {
+                          ...p.sectionTitles,
+                          skills: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="Core Tech Stack"
+                    style={S.input}
+                  />
+                </div>
+              )}
+              <div
+                style={{
+                  marginTop: 4,
+                  padding: "8px 10px",
+                  background: "rgba(0,0,0,0.15)",
+                  borderRadius: 6,
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <label style={S.label}>Socials Section Title</label>
+                <input
+                  value={formData.sectionTitles?.socials ?? "Socials"}
+                  onChange={(e) =>
+                    setFormData((p) => ({
+                      ...p,
+                      sectionTitles: {
+                        ...p.sectionTitles,
+                        socials: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="Socials"
+                  style={S.input}
+                />
+              </div>
+              <div
+                style={{
+                  marginTop: 4,
+                  padding: "8px 10px",
+                  background: "rgba(0,0,0,0.15)",
+                  borderRadius: 6,
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <label style={S.label}>Arena Stats Section Title</label>
+                <input
+                  value={formData.sectionTitles?.leetcode ?? "Arena Stats"}
+                  onChange={(e) =>
+                    setFormData((p) => ({
+                      ...p,
+                      sectionTitles: {
+                        ...p.sectionTitles,
+                        leetcode: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="Arena Stats"
+                  style={S.input}
+                />
+              </div>
             </div>
 
             <div style={S.card}>
@@ -2474,16 +3383,29 @@ export default function App() {
               Made with <span style={{ color: "var(--accent-color)" }}>❤️</span>{" "}
               by Satyam Jha
             </p>
-            <a
-              href="https://github.com/dev-satyamjha/DevReadME"
-              target="_blank"
-              rel="noopener noreferrer"
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                background: "#555555",
+                borderRadius: "4px",
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: "10px",
+                letterSpacing: "0.5px",
+                overflow: "hidden",
+              }}
             >
-              <img
-                src="https://komarev.com/ghpvc/?username=devreadmetool&style=flat-square&color=blue&label=VISITORS"
-                alt="Visitors"
-              />
-            </a>
+              <span
+                style={{
+                  background: "#0e76e8",
+                  padding: "4px 6px",
+                }}
+              >
+                VISITORS
+              </span>
+              <span style={{ padding: "4px 8px" }}>{visitorCount}</span>
+            </div>
           </div>
         </aside>
 
@@ -3137,7 +4059,9 @@ export default function App() {
                       stepText: (
                         <>
                           Go to your profile repo:{" "}
-                          <code style={S.chip}>github.com/username/username</code>
+                          <code style={S.chip}>
+                            github.com/username/username
+                          </code>
                         </>
                       ),
                     },
@@ -3146,54 +4070,137 @@ export default function App() {
                       stepText: (
                         <>
                           Add file, type:{" "}
-                          <code style={S.chip}>.github/workflows/isometric3d.yml</code>
+                          <code style={S.chip}>
+                            .github/workflows/isometric3d.yml
+                          </code>
                         </>
                       ),
                     },
                     {
                       stepNumber: 3,
-                      stepText: "Copy the YML below, paste into the file, commit.",
-                    },
-                    {
-                      stepNumber: 4,
                       stepText: (
                         <>
-                          Enable the{" "}
-                          <strong>isometric3D</strong> toggle in the Sections panel, then copy your README.
+                          <strong>
+                            Settings &gt; Actions &gt; General &gt; Workflow
+                            permissions &gt; Read and write
+                          </strong>
                         </>
                       ),
                     },
+                    {
+                      stepNumber: 4,
+                      stepText:
+                        "Pick a theme below, copy the YML, paste into the file, commit.",
+                    },
+                    {
+                      stepNumber: 5,
+                      stepText: (
+                        <>
+                          <strong>
+                            Actions &gt; Generate 3D Contribution Graph &gt; Run
+                            workflow
+                          </strong>
+                          . Creates{" "}
+                          <code style={S.chip}>profile-3d-contrib/</code> folder
+                          in <code style={S.chip}>main</code>.
+                        </>
+                      ),
+                    },
+                    {
+                      stepNumber: 6,
+                      stepText:
+                        "Runs daily via cron. SVG commits directly to main so no extra branches are needed.",
+                    },
                   ].map(({ stepNumber, stepText }) => (
-                    <div
-                      key={stepNumber}
+                    <div key={stepNumber} style={S.stepRow}>
+                      <div style={S.stepNum}>{stepNumber}</div>
+                      <div style={S.stepText}>{stepText}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    marginBottom: 8,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  Live Preview
+                </div>
+                <div
+                  style={{
+                    marginBottom: 16,
+                    background: "var(--bg-secondary)",
+                    borderRadius: 6,
+                    border: "1px solid var(--border-color)",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 120,
+                  }}
+                >
+                  <img
+                    src={`https://raw.githubusercontent.com/yoshi389111/github-profile-3d-contrib/main/docs/demo/${formData.isometric3dTheme || "profile-green-animate"}.svg`}
+                    alt="3D Contribution Graph Preview"
+                    style={{ width: "100%", display: "block" }}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    marginBottom: 8,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  Theme
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 6,
+                    marginBottom: 16,
+                  }}
+                >
+                  {ISOMETRIC_3D_THEMES.map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() => setIsometric3dTheme(t.value)}
                       style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 10,
-                        marginBottom: 8,
+                        padding: "4px 10px",
+                        borderRadius: 5,
+                        border: `2px solid ${
+                          (formData.isometric3dTheme ||
+                            "profile-green-animate") === t.value
+                            ? t.accent
+                            : "var(--border-color)"
+                        }`,
+                        background:
+                          (formData.isometric3dTheme ||
+                            "profile-green-animate") === t.value
+                            ? `${t.accent}22`
+                            : "transparent",
+                        color: t.accent,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        fontSize: "0.75rem",
+                        transition: "all 0.12s",
                       }}
                     >
-                      <span
-                        style={{
-                          background: "var(--accent-color)",
-                          color: "#fff",
-                          borderRadius: "50%",
-                          width: 20,
-                          height: 20,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "0.68rem",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {stepNumber}
-                      </span>
-                      <span style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
-                        {stepText}
-                      </span>
-                    </div>
+                      {t.label}
+                    </button>
                   ))}
                 </div>
 
@@ -3218,7 +4225,11 @@ export default function App() {
                     marginBottom: 12,
                   }}
                 >
-                  {copiedIsometricYml ? <Check size={14} /> : <Copy size={14} />}{" "}
+                  {copiedIsometricYml ? (
+                    <Check size={14} />
+                  ) : (
+                    <Copy size={14} />
+                  )}{" "}
                   {copiedIsometricYml ? "Copied!" : "Copy YML"}
                 </button>
                 <pre
