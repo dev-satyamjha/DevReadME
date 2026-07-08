@@ -814,6 +814,13 @@ function buildDots(str, y, pw, px, offsetX = null) {
   return dots;
 }
 
+const RAIN_DROPS = Array.from({ length: 110 }).map((_, i) => ({
+  id: i,
+  cx: PX + Math.floor(Math.random() * PW),
+  dur: (1.2 + Math.random() * 2).toFixed(2),
+  delay: (Math.random() * 3).toFixed(2),
+}));
+
 function DisplayBoard({ projects, github }) {
   const validProjects = useMemo(
     () => projects.filter((p) => p && String(p).trim() !== ""),
@@ -826,16 +833,7 @@ function DisplayBoard({ projects, github }) {
   const scrollRef = useRef(null);
   const innerPerimeter = (PW + PH) * 2;
 
-  const rainDrops = useMemo(
-    () =>
-      Array.from({ length: 110 }).map((_, i) => ({
-        id: i,
-        cx: PX + Math.floor(Math.random() * PW),
-        dur: (1.2 + Math.random() * 2).toFixed(2),
-        delay: (Math.random() * 3).toFixed(2),
-      })),
-    [],
-  );
+  const rainDrops = RAIN_DROPS;
 
   const fullMatrix = useMemo(() => {
     const spacing = 22;
@@ -864,7 +862,6 @@ function DisplayBoard({ projects, github }) {
 
   useEffect(() => {
     if (validProjects.length <= 1) {
-      setCurrentIdx(0);
       return;
     }
     timerRef.current = setInterval(() => {
@@ -875,15 +872,18 @@ function DisplayBoard({ projects, github }) {
   }, [validProjects.length]);
 
   useEffect(() => {
-    setScrollX(0);
-    if (!needsScroll) return;
+    const reset = setTimeout(() => setScrollX(0), 0);
+    if (!needsScroll) return () => clearTimeout(reset);
     let x = 0;
     scrollRef.current = setInterval(() => {
       x += 1.5;
       if (x > nameW + 20) x = -PW;
       setScrollX(x);
     }, 30);
-    return () => clearInterval(scrollRef.current);
+    return () => {
+      clearTimeout(reset);
+      clearInterval(scrollRef.current);
+    };
   }, [currentIdx, needsScroll, nameW]);
 
   useEffect(() => {
@@ -1543,13 +1543,7 @@ const getTopHeader = (formData) => {
   return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${safeName}</h1>\n  <h3 align="center">${safeSubtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
 };
 
-const generateMarkdown = (
-  isPreview = false,
-  currentOrder,
-  includeState = false,
-  formData,
-  theme,
-) => {
+const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
   try {
     const apiThemes = getApiThemes(theme);
     const user = formData.github ? String(formData.github).trim() : "torvalds";
@@ -1844,7 +1838,7 @@ const generateMarkdown = (
           }
           break;
         case "summary":
-          if (formData.animations.githubProfileSummary) {
+          if (formData.animations.lecoqLanguage) {
             s += `<p align="center">\n  <img src="https://metrics.lecoq.io/${user}?base=0&plugin_isocalendar=yes&plugin_isocalendar_duration=half-year" alt="Isometric Commit Calendar" width="100%" />\n</p>\n\n`;
           }
           break;
@@ -2008,31 +2002,27 @@ const PreviewContent = ({ formData, theme }) => {
     (p) => p && String(p).trim() !== "",
   );
   const showBoard = formData.displayBoard && validProjects.length > 0;
-  const boardIndex = formData.sectionOrder.indexOf("board");
-  const beforeBoard =
-    boardIndex > -1
-      ? formData.sectionOrder.slice(0, boardIndex)
-      : formData.sectionOrder;
-  const afterBoard =
-    boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
   const topStr = useMemo(() => getTopHeader(formData), [formData]);
-  const mdBefore = useMemo(
-    () =>
+  const mdBefore = useMemo(() => {
+    const boardIndex = formData.sectionOrder.indexOf("board");
+    const beforeBoard =
+      boardIndex > -1
+        ? formData.sectionOrder.slice(0, boardIndex)
+        : formData.sectionOrder;
+    return (
       topStr +
-      generateMarkdown(true, beforeBoard, false, formData, theme).replace(
-        topStr,
-        "",
-      ),
-    [topStr, beforeBoard, formData, theme],
-  );
-  const mdAfter = useMemo(
-    () =>
-      generateMarkdown(true, afterBoard, false, formData, theme).replace(
-        topStr,
-        "",
-      ),
-    [topStr, afterBoard, formData, theme],
-  );
+      generateMarkdown(true, beforeBoard, formData, theme).replace(topStr, "")
+    );
+  }, [topStr, formData, theme]);
+  const mdAfter = useMemo(() => {
+    const boardIndex = formData.sectionOrder.indexOf("board");
+    const afterBoard =
+      boardIndex > -1 ? formData.sectionOrder.slice(boardIndex + 1) : [];
+    return generateMarkdown(true, afterBoard, formData, theme).replace(
+      topStr,
+      "",
+    );
+  }, [topStr, formData, theme]);
 
   return (
     <div className="markdown-preview custom-scrollbar">
@@ -2348,13 +2338,13 @@ export default function App() {
     { key: "visitors", label: "Profile Visitors Badge" },
     { key: "stats", label: "GitHub Stats" },
     { key: "streak", label: "GitHub Streak Stats" },
-    { key: "githubProfileSummary", label: "GitHub Profile Metrics" },
+    { key: "githubProfileSummary", label: "Classic User Account Card" },
+    { key: "lecoqLanguage", label: "Lecoq 3D Calendar & Languages" },
+    { key: "isometric3D", label: "Yoshi 3D Contribution Graph" },
     { key: "topLangsCommit", label: "Top Langs by Commit" },
     { key: "topLangsRepo", label: "Top Langs by Repo" },
     { key: "pinball", label: "Activity Graph" },
     { key: "snake", label: "Contribution Snake" },
-    { key: "isometric3D", label: "3D Contribution Graph" },
-    { key: "lecoqLanguage", label: "Lecoq Language Chart" },
     { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
     { key: "showLeetcodeContest", label: "LeetCode Contest" },
     { key: "codeforces", label: "Codeforces Stats" },
