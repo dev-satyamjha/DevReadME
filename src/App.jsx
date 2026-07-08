@@ -130,6 +130,224 @@ const PRESET_SCHEMES = [
   },
 ];
 
+const SOCIAL_NETWORKS = [
+  {
+    name: "github",
+    label: "GitHub",
+    placeholder: "username",
+    prefix: "https://github.com/",
+    color: "181717",
+    logo: "github",
+    logoColor: "white",
+  },
+  {
+    name: "email",
+    label: "Email",
+    placeholder: "email@example.com",
+    prefix: "mailto:",
+    color: "D14836",
+    logo: "gmail",
+    logoColor: "white",
+  },
+  {
+    name: "linkedin",
+    label: "LinkedIn",
+    placeholder: "username",
+    prefix: "https://linkedin.com/in/",
+    color: "0A66C2",
+    logo: "linkedin",
+    logoColor: "white",
+    urlMatch: "linkedin",
+  },
+  {
+    name: "twitter",
+    label: "X (Twitter)",
+    badgeLabel: "X",
+    placeholder: "username",
+    prefix: "https://x.com/",
+    color: "000000",
+    logo: "x",
+    logoColor: "white",
+    urlMatch: "x.com",
+  },
+  {
+    name: "leetcode",
+    label: "LeetCode",
+    placeholder: "username",
+    prefix: "https://leetcode.com/u/",
+    color: "FFA116",
+    logo: "leetcode",
+    logoColor: "black",
+  },
+  {
+    name: "codeforces",
+    label: "Codeforces",
+    placeholder: "username",
+    noBadge: true,
+  },
+  {
+    name: "codestats",
+    label: "Code::Stats",
+    placeholder: "username",
+    prefix: "https://codestats.net/users/",
+    color: "20262E",
+    logo: "codeigniter",
+    logoColor: "white",
+  },
+  {
+    name: "instagram",
+    label: "Instagram",
+    placeholder: "handle",
+    prefix: "https://instagram.com/",
+    color: "E4405F",
+    logo: "instagram",
+    logoColor: "white",
+    urlMatch: "instagram",
+  },
+  {
+    name: "facebook",
+    label: "Facebook",
+    placeholder: "username",
+    prefix: "https://facebook.com/",
+    color: "1877F2",
+    logo: "facebook",
+    logoColor: "white",
+    urlMatch: "facebook",
+  },
+  {
+    name: "snapchat",
+    label: "Snapchat",
+    placeholder: "username",
+    prefix: "https://snapchat.com/add/",
+    color: "FFFC00",
+    logo: "snapchat",
+    logoColor: "black",
+    urlMatch: "snapchat",
+  },
+  {
+    name: "portfolio",
+    label: "Portfolio",
+    placeholder: "https://yoursite.com",
+    prefix: "https://",
+    color: "4285F4",
+    logo: "googlechrome",
+    logoColor: "white",
+  },
+  {
+    name: "discord",
+    label: "Discord",
+    placeholder: "username or ID",
+    prefix: "https://discord.com/users/",
+    color: "5865F2",
+    logo: "discord",
+    logoColor: "white",
+    urlMatch: "discord",
+  },
+  {
+    name: "producthunt",
+    label: "Product Hunt",
+    badgeLabel: "Product_Hunt",
+    placeholder: "username",
+    prefix: "https://www.producthunt.com/@",
+    color: "DA552F",
+    logo: "product-hunt",
+    logoColor: "white",
+    urlMatch: "producthunt",
+  },
+  {
+    name: "youtube",
+    label: "YouTube",
+    placeholder: "handle or channel URL",
+    prefix: "https://youtube.com/@",
+    color: "FF0000",
+    logo: "youtube",
+    logoColor: "white",
+    urlMatch: "youtube",
+  },
+  {
+    name: "twitch",
+    label: "Twitch",
+    placeholder: "username",
+    prefix: "https://twitch.tv/",
+    color: "9146FF",
+    logo: "twitch",
+    logoColor: "white",
+    urlMatch: "twitch",
+  },
+  {
+    name: "medium",
+    label: "Medium",
+    placeholder: "username",
+    prefix: "https://medium.com/@",
+    color: "12100E",
+    logo: "medium",
+    logoColor: "white",
+    urlMatch: "medium",
+  },
+  {
+    name: "stackoverflow",
+    label: "Stack Overflow",
+    badgeLabel: "Stack_Overflow",
+    placeholder: "user ID",
+    prefix: "https://stackoverflow.com/users/",
+    color: "FE7A16",
+    logo: "stackoverflow",
+    logoColor: "white",
+    urlMatch: "stackoverflow",
+  },
+  {
+    name: "dribbble",
+    label: "Dribbble",
+    placeholder: "username",
+    prefix: "https://dribbble.com/",
+    color: "EA4C89",
+    logo: "dribbble",
+    logoColor: "white",
+    urlMatch: "dribbble",
+  },
+  {
+    name: "behance",
+    label: "Behance",
+    placeholder: "username",
+    prefix: "https://www.behance.net/",
+    color: "1769FF",
+    logo: "behance",
+    logoColor: "white",
+    urlMatch: "behance",
+  },
+  {
+    name: "kaggle",
+    label: "Kaggle",
+    placeholder: "username",
+    prefix: "https://www.kaggle.com/",
+    color: "20BEFF",
+    logo: "kaggle",
+    logoColor: "white",
+    urlMatch: "kaggle",
+  },
+  {
+    name: "devto",
+    label: "DEV Community",
+    badgeLabel: "DEV.TO",
+    placeholder: "username",
+    prefix: "https://dev.to/",
+    color: "0A0A0A",
+    logo: "devdotto",
+    logoColor: "white",
+    urlMatch: "dev.to",
+  },
+  {
+    name: "mastodon",
+    label: "Mastodon",
+    placeholder: "username",
+    prefix: "https://mastodon.social/@",
+    color: "6364FF",
+    logo: "mastodon",
+    logoColor: "white",
+    urlMatch: "mastodon",
+  },
+];
+
 const SKILLS_CATEGORIES = {
   Languages: [
     "JavaScript",
@@ -1143,12 +1361,12 @@ const ISOMETRIC_3D_THEMES = [
 ];
 
 const DEFAULT_STATE = {
-  name: "John Doe",
-  subtitle: "Full Stack Developer | Open Source Enthusiast",
-  about:
-    "I am a passionate software engineer building scalable web applications.",
-  github: "",
-  joinedDate: "Sept 2021",
+  name: "",
+  subtitle: "",
+  about: "",
+  funFact: "",
+  github: "johndoe",
+  joinedDate: "",
   email: "",
   twitter: "",
   linkedin: "",
@@ -1186,7 +1404,6 @@ const DEFAULT_STATE = {
     topLangsRepo: true,
     pinball: true,
     snake: true,
-    lecoqLanguage: true,
     showLeetcodeHeatmap: true,
     showLeetcodeContest: true,
     codeforces: true,
@@ -1196,13 +1413,12 @@ const DEFAULT_STATE = {
     displayBoard: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     stats: { w: "", h: "", scale: "46%", x: 0, y: 0 },
     streak: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-    githubProfileSummary: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    githubProfileSummary: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     topLangsCommit: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     topLangsRepo: { w: "", h: "", scale: "25%", x: 58, y: 0 },
     pinball: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     visitors: { w: "", h: "", scale: "8%", x: 0, y: 0 },
-    isometric3D: { w: "", h: "", scale: "49%", x: 0, y: 0 },
-    lecoqLanguage: { w: "", h: "", scale: "49%", x: 0, y: 0 },
+    isometric3D: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     snake: { w: "", h: "", scale: "100%", x: 0, y: 0 },
     showLeetcodeHeatmap: { w: "", h: "", scale: "49%", x: 0, y: 0 },
     showLeetcodeContest: { w: "", h: "", scale: "39%", x: 20, y: 0 },
@@ -1217,15 +1433,12 @@ const DEFAULT_STATE = {
     "socials",
     "stats",
     "isometric3D",
-    "summary",
     "topLangs",
     "pinball",
     "visitors",
     "snake",
     "leetcode",
   ],
-  snakeTitle: "Dev Snake",
-  funFact: "I can solve a Rubik's cube in under a minute!",
   isometric3dTheme: "profile-green-animate",
   sectionTitles: {
     board: "Prominent Works",
@@ -1274,18 +1487,9 @@ function loadInitialState() {
         : DEFAULT_STATE.projects,
       sectionOrder: Array.isArray(parsed.sectionOrder)
         ? (() => {
-            let order = parsed.sectionOrder;
+            let order = parsed.sectionOrder.filter((s) => s !== "summary");
             if (!order.includes("isometric3D")) {
-              const summaryIndex = order.indexOf("summary");
-              if (summaryIndex !== -1) {
-                order = [
-                  ...order.slice(0, summaryIndex),
-                  "isometric3D",
-                  ...order.slice(summaryIndex),
-                ];
-              } else {
-                order = [...order, "isometric3D"];
-              }
+              order = [...order, "isometric3D"];
             }
             return order;
           })()
@@ -1529,25 +1733,40 @@ const isSafeUrl = (url) => {
 };
 
 const getTopHeader = (formData) => {
-  const safeDate = formData.joinedDate
-    ? String(formData.joinedDate).trim().replace(/ /g, "%20")
-    : "";
+  const actualJoinedDate = formData.joinedDate
+    ? String(formData.joinedDate).trim()
+    : "December 1969";
+  const safeDate = actualJoinedDate.replace(/ /g, "%20");
   const targetUrl = formData.github
     ? `https://github.com/${String(formData.github).trim()}`
     : "#";
-  const joinedBadge = formData.joinedDate
-    ? `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`
-    : "";
-  const safeName = escapeHtml(formData.name) || "Anonymous Developer";
+  const joinedBadge = `<a href="${targetUrl}"><img align="right" src="https://img.shields.io/badge/Joined-${safeDate}-181717?style=for-the-badge&logo=github&logoColor=white" alt="Joined GitHub" /></a>`;
+  const safeName = escapeHtml(formData.name) || "John Doe";
   const safeSubtitle = escapeHtml(formData.subtitle);
   return `<div>\n  ${joinedBadge}\n  <h1 align="left">Hi 👋, I'm ${safeName}</h1>\n  <h3 align="center">${safeSubtitle}</h3>\n</div>\n\n<br clear="both"/>\n\n`;
+};
+
+const getLecoqTheme = (apiThemes) => {
+  const raw = apiThemes.stats;
+  const match = raw.match(/(?:^|&)theme=([^&]+)/);
+  return match ? match[1] : "dark";
 };
 
 const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
   try {
     const apiThemes = getApiThemes(theme);
-    const user = formData.github ? String(formData.github).trim() : "torvalds";
+    const user = formData.github
+      ? String(formData.github).trim()
+      : isPreview
+        ? "example"
+        : "YOUR_GITHUB_USERNAME";
+
     const buildImg = (key, src, alt) => {
+      const skipPlaceholder =
+        key === "displayBoard" || key === "snake" || key === "isometric3D";
+      if (!formData.github && isPreview && !skipPlaceholder) {
+        src = `https://placehold.co/800x400/111111/444444.svg?text=${encodeURIComponent(alt)}`;
+      }
       const dim = formData.dimensions[key];
       if (!dim) return `<img src="${src}" alt="${alt}" width="100%" />\n`;
       const ySpace = "<br>\n".repeat(Number(dim.y) || 0);
@@ -1561,7 +1780,6 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
     let md = getTopHeader(formData);
     const analyticsGroup = [
       "stats",
-      "summary",
       "pinball",
       "topLangs",
       "snake",
@@ -1581,7 +1799,7 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
         case "board":
           if (
             formData.displayBoard &&
-            formData.projects.filter((p) => p && String(p).trim()).length > 0
+            formData.projects?.filter((p) => p && String(p).trim())?.length > 0
           ) {
             const base = isPreview
               ? window.location.origin
@@ -1598,7 +1816,7 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
             s += `## ${formData.sectionTitles?.about || "About Me"}\n${escapeHtml(formData.about)}\n\n`;
           break;
         case "skills":
-          if (formData.skills.length > 0) {
+          if (formData.skills?.length > 0) {
             s += `## ${formData.sectionTitles?.skills || "Core Tech Stack"}\n\n`;
             Object.entries(SKILLS_CATEGORIES).forEach(
               ([category, categorySkills]) => {
@@ -1621,8 +1839,8 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
           }
           break;
         case "customSkills":
-          formData.customCategories.forEach((cat) => {
-            if (cat.skills.length > 0) {
+          formData.customCategories?.forEach((cat) => {
+            if (cat.skills?.length > 0) {
               s += `### ${escapeHtml(cat.title)}\n<p align="center">\n`;
               cat.skills.forEach((skillObj) => {
                 if (
@@ -1648,175 +1866,31 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
           break;
         case "socials": {
           const hasSocials =
-            formData.github ||
-            formData.email ||
-            formData.twitter ||
-            formData.linkedin ||
-            formData.leetcode ||
-            formData.codestats ||
-            formData.instagram ||
-            formData.facebook ||
-            formData.snapchat ||
-            formData.discord ||
-            formData.producthunt ||
-            formData.youtube ||
-            formData.twitch ||
-            formData.medium ||
-            formData.stackoverflow ||
-            formData.dribbble ||
-            formData.behance ||
-            formData.kaggle ||
-            formData.devto ||
-            formData.mastodon ||
-            formData.portfolio ||
-            formData.customLinks.length > 0;
+            SOCIAL_NETWORKS.some((net) => formData[net.name]) ||
+            formData.customLinks?.length > 0;
           if (hasSocials) {
             s += `## ${formData.sectionTitles?.socials || "Socials"}\n<p align="center">\n`;
-            if (formData.github)
-              s += `  <a href="https://github.com/${formData.github}"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>&nbsp;&nbsp;\n`;
-            if (formData.email)
-              s += `  <a href="mailto:${formData.email}"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>&nbsp;&nbsp;\n`;
-            if (formData.linkedin) {
-              const lnUrl = formData.linkedin.startsWith("http")
-                ? isSafeUrl(formData.linkedin)
-                  ? formData.linkedin
-                  : "#"
-                : `https://linkedin.com/in/${formData.linkedin}`;
-              s += `  <a href="${lnUrl}"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.twitter) {
-              const twUrl = formData.twitter.startsWith("http")
-                ? isSafeUrl(formData.twitter)
-                  ? formData.twitter
-                  : "#"
-                : `https://x.com/${formData.twitter}`;
-              s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.leetcode)
-              s += `  <a href="https://leetcode.com/u/${formData.leetcode}"><img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" /></a>&nbsp;&nbsp;\n`;
-            if (formData.codestats)
-              s += `  <a href="https://codestats.net/users/${formData.codestats}"><img src="https://img.shields.io/badge/Code::Stats-20262E?style=for-the-badge&logo=codeigniter&logoColor=white" alt="Code::Stats" /></a>&nbsp;&nbsp;\n`;
-            if (formData.instagram) {
-              const igUrl = formData.instagram.startsWith("http")
-                ? isSafeUrl(formData.instagram)
-                  ? formData.instagram
-                  : "#"
-                : `https://instagram.com/${formData.instagram}`;
-              s += `  <a href="${igUrl}"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.facebook) {
-              const fbUrl = formData.facebook.startsWith("http")
-                ? isSafeUrl(formData.facebook)
-                  ? formData.facebook
-                  : "#"
-                : `https://facebook.com/${formData.facebook}`;
-              s += `  <a href="${fbUrl}"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.snapchat) {
-              const scUrl = formData.snapchat.startsWith("http")
-                ? isSafeUrl(formData.snapchat)
-                  ? formData.snapchat
-                  : "#"
-                : `https://snapchat.com/add/${formData.snapchat}`;
-              s += `  <a href="${scUrl}"><img src="https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=black" alt="Snapchat" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.discord) {
-              const dcUrl = formData.discord.startsWith("http")
-                ? isSafeUrl(formData.discord)
-                  ? formData.discord
-                  : "#"
-                : `https://discord.com/users/${formData.discord}`;
-              s += `  <a href="${dcUrl}"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.producthunt) {
-              const phUrl = formData.producthunt.startsWith("http")
-                ? isSafeUrl(formData.producthunt)
-                  ? formData.producthunt
-                  : "#"
-                : `https://www.producthunt.com/@${formData.producthunt}`;
-              s += `  <a href="${phUrl}"><img src="https://img.shields.io/badge/Product_Hunt-DA552F?style=for-the-badge&logo=product-hunt&logoColor=white" alt="Product Hunt" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.youtube) {
-              const ytUrl = formData.youtube.startsWith("http")
-                ? isSafeUrl(formData.youtube)
-                  ? formData.youtube
-                  : "#"
-                : `https://youtube.com/@${formData.youtube}`;
-              s += `  <a href="${ytUrl}"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.twitch) {
-              const twUrl = formData.twitch.startsWith("http")
-                ? isSafeUrl(formData.twitch)
-                  ? formData.twitch
-                  : "#"
-                : `https://twitch.tv/${formData.twitch}`;
-              s += `  <a href="${twUrl}"><img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.medium) {
-              const mdUrl = formData.medium.startsWith("http")
-                ? isSafeUrl(formData.medium)
-                  ? formData.medium
-                  : "#"
-                : `https://medium.com/@${formData.medium}`;
-              s += `  <a href="${mdUrl}"><img src="https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white" alt="Medium" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.stackoverflow) {
-              const soUrl = formData.stackoverflow.startsWith("http")
-                ? isSafeUrl(formData.stackoverflow)
-                  ? formData.stackoverflow
-                  : "#"
-                : `https://stackoverflow.com/users/${formData.stackoverflow}`;
-              s += `  <a href="${soUrl}"><img src="https://img.shields.io/badge/Stack_Overflow-FE7A16?style=for-the-badge&logo=stackoverflow&logoColor=white" alt="Stack Overflow" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.dribbble) {
-              const drUrl = formData.dribbble.startsWith("http")
-                ? isSafeUrl(formData.dribbble)
-                  ? formData.dribbble
-                  : "#"
-                : `https://dribbble.com/${formData.dribbble}`;
-              s += `  <a href="${drUrl}"><img src="https://img.shields.io/badge/Dribbble-EA4C89?style=for-the-badge&logo=dribbble&logoColor=white" alt="Dribbble" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.behance) {
-              const beUrl = formData.behance.startsWith("http")
-                ? isSafeUrl(formData.behance)
-                  ? formData.behance
-                  : "#"
-                : `https://www.behance.net/${formData.behance}`;
-              s += `  <a href="${beUrl}"><img src="https://img.shields.io/badge/Behance-1769FF?style=for-the-badge&logo=behance&logoColor=white" alt="Behance" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.kaggle) {
-              const kgUrl = formData.kaggle.startsWith("http")
-                ? isSafeUrl(formData.kaggle)
-                  ? formData.kaggle
-                  : "#"
-                : `https://www.kaggle.com/${formData.kaggle}`;
-              s += `  <a href="${kgUrl}"><img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.devto) {
-              const dtUrl = formData.devto.startsWith("http")
-                ? isSafeUrl(formData.devto)
-                  ? formData.devto
-                  : "#"
-                : `https://dev.to/${formData.devto}`;
-              s += `  <a href="${dtUrl}"><img src="https://img.shields.io/badge/DEV.TO-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white" alt="DEV.TO" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.mastodon) {
-              const msUrl = formData.mastodon.startsWith("http")
-                ? isSafeUrl(formData.mastodon)
-                  ? formData.mastodon
-                  : "#"
-                : `https://mastodon.social/@${formData.mastodon}`;
-              s += `  <a href="${msUrl}"><img src="https://img.shields.io/badge/Mastodon-6364FF?style=for-the-badge&logo=mastodon&logoColor=white" alt="Mastodon" /></a>&nbsp;&nbsp;\n`;
-            }
-            if (formData.portfolio) {
-              const ptUrl = formData.portfolio.startsWith("http")
-                ? isSafeUrl(formData.portfolio)
-                  ? formData.portfolio
-                  : "#"
-                : `https://${formData.portfolio}`;
-              s += `  <a href="${ptUrl}"><img src="https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio" /></a>&nbsp;&nbsp;\n`;
-            }
-            formData.customLinks.forEach((link) => {
+
+            SOCIAL_NETWORKS.forEach((net) => {
+              if (net.noBadge) return;
+              const val = formData[net.name];
+              if (!val) return;
+              let url = val;
+              if (net.urlMatch && !val.startsWith("http")) {
+                url = `${net.prefix}${val}`;
+              } else if (!val.startsWith("http") && net.prefix) {
+                url = `${net.prefix}${val}`;
+              }
+              const safeUrl =
+                url.startsWith("http") || url.startsWith("mailto:")
+                  ? isSafeUrl(url)
+                    ? url
+                    : "#"
+                  : url;
+              s += `  <a href="${safeUrl}"><img src="https://img.shields.io/badge/${net.badgeLabel || net.label}-${net.color}?style=for-the-badge&logo=${net.logo}&logoColor=${net.logoColor}" alt="${net.label.replace(/\s*\(.*?\)/, "")}" /></a>&nbsp;&nbsp;\n`;
+            });
+
+            formData.customLinks?.forEach((link) => {
               const safeUrl = isSafeUrl(link.url) ? link.url : "#";
               if (link.icon.startsWith("http") && isSafeUrl(link.icon))
                 s += `  <a href="${safeUrl}"><img src="${link.icon}" height="28" alt="${escapeHtml(link.label)}" title="${escapeHtml(link.label)}" /></a>&nbsp;&nbsp;\n`;
@@ -1835,11 +1909,6 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
             if (formData.animations.stats)
               s += `  ${buildImg("stats", `https://github-rs.vercel.app/api?username=${user}&show_icons=true&${apiThemes.stats}`, "GitHub Stats")}`;
             s += `</p>\n\n`;
-          }
-          break;
-        case "summary":
-          if (formData.animations.lecoqLanguage) {
-            s += `<p align="center">\n  <img src="https://metrics.lecoq.io/${user}?base=0&plugin_isocalendar=yes&plugin_isocalendar_duration=half-year" alt="Isometric Commit Calendar" width="100%" />\n</p>\n\n`;
           }
           break;
         case "pinball":
@@ -1864,10 +1933,7 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
             const snakeSrc = isPreview
               ? `https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg`
               : `https://raw.githubusercontent.com/${user}/${user}/output/github-contribution-grid-snake.svg`;
-            const snakeHeading =
-              formData.sectionTitles?.snake ||
-              formData.snakeTitle ||
-              "Dev Snake";
+            const snakeHeading = formData.sectionTitles?.snake || "Dev Snake";
             s += `## ${snakeHeading}\n<p align="center">\n  ${buildImg("snake", snakeSrc, snakeHeading)}</p>\n\n`;
           }
           break;
@@ -1878,14 +1944,14 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
           ) {
             const isoHeading =
               formData.sectionTitles?.isometric3D || "3D Contribution Graph";
-            s += `## ${isoHeading}\n<p align="center">\n`;
+            const lecoqTheme = getLecoqTheme(apiThemes);
+            const classicUser = formData.github
+              ? String(formData.github).trim()
+              : isPreview
+                ? "example"
+                : "YOUR_GITHUB_USERNAME";
 
-            if (formData.animations.githubProfileSummary) {
-              const themeName = apiThemes.stats.includes("theme=")
-                ? apiThemes.stats.replace("theme=", "")
-                : "dark";
-              s += `  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${user}?theme=${themeName}`, "Classic User Account")}\n`;
-            }
+            s += `## ${isoHeading}\n<p align="center">\n`;
 
             if (formData.animations.isometric3D) {
               const isoTheme =
@@ -1894,6 +1960,13 @@ const generateMarkdown = (isPreview = false, currentOrder, formData, theme) => {
                 ? `https://raw.githubusercontent.com/yoshi389111/github-profile-3d-contrib/main/docs/demo/${isoTheme}.svg`
                 : `https://raw.githubusercontent.com/${user}/${user}/main/profile-3d-contrib/${isoTheme}.svg`;
               s += `  ${buildImg("isometric3D", isoSrc, "3D Contribution Graph")}\n`;
+            }
+
+            if (formData.animations.githubProfileSummary) {
+              if (formData.animations.isometric3D) {
+                s += `  <br><br>\n`;
+              }
+              s += `  ${buildImg("githubProfileSummary", `https://metrics.lecoq.io/${classicUser}?theme=${lecoqTheme}&template=classic&base=header,activity,community,repositories,metadata&base.indepth=false&base.hireable=false&base.skip=false&plugin_isocalendar=false&plugin_calendar=false&v=4`, "Classic User Account")}\n`;
             }
 
             s += `</p>\n\n`;
@@ -2045,6 +2118,21 @@ const PreviewContent = ({ formData, theme }) => {
 };
 
 let globalCounterCalled = false;
+
+const animKeys = [
+  { key: "stats", label: "GitHub Stats" },
+  { key: "streak", label: "GitHub Streak Stats" },
+  { key: "isometric3D", label: "Yoshi 3D Contribution Graph" },
+  { key: "githubProfileSummary", label: "Classic User Account Card" },
+  { key: "topLangsCommit", label: "Top Langs by Commit" },
+  { key: "topLangsRepo", label: "Top Langs by Repo" },
+  { key: "pinball", label: "Activity Graph" },
+  { key: "visitors", label: "Profile Visitors Badge" },
+  { key: "snake", label: "Contribution Snake" },
+  { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
+  { key: "showLeetcodeContest", label: "LeetCode Contest" },
+  { key: "codeforces", label: "Codeforces Stats" },
+];
 
 export default function App() {
   const [theme, setTheme] = useState("elegant-black");
@@ -2281,32 +2369,6 @@ export default function App() {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(
-      generateMarkdown(false, formData.sectionOrder, false, formData, theme),
-    );
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const copySession = () => {
-    navigator.clipboard.writeText(generateSessionBlob());
-    setCopiedSession(true);
-    setTimeout(() => setCopiedSession(false), 2000);
-  };
-
-  const copyYml = () => {
-    navigator.clipboard.writeText(snakeYml);
-    setCopiedYml(true);
-    setTimeout(() => setCopiedYml(false), 2000);
-  };
-
-  const copyIsometricYml = () => {
-    navigator.clipboard.writeText(isometricYml);
-    setCopiedIsometricYml(true);
-    setTimeout(() => setCopiedIsometricYml(false), 2000);
-  };
-
   const snakeConfig = formData.snakeCustom || DEFAULT_SNAKE;
   const safeHex = (val, def) => (val || def).replace("#", "");
   const lightDotsEncoded = [
@@ -2332,23 +2394,31 @@ export default function App() {
 
   const snakeYml = `name: Generate Snake\n\non:\n  schedule:\n    - cron: "0 0 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n      - name: Generate snake\n        uses: Platane/snk@v3\n        with:\n          github_user_name: \${{ github.repository_owner }}\n          outputs: |\n            dist/github-contribution-grid-snake.svg?palette=github&color_snake=%23${snakeHex}&color_dots=${lightDotsEncoded}&color_background=%23${bgHex}\n            dist/github-contribution-grid-snake-dark.svg?palette=github-dark&color_snake=%23${snakeHex}&color_dots=${darkDotsEncoded}&color_background=%23${bgHex}\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n      - name: Push snake to output branch\n        run: |\n          sudo chown -R $USER:$USER dist\n          cd dist\n          git init\n          git checkout -b output\n          git add .\n          git config user.name "github-actions[bot]"\n          git config user.email "github-actions[bot]@users.noreply.github.com"\n          git commit -m "chore: update dev snake animation"\n          git push --force https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@github.com/\${{ github.repository }}.git output`;
 
-  const isometricYml = `name: GitHub-Profile-3D-Contrib\n\non:\n  schedule:\n    - cron: "0 18 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    name: generate-github-profile-3d-contrib\n    steps:\n      - uses: actions/checkout@v5\n      - uses: yoshi389111/github-profile-3d-contrib@latest\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n          USERNAME: \${{ github.repository_owner }}\n      - name: Commit & Push\n        run: |\n          git config user.name github-actions\n          git config user.email github-actions@github.com\n          git add -A .\n          if git commit -m "generated"; then\n            git push\n          fi`;
+  const isometricYml = `name: GitHub-Profile-3D-Contrib\n\non:\n  schedule:\n    - cron: "0 18 * * *"\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    name: generate-github-profile-3d-contrib\n    steps:\n      - uses: actions/checkout@v5\n      - uses: yoshi389111/github-profile-3d-contrib@latest\n        env:\n          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}\n          USERNAME: \${{ github.repository_owner || 'YOUR_GITHUB_USERNAME' }}\n      - name: Commit & Push\n        run: |\n          git config user.name github-actions\n          git config user.email github-actions@github.com\n          git add -A .\n          if git commit -m "generated"; then\n            git push\n          fi`;
 
-  const animKeys = [
-    { key: "visitors", label: "Profile Visitors Badge" },
-    { key: "stats", label: "GitHub Stats" },
-    { key: "streak", label: "GitHub Streak Stats" },
-    { key: "githubProfileSummary", label: "Classic User Account Card" },
-    { key: "lecoqLanguage", label: "Lecoq 3D Calendar & Languages" },
-    { key: "isometric3D", label: "Yoshi 3D Contribution Graph" },
-    { key: "topLangsCommit", label: "Top Langs by Commit" },
-    { key: "topLangsRepo", label: "Top Langs by Repo" },
-    { key: "pinball", label: "Activity Graph" },
-    { key: "snake", label: "Contribution Snake" },
-    { key: "showLeetcodeHeatmap", label: "LeetCode Heatmap" },
-    { key: "showLeetcodeContest", label: "LeetCode Contest" },
-    { key: "codeforces", label: "Codeforces Stats" },
-  ];
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(
+      generateMarkdown(false, formData.sectionOrder, formData, theme),
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  const copySession = () => {
+    const sessionData = btoa(JSON.stringify(formData));
+    navigator.clipboard.writeText(sessionData);
+    setCopiedSession(true);
+    setTimeout(() => setCopiedSession(false), 2000);
+  };
+  const copyYml = () => {
+    navigator.clipboard.writeText(snakeYml);
+    setCopiedYml(true);
+    setTimeout(() => setCopiedYml(false), 2000);
+  };
+  const copyIsometricYml = () => {
+    navigator.clipboard.writeText(isometricYml);
+    setCopiedIsometricYml(true);
+    setTimeout(() => setCopiedIsometricYml(false), 2000);
+  };
 
   return (
     <div className="app-container">
@@ -2651,123 +2721,14 @@ export default function App() {
               <div style={S.sectionHead}>
                 <LinkIcon size={13} /> Socials & Platforms
               </div>
-              {[
-                {
-                  name: "github",
-                  label: "GitHub Username",
-                  placeholder: "torvalds",
-                },
-                {
-                  name: "joinedDate",
-                  label: "Joined Date",
-                  placeholder: "Sept 2021",
-                },
-                {
-                  name: "email",
-                  label: "Email",
-                  placeholder: "you@example.com",
-                },
-                {
-                  name: "leetcode",
-                  label: "LeetCode",
-                  placeholder: "username",
-                },
-                {
-                  name: "codeforces",
-                  label: "Codeforces",
-                  placeholder: "handle",
-                },
-                {
-                  name: "codestats",
-                  label: "Code::Stats",
-                  placeholder: "username",
-                },
-                {
-                  name: "twitter",
-                  label: "X (Twitter)",
-                  placeholder: "handle",
-                },
-                {
-                  name: "linkedin",
-                  label: "LinkedIn",
-                  placeholder: "username or URL",
-                },
-                {
-                  name: "instagram",
-                  label: "Instagram",
-                  placeholder: "handle",
-                },
-                {
-                  name: "facebook",
-                  label: "Facebook",
-                  placeholder: "username",
-                },
-                {
-                  name: "snapchat",
-                  label: "Snapchat",
-                  placeholder: "username",
-                },
-                {
-                  name: "portfolio",
-                  label: "Portfolio",
-                  placeholder: "https://yoursite.com",
-                },
-                {
-                  name: "discord",
-                  label: "Discord",
-                  placeholder: "username or ID",
-                },
-                {
-                  name: "producthunt",
-                  label: "Product Hunt",
-                  placeholder: "username",
-                },
-                {
-                  name: "youtube",
-                  label: "YouTube",
-                  placeholder: "handle or channel URL",
-                },
-                {
-                  name: "twitch",
-                  label: "Twitch",
-                  placeholder: "username",
-                },
-                {
-                  name: "medium",
-                  label: "Medium",
-                  placeholder: "username",
-                },
-                {
-                  name: "stackoverflow",
-                  label: "Stack Overflow",
-                  placeholder: "user ID",
-                },
-                {
-                  name: "dribbble",
-                  label: "Dribbble",
-                  placeholder: "username",
-                },
-                {
-                  name: "behance",
-                  label: "Behance",
-                  placeholder: "username",
-                },
-                {
-                  name: "kaggle",
-                  label: "Kaggle",
-                  placeholder: "username",
-                },
-                {
-                  name: "devto",
-                  label: "DEV Community",
-                  placeholder: "username",
-                },
-                {
-                  name: "mastodon",
-                  label: "Mastodon",
-                  placeholder: "username",
-                },
-              ].map((f) => (
+              <Field
+                name="joinedDate"
+                label="Joined Date"
+                placeholder="Sept 2021"
+                value={formData.joinedDate}
+                onChange={handleInputChange}
+              />
+              {SOCIAL_NETWORKS.map((f) => (
                 <Field
                   key={f.name}
                   {...f}
@@ -2961,11 +2922,7 @@ export default function App() {
                 >
                   <label style={S.label}>Snake Section Title</label>
                   <input
-                    value={
-                      formData.sectionTitles?.snake ??
-                      formData.snakeTitle ??
-                      "Dev Snake"
-                    }
+                    value={formData.sectionTitles?.snake ?? "Dev Snake"}
                     onChange={(e) =>
                       setFormData((p) => ({
                         ...p,
@@ -3582,7 +3539,6 @@ export default function App() {
                   {generateMarkdown(
                     false,
                     formData.sectionOrder,
-                    false,
                     formData,
                     theme,
                   )}
