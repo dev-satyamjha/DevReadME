@@ -60,6 +60,9 @@ Most generators feel like paperwork. This one feels like a design tool.
 
 **↕️ Section Ordering**: arrange your README exactly how you want it read.
 
+![Vercel API](https://img.shields.io/badge/API-Self_Hosted_Vercel-000000?style=flat-square&logo=vercel) 
+>⚡ **Note:** The dynamic metrics on this profile (GitHub Stats, Streak Card, Top Languages, and Top Languages by Repo) are served via a private, self-hosted Vercel deployment to bypass public API rate limits.
+
 ***
 
 ## Nine themes
